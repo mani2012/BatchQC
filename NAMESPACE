@@ -1,0 +1,5 @@
+export(rnaseq_sim)
+export(batchqc_heatmap)
+export(batchqc_pca)
+export(batchtest)
+export(batchqc_pipeline)
