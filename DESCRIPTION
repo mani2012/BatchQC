@@ -16,4 +16,5 @@ Collate:
     'heatmap.R'
     'pca.R'
     'batchtest.R'
+    'batchQC.R'
     'batchqc_pipeline.R'
