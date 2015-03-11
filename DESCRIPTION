@@ -7,14 +7,15 @@ Author: Solaiappan Manimaran
 Maintainer: Solaiappan Manimaran <mani2012@bu.edu>
 Description: Provides Quality Control of sequencing samples by deducing if there is batch effect and adjusts for it. 
 License: GNU GPL (version 2 or later)
-Depends:
+Depends: 
     MCMCpack,
     sva,
     limma,
-Collate:
+Collate: 
     'simulate_data.R'
     'heatmap.R'
     'pca.R'
     'batchtest.R'
     'batchQC.R'
     'batchqc_pipeline.R'
+Suggests: testthat
