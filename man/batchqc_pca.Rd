@@ -5,16 +5,14 @@
 \title{Performs principal component analysis and
 produces plot of the first two principal components}
 \usage{
-batchqc_pca(data.matrix, nbatch = 3, ncond = 2, npercond = 10)
+batchqc_pca(data.matrix, batch, mod = NULL)
 }
 \arguments{
 \item{data.matrix}{Given data or simulated data from rnaseq_sim()}
 
-\item{nbatch}{Number of batches to simulate}
+\item{batch}{Batch covariate}
 
-\item{ncond}{Number of conditions to simulate}
-
-\item{npercond}{Number of samples per condition per batch to simulate}
+\item{mod}{Model matrix for outcome of interest and other covariates besides batch}
 }
 \value{
 PCA object from principal component analysis
@@ -24,8 +22,9 @@ Performs principal component analysis and
 produces plot of the first two principal components
 }
 \examples{
-batchqc_pca(data.matrix)
-batchqc_pca(data.matrix, nbatch=5)
-batchqc_pca(data.matrix, nbatch=3, ncond=2, npercond=10)
+nbatch <- 10
+nperbatch <- 10
+batch <- rep(1:nbatch, each=nperbatch)
+batchqc_pca(data.matrix, batch)
 }
 

@@ -4,23 +4,22 @@
 \alias{batchqc_heatmap}
 \title{Produce heatmap plots for the given data}
 \usage{
-batchqc_heatmap(data.matrix, nbatch = 3, ncond = 2, npercond = 10)
+batchqc_heatmap(data.matrix, batch, mod = NULL)
 }
 \arguments{
 \item{data.matrix}{Given data or simulated data from rnaseq_sim()}
 
-\item{nbatch}{Number of batches to simulate}
+\item{batch}{Batch covariate}
 
-\item{ncond}{Number of conditions to simulate}
-
-\item{npercond}{Number of samples per condition per batch to simulate}
+\item{mod}{Model matrix for outcome of interest and other covariates besides batch}
 }
 \description{
 Produce heatmap plots for the given data
 }
 \examples{
-batchqc_heatmap(data.matrix)
-batchqc_heatmap(data.matrix, nbatch=5)
-batchqc_heatmap(data.matrix, nbatch=3, ncond=2, npercond=10)
+nbatch <- 10
+nperbatch <- 10
+batch <- rep(1:nbatch, each=nperbatch)
+batchqc_heatmap(data.matrix, batch)
 }
 

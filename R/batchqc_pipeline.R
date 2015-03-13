@@ -11,11 +11,15 @@ condition <- rep(rep(1:ncond, each=npercond), nbatch)
 nsample <- nbatch*ncond*npercond
 sample <- 1:nsample
 pdata <- data.frame(sample, batch, condition)
-modmatrix = model.matrix(~as.factor(condition), data=pdata)  
-pca <- batchQC(data.matrix, batch=batch, mod=modmatrix)
+modmatrix = model.matrix(~as.factor(condition), data=pdata)
+#pca <- batchQC(data.matrix, batch=batch, mod=modmatrix)
+
+batchQC_report(data.matrix, batch=batch, mod=modmatrix, report_file="batchqc_report.html")
+
 
 ### apply combat
 combat_data.matrix = ComBat(dat=data.matrix, batch=batch, mod=modmatrix)
 
 ### Rerun the BatchQC pipeline on the batch adjusted data
-pca <- batchQC(combat_data.matrix, batch=batch, mod=modmatrix)
+#pca <- batchQC(combat_data.matrix, batch=batch, mod=modmatrix)
+batchQC_report(data.matrix, batch=batch, mod=modmatrix, report_file="batchqc_combat_adj_report.html")

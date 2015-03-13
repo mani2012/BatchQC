@@ -4,23 +4,22 @@
 \alias{batchtest}
 \title{Performs test to check whether batch needs to be adjusted}
 \usage{
-batchtest(pca, nbatch = 3, ncond = 2, npercond = 10)
+batchtest(pca, batch, mod = NULL)
 }
 \arguments{
 \item{pca}{PCA object from principal component analysis}
 
-\item{nbatch}{Number of batches to simulate}
+\item{batch}{Batch covariate}
 
-\item{ncond}{Number of conditions to simulate}
-
-\item{npercond}{Number of samples per condition per batch to simulate}
+\item{mod}{Model matrix for outcome of interest and other covariates besides batch}
 }
 \description{
 Performs test to check whether batch needs to be adjusted
 }
 \examples{
-batchtest(pca)
-batchtest(pca, nbatch=5)
-batchtest(pca, nbatch=3, ncond=2, npercond=10)
+nbatch <- 10
+nperbatch <- 10
+batch <- rep(1:nbatch, each=nperbatch)
+batchtest(pca, batch)
 }
 
