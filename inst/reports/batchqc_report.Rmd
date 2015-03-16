@@ -22,7 +22,7 @@ When you click the **Knit** button a document will be generated that includes bo
 You can also embed plots, for example:
 
 ```{r, echo=FALSE, message=FALSE}
-pca <- batchQC(data.matrix, batch=batch, mod=modmatrix)
+pca <- batchQC_analyze(data.matrix, batch=batch, mod=modmatrix)
 
 ```
 

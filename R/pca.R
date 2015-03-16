@@ -19,7 +19,7 @@ batchqc_pca <- function(data.matrix, batch, mod=NULL)  {
   colorfun <- function(i) { return(bc[i]) }
   cc <- sapply(intbatch, colorfun, simplify=TRUE)
   if (!is.null(mod)) {
-    print ("Need to implement this part")
+    #print ("Need to implement this part")
     # do something here
   }
   pca <- prcomp(t(data.matrix), retx=T, center=T, scale=T)
