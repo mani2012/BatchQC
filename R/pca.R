@@ -30,6 +30,37 @@ batchqc_pca <- function(data.matrix, batch, mod=NULL)  {
   return(pca)
 }
 
+#' Performs PCA svd variance decomposition and 
+#' produces plot of the first two principal components
+#' 
+#' @param data.matrix Given data or simulated data from rnaseq_sim()
+#' @param batch Batch covariate 
+#' @param mod Model matrix for outcome of interest and other covariates besides batch
+#' @return res PCA list with two components v and d.
+#' @export
+#' @examples
+#' nbatch <- 10
+#' nperbatch <- 10
+#' batch <- rep(1:nbatch, each=nperbatch)
+#' batchqc_pca_svd(data.matrix, batch)
+batchqc_pca_svd <- function(data.matrix, batch, mod=NULL)  {
+  res <- makeSVD(data.matrix)
+  pcRes(res$v,res$d, modmatrix[,2], batch)
+  fbatch <- as.factor(batch)
+  nbatch <- nlevels(fbatch)
+  bc <- rainbow(nbatch)
+  intbatch <- as.integer(fbatch)
+  colorfun <- function(i) { return(bc[i]) }
+  cc <- sapply(intbatch, colorfun, simplify=TRUE)
+  plotPC(res$v,res$d, 
+         col=cc, # color by batch
+         pch=19, main="PCA plot",
+         xlim=c(min(res$v[,1])-.08,max(res$v[,1])+.08),
+         ylim=c(min(res$v[,2])-.08,max(res$v[,2])+.08))
+  text(res$v[,1], res$v[,2], batch, pos=1, cex=0.6)
+  return(res)
+}
+
 #' Compute singular value decomposition
 #'
 #' @param x matrix of genes by sample (ie. the usual data matrix)
@@ -92,7 +123,7 @@ pcRes <- function(v, d, condition=NULL, batch=NULL){
                       cond.R2=cond.R2,
                       batch.R2=batch.R2)
   }
-  
+  print(res)
   return(res)
 }
 
