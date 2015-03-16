@@ -46,14 +46,20 @@ batchqc_pca <- function(data.matrix, batch, mod=NULL)  {
 batchqc_pca_svd <- function(data.matrix, batch, mod=NULL)  {
   res <- makeSVD(data.matrix)
   pcRes(res$v,res$d, modmatrix[,2], batch)
-  fbatch <- as.factor(batch)
-  nbatch <- nlevels(fbatch)
-  bc <- rainbow(nbatch)
-  intbatch <- as.integer(fbatch)
+  fcond <- as.factor(modmatrix[,2])
+  ncond <- nlevels(fcond)
+  bc <- rainbow(ncond)
+  intcond <- as.integer(fcond)
   colorfun <- function(i) { return(bc[i]) }
-  cc <- sapply(intbatch, colorfun, simplify=TRUE)
+  cc <- sapply(intcond, colorfun, simplify=TRUE)
+  #fbatch <- as.factor(batch)
+  #nbatch <- nlevels(fbatch)
+  #bc <- rainbow(nbatch)
+  #intbatch <- as.integer(fbatch)
+  #colorfun <- function(i) { return(bc[i]) }
+  #cc <- sapply(intbatch, colorfun, simplify=TRUE)
   plotPC(res$v,res$d, 
-         col=cc, # color by batch
+         col=cc, # color by condition
          pch=19, main="PCA plot",
          xlim=c(min(res$v[,1])-.08,max(res$v[,1])+.08),
          ylim=c(min(res$v[,2])-.08,max(res$v[,2])+.08))
