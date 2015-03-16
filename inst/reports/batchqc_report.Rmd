@@ -31,14 +31,7 @@ PCA Proportion Variation and correlation
 ========================================
 
 ```{r, echo=FALSE, message=FALSE}
-res <- makeSVD(data.matrix)
-pcRes(res$v,res$d, modmatrix[,2], batch)
-plotPC(res$v,res$d, 
-       col=modmatrix[,2], # color by batch
-       pch=19, main="PCA plot",
-       xlim=c(min(res$v[,1])-.08,max(res$v[,1])+.08),
-       ylim=c(min(res$v[,2])-.08,max(res$v[,2])+.08))
-text(res$v[,1], res$v[,2], batch, pos=1, cex=0.6) 
+res <- batchqc_pca_svd(data.matrix, batch=batch, mod=modmatrix)
 ```
 
 Batch Effects testing
