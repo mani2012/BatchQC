@@ -11,6 +11,7 @@ Depends:
     MCMCpack,
     sva,
     limma,
+    corpcor,
 Collate: 
     'simulate_data.R'
     'heatmap.R'
