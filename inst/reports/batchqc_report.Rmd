@@ -7,23 +7,46 @@ output:
     toc: true
     toc_depth: 2
 ---
-Synopsis
-========
+Heatmap
+=======
 
-rmarkdown::render("batchqc_report.Rmd")
-
-Description
-===========
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-You can also embed plots, for example:
+This is a heatmap of the given data matrix showing the batch effects and variations with different conditions. 
 
 ```{r, echo=FALSE, message=FALSE}
-pca <- batchQC_analyze(data.matrix, batch=batch, mod=modmatrix)
+batchqc_heatmap(data.matrix, batch=batch, mod=modmatrix)
 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+PCA: Principal Component Analysis
+=================================
+
+This is a plot of the top two principal components and showing the variation with respect to batch effects and different conditions. 
+
+```{r, echo=FALSE, message=FALSE}
+pca <- batchqc_pca(data.matrix, batch=batch, mod=modmatrix)
+
+```
+
+PCA Proportion Variation and correlation
+========================================
+
+```{r, echo=FALSE, message=FALSE}
+res <- makeSVD(data.matrix)
+pcRes(res$v,res$d, modmatrix[,2], batch)
+plotPC(res$v,res$d, 
+       col=modmatrix[,2], # color by batch
+       pch=19, main="PCA plot",
+       xlim=c(min(res$v[,1])-.08,max(res$v[,1])+.08),
+       ylim=c(min(res$v[,2])-.08,max(res$v[,2])+.08))
+text(res$v[,1], res$v[,2], batch, pos=1, cex=0.6) 
+```
+
+Batch Effects testing
+=====================
+
+This is a summary of the statistical test for batch effects. 
+
+```{r, echo=FALSE, message=FALSE}
+batchtest(pca, batch=batch, mod=mod)
+
+```

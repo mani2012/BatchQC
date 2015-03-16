@@ -11,9 +11,14 @@
 #' batchtest(pca, batch)
 batchtest <- function(pca, batch, mod=NULL)  {
   pc <- pca$x 
-  summary(lm(pc[,1]~batch))
-  summary(lm(pc[,2]~batch))
-  summary(lm(pc[,3]~batch))
-  summary(lm(pc[,4]~batch))
-  summary(lm(pc[,5]~batch))
+  s1 <- summary(lm(pc[,1]~batch))
+  s2 <- summary(lm(pc[,2]~batch))
+  s3 <- summary(lm(pc[,3]~batch))
+  s4 <- summary(lm(pc[,4]~batch))
+  s5 <- summary(lm(pc[,5]~batch))
+  print(s1)
+  print(s2)
+  print(s3)
+  print(s4)
+  print(s5)
 }
