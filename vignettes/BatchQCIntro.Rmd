@@ -1,0 +1,62 @@
+---
+title: "BatchQC package Introduction"
+author: "Solaiappan Manimaran"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{BatchQCIntro}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+The purpose of this package is to provide Quality Control of sequencing samples by deducing if there is batch effect and adjusts for it.
+
+The package includes:
+
+1. principal component analysis and plots to check batch effects
+2. heatmap plot of gene expressions
+3. statistical tests to assess batch effects
+4. functions to generate simulated RNA-Seq data
+
+`batchQC` is the pipeline function that generates the BatchQC report. It combines all the functions into one step.
+
+## Installation
+
+To begin, install [Bioconductor](http://www.bioconductor.org/) along with a
+few dependencies that BatchQC uses:
+
+```r
+source("http://bioconductor.org/biocLite.R")
+biocLite(c('limma', 'preprocessCore', 'sva'))
+```
+
+Next, use [devtools](https://github.com/hadley/devtools) to install the latest
+version of cbcbSEQ from Github:
+```r
+require(devtools)
+install_github("BatchQC", user="mani2012", build_vignettes=TRUE)
+```
+
+If all went well you should now be able to load BatchQC. Here is an example use of the pipeline.
+
+### simulate data
+```r
+nbatch <- 3
+ncond <- 2
+npercond <- 10
+data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
+                          ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+
+```
+### apply BatchQC
+```r
+batch <- rep(1:nbatch, each=ncond*npercond)
+condition <- rep(rep(1:ncond, each=npercond), nbatch)
+nsample <- nbatch*ncond*npercond
+sample <- 1:nsample
+pdata <- data.frame(sample, batch, condition)
+modmatrix = model.matrix(~as.factor(condition), data=pdata)
+
+batchQC(data.matrix, batch=batch, mod=modmatrix, 
+        report_file="batchqc_report.html", report_dir=".")
+
+```

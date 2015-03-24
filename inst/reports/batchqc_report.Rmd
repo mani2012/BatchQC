@@ -32,6 +32,7 @@ PCA Proportion Variation and correlation
 
 ```{r, echo=FALSE, message=FALSE}
 res <- batchqc_pca_svd(data.matrix, batch=batch, mod=modmatrix)
+pander(res)
 ```
 
 Batch Effects testing
@@ -40,6 +41,9 @@ Batch Effects testing
 This is a summary of the statistical test for batch effects. 
 
 ```{r, echo=FALSE, message=FALSE}
-batchtest(pca, batch=batch, mod=mod)
-
+retval <- batchtest(pca, batch=batch, mod=mod)
 ```
+Metrics       | PC 1 | PC 2
+------------- | -----|-----
+R-squared     | "`r retval[1]$r.squared`" | "`r retval[2]$r.squared`" |
+

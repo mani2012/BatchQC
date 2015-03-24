@@ -12,11 +12,15 @@ Depends:
     sva,
     limma,
     corpcor,
+    rmarkdown,
+    knitr,
+    pander,
 Collate: 
     'simulate_data.R'
     'heatmap.R'
     'pca.R'
     'batchtest.R'
     'batchQC.R'
-    'batchqc_pipeline.R'
 Suggests: testthat
+VignetteBuilder: knitr
+

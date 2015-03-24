@@ -21,4 +21,6 @@ batchtest <- function(pca, batch, mod=NULL)  {
   print(s3)
   print(s4)
   print(s5)
+  retval <- c(s1, s2, s3, s4, s5)
+  return(retval)
 }

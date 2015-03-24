@@ -10,8 +10,7 @@ The package includes:
 3. statistical tests to assess batch effects
 4. functions to generate simulated RNA-Seq data
 
-`batchQC` is the pipeline function. It combines all the functions into one step.
-`batchQC_report` is the function that generates the BatchQC report.
+`batchQC` is the pipeline function that generates the BatchQC report. It combines all the functions into one step.
 
 ## Installation
 
@@ -27,7 +26,7 @@ Next, use [devtools](https://github.com/hadley/devtools) to install the latest
 version of cbcbSEQ from Github:
 ```r
 require(devtools)
-install_github("BatchQC", user="mani2012")
+install_github("BatchQC", user="mani2012", build_vignettes=TRUE)
 ```
 
 If all went well you should now be able to load BatchQC:

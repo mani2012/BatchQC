@@ -45,7 +45,7 @@ batchqc_pca <- function(data.matrix, batch, mod=NULL)  {
 #' batchqc_pca_svd(data.matrix, batch)
 batchqc_pca_svd <- function(data.matrix, batch, mod=NULL)  {
   res <- makeSVD(data.matrix)
-  pcRes(res$v,res$d, modmatrix[,2], batch)
+  res1 <- pcRes(res$v,res$d, modmatrix[,2], batch)
   fcond <- as.factor(modmatrix[,2])
   ncond <- nlevels(fcond)
   bc <- rainbow(ncond)
@@ -64,7 +64,7 @@ batchqc_pca_svd <- function(data.matrix, batch, mod=NULL)  {
          xlim=c(min(res$v[,1])-.08,max(res$v[,1])+.08),
          ylim=c(min(res$v[,2])-.08,max(res$v[,2])+.08))
   text(res$v[,1], res$v[,2], batch, pos=1, cex=0.6)
-  return(res)
+  return(res1)
 }
 
 #' Compute singular value decomposition

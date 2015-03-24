@@ -1,5 +1,6 @@
 require(sva)
 require(limma)
+require(pander)
 #' Checks for presence of batch effect and reports whether the batch needs to be adjusted
 #' 
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
