@@ -1,20 +1,33 @@
 ---
 title: "batchQC Report"
-author: "Mani"
+author: "Solaiappan Manimaran"
 date: "`r Sys.Date()`"
 output: 
-  html_document:
+  html_vignette:
     toc: true
     toc_depth: 2
 ---
+Data Summary
+============
+
+This is a summary of the given data matrix. 
+
+```{r, echo=FALSE, message=FALSE}
+#{r, echo=FALSE, message=FALSE, results='asis'}
+#knitr::kable(head(data.matrix[1:10]), format="html")
+datasummary <- summary(data.matrix)
+pander(datasummary)
+#data(iris)
+#knitr::kable(head(iris), format="html")
+```
+
 Heatmap
 =======
 
 This is a heatmap of the given data matrix showing the batch effects and variations with different conditions. 
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
 batchqc_heatmap(data.matrix, batch=batch, mod=modmatrix)
-
 ```
 
 PCA: Principal Component Analysis
@@ -22,7 +35,7 @@ PCA: Principal Component Analysis
 
 This is a plot of the top two principal components and showing the variation with respect to batch effects and different conditions. 
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
 pca <- batchqc_pca(data.matrix, batch=batch, mod=modmatrix)
 
 ```
@@ -30,8 +43,15 @@ pca <- batchqc_pca(data.matrix, batch=batch, mod=modmatrix)
 PCA Proportion Variation and correlation
 ========================================
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
 res <- batchqc_pca_svd(data.matrix, batch=batch, mod=modmatrix)
+```
+
+PCA Proportion Variation and correlation Table
+==============================================
+
+```{r, echo=FALSE, message=FALSE}
+#panderOptions("table.split.table", Inf)  ## don't split tables
 pander(res)
 ```
 
