@@ -109,18 +109,23 @@ pcRes <- function(v, d, condition=NULL, batch=NULL){
   if(is.null(condition) & is.null(batch)){
     res <- data.frame(propVar=pcVar, 
                       cumPropVar=cumPcVar)
+    colnames(res) <- c("Percentage Variation", "Cumulative Percentage Variation")
   }
   
   if(!is.null(batch) & is.null(condition)){
     res <- data.frame(propVar=pcVar, 
                       cumPropVar=cumPcVar, 
                       batch.R2=batch.R2)
+    colnames(res) <- c("Percentage Variation", "Cumulative Percentage Variation",
+                       "Batch Correlation")
   }
   
   if(!is.null(condition) & is.null(batch)){
     res <- data.frame(propVar=pcVar, 
                       cumPropVar=cumPcVar, 
                       cond.R2=cond.R2)
+    colnames(res) <- c("Percentage Variation", "Cumulative Percentage Variation",
+                       "Condition Correlation")
   }
   
   if(!is.null(condition) & !is.null(batch)){
@@ -128,8 +133,11 @@ pcRes <- function(v, d, condition=NULL, batch=NULL){
                       cumPropVar=cumPcVar, 
                       cond.R2=cond.R2,
                       batch.R2=batch.R2)
+    colnames(res) <- c("Percentage Variation", "Cumulative Percentage Variation",
+                       "Condition Correlation", "Batch Correlation")
   }
-  print(res)
+  rownames(res) <- 1:length(d)
+  #print(res)
   return(res)
 }
 

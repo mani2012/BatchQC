@@ -10,15 +10,13 @@ output:
 Data Summary
 ============
 
-This is a summary of the given data matrix. 
+This is a summary of the given data matrix for the first 12 genes. 
 
 ```{r, echo=FALSE, message=FALSE}
 #{r, echo=FALSE, message=FALSE, results='asis'}
 #knitr::kable(head(data.matrix[1:10]), format="html")
 datasummary <- summary(data.matrix)
-pander(datasummary)
-#data(iris)
-#knitr::kable(head(iris), format="html")
+pander(datasummary[,1:12])
 ```
 
 Heatmap
@@ -51,7 +49,7 @@ PCA Proportion Variation and correlation Table
 ==============================================
 
 ```{r, echo=FALSE, message=FALSE}
-#panderOptions("table.split.table", Inf)  ## don't split tables
+panderOptions("table.split.table", Inf)  ## don't split tables
 pander(res)
 ```
 
