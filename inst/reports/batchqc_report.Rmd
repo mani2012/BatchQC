@@ -53,6 +53,14 @@ panderOptions("table.split.table", Inf)  ## don't split tables
 pander(res)
 ```
 
+Combat Plots
+============
+This is a plot showing whether parametric or non-parameteric prior is appropriate for this data. 
+
+```{r, echo=FALSE, message=FALSE}
+#adjustedData <- combatPlot(data.matrix, batch=batch, mod=modmatrix)
+```
+
 Batch Effects testing
 =====================
 
