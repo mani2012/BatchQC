@@ -55,10 +55,11 @@ pander(res)
 
 Combat Plots
 ============
-This is a plot showing whether parametric or non-parameteric prior is appropriate for this data. 
+This is a plot showing whether parametric or non-parameteric prior is appropriate for this data. It also shows the Kolmogorov-Smirnov test comparing the parametric and non-parameteric prior distribution.
 
 ```{r, echo=FALSE, message=FALSE}
-adjustedData <- combatPlot(data.matrix, batch=batch, mod=modmatrix)
+kstest <- combatPlot(data.matrix, batch=batch, mod=modmatrix)
+print(kstest)
 ```
 
 Batch Effects testing

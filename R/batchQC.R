@@ -1,6 +1,9 @@
 require(sva)
 require(limma)
 require(pander)
+require(stats)
+require(graphics)
+
 #' Checks for presence of batch effect and reports whether the batch needs to be adjusted
 #' 
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
@@ -151,7 +154,9 @@ combatPlot <- function(dat=data.matrix, batch, mod=NULL, par.prior=TRUE, prior.p
     title('Q-Q Plot')
   }
   
-  return(data.matrix)
+  kstest <- ks.test(gamma.hat[1,], "pnorm", gamma.bar[1], sqrt(t2[1])) # two-sided, exact
+  
+  return(kstest)
   
 }
 
