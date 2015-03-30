@@ -58,7 +58,7 @@ Combat Plots
 This is a plot showing whether parametric or non-parameteric prior is appropriate for this data. 
 
 ```{r, echo=FALSE, message=FALSE}
-#adjustedData <- combatPlot(data.matrix, batch=batch, mod=modmatrix)
+adjustedData <- combatPlot(data.matrix, batch=batch, mod=modmatrix)
 ```
 
 Batch Effects testing
@@ -69,7 +69,4 @@ This is a summary of the statistical test for batch effects.
 ```{r, echo=FALSE, message=FALSE}
 retval <- batchtest(pca, batch=batch, mod=mod)
 ```
-Metrics       | PC 1 | PC 2
-------------- | -----|-----
-R-squared     | "`r retval[1]$r.squared`" | "`r retval[2]$r.squared`" |
 

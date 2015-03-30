@@ -62,7 +62,7 @@ batchQC <- function(data.matrix, batch, mod=NULL,
 #' @export
 #' 
 
-combatPlot <- function(data.matrix, batch, mod=NULL, par.prior=TRUE, prior.plots=TRUE) {
+combatPlot <- function(dat=data.matrix, batch, mod=NULL, par.prior=TRUE, prior.plots=TRUE) {
   # make batch a factor and make a set of indicators for batch
   if(length(dim(batch))>1){stop("This version of ComBat only allows one batch variable")}  ## to be updated soon!
   batch <- as.factor(batch)
@@ -133,7 +133,7 @@ combatPlot <- function(data.matrix, batch, mod=NULL, par.prior=TRUE, prior.plots
   ##Plot empirical and parametric priors
   
   if (prior.plots & par.prior){
-    par(mfrow=c(2,2))
+    #par(mfrow=c(2,2))
     tmp <- density(gamma.hat[1,])
     plot(tmp,  type='l', main="Density Plot")
     xx <- seq(min(tmp$x), max(tmp$x), length=100)
@@ -151,39 +151,10 @@ combatPlot <- function(data.matrix, batch, mod=NULL, par.prior=TRUE, prior.plots
     title('Q-Q Plot')
   }
   
-  ##Find EB batch adjustments
-  
-  gamma.star <- delta.star <- NULL
-  if(par.prior){
-    cat("Finding parametric adjustments\n")
-    for (i in 1:n.batch){
-      temp <- it.sol(s.data[,batches[[i]]],gamma.hat[i,],
-                     delta.hat[i,],gamma.bar[i],t2[i],a.prior[i],b.prior[i])
-      gamma.star <- rbind(gamma.star,temp[1,])
-      delta.star <- rbind(delta.star,temp[2,])
-    }
-  }else{
-    cat("Finding nonparametric adjustments\n")
-    for (i in 1:n.batch){
-      temp <- int.eprior(as.matrix(s.data[,batches[[i]]]),gamma.hat[i,],delta.hat[i,])
-      gamma.star <- rbind(gamma.star,temp[1,])
-      delta.star <- rbind(delta.star,temp[2,])
-    }
-  }
-  
-  
-  ### Normalize the Data ###
-  cat("Adjusting the Data\n")
-  
-  bayesdata <- s.data
-  j <- 1
-  for (i in batches){
-    bayesdata[,i] <- (bayesdata[,i]-t(batch.design[i,]%*%gamma.star))/(sqrt(delta.star[j,])%*%t(rep(1,n.batches[j])))
-    j <- j+1
-  }
-  
-  bayesdata <- (bayesdata*(sqrt(var.pooled)%*%t(rep(1,n.array))))+stand.mean
-  
-  return(bayesdata)
+  return(data.matrix)
   
 }
+
+# Following four find empirical hyper-prior values
+aprior <- function(gamma.hat){m=mean(gamma.hat); s2=var(gamma.hat); (2*s2+m^2)/s2}
+bprior <- function(gamma.hat){m=mean(gamma.hat); s2=var(gamma.hat); (m*s2+m^3)/s2}
