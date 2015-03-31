@@ -26,7 +26,7 @@ Next, use [devtools](https://github.com/hadley/devtools) to install the latest
 version of cbcbSEQ from Github:
 ```r
 require(devtools)
-install_github("BatchQC", user="mani2012", build_vignettes=TRUE)
+install_github("mani2012/BatchQC", build_vignettes=TRUE)
 ```
 
 If all went well you should now be able to load BatchQC:
@@ -34,4 +34,12 @@ If all went well you should now be able to load BatchQC:
 require(BatchQC)
 vignette('BatchQCIntro', package='BatchQC')
 ```
+You may have to setup local directory, if you do not have permissions to install in the default location for R.
+```r
+export R_LIBS="/my_own_local_directory/R_libs"
+```
 
+And do something like the following
+```r
+install.packages("devtools", repos="http://cran.r-project.org", lib="/my_own_local_directory/R_libs")
+```

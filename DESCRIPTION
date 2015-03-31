@@ -7,14 +7,13 @@ Author: Solaiappan Manimaran
 Maintainer: Solaiappan Manimaran <mani2012@bu.edu>
 Description: Provides Quality Control of sequencing samples by deducing if there is batch effect and adjusts for it. 
 License: GNU GPL (version 2 or later)
-Depends: 
-    MCMCpack,
+Depends: MCMCpack,
     sva,
     limma,
     corpcor,
     rmarkdown,
     knitr,
-    pander,
+    pander
 Collate: 
     'simulate_data.R'
     'heatmap.R'
@@ -23,4 +22,3 @@ Collate:
     'batchQC.R'
 Suggests: testthat
 VignetteBuilder: knitr
-
