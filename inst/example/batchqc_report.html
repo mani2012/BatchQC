@@ -543,90 +543,104 @@
 <p>This is a summary of the statistical test for batch effects.</p>
 <pre><code>## 
 ## Call:
-## lm(formula = pc[, 1] ~ batch)
+## lm(formula = pc[, 1] ~ fbatch + fcond)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -3.2464 -1.1994 -0.1585  0.6042 12.2817 
+## -3.2124 -0.9805 -0.2123  0.6178 11.7385 
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)  
-## (Intercept)  -1.3500     0.7157  -1.886   0.0643 .
-## batch         0.6750     0.3313   2.037   0.0462 *
+## (Intercept) -0.70903    0.53661  -1.321   0.1918  
+## fbatch2     -0.08874    0.65721  -0.135   0.8931  
+## fbatch3      1.35003    0.65721   2.054   0.0446 *
+## fcond1       0.57721    0.53661   1.076   0.2867  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 2.095 on 58 degrees of freedom
-## Multiple R-squared:  0.06679,    Adjusted R-squared:  0.0507 
-## F-statistic: 4.151 on 1 and 58 DF,  p-value: 0.04618
+## Residual standard error: 2.078 on 56 degrees of freedom
+## Multiple R-squared:  0.1136, Adjusted R-squared:  0.06612 
+## F-statistic: 2.392 on 3 and 56 DF,  p-value: 0.07812
 ## 
 ## 
 ## Call:
-## lm(formula = pc[, 2] ~ batch)
+## lm(formula = pc[, 2] ~ fbatch + fcond)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -6.9704 -0.3262  0.1153  0.5886  5.8373 
+## -6.5546 -0.5030  0.0587  0.7284  5.7549 
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)
-## (Intercept)  -0.3728     0.6226  -0.599    0.552
-## batch         0.1864     0.2882   0.647    0.520
+## (Intercept)  0.06335    0.47433   0.134    0.894
+## fbatch2     -0.31186    0.58094  -0.537    0.594
+## fbatch3      0.37279    0.58094   0.642    0.524
+## fcond1      -0.16733    0.47433  -0.353    0.726
 ## 
-## Residual standard error: 1.823 on 58 degrees of freedom
-## Multiple R-squared:  0.007159,   Adjusted R-squared:  -0.009959 
-## F-statistic: 0.4182 on 1 and 58 DF,  p-value: 0.5204
+## Residual standard error: 1.837 on 56 degrees of freedom
+## Multiple R-squared:  0.02637,    Adjusted R-squared:  -0.02578 
+## F-statistic: 0.5057 on 3 and 56 DF,  p-value: 0.68
 ## 
 ## 
 ## Call:
-## lm(formula = pc[, 3] ~ batch)
+## lm(formula = pc[, 3] ~ fbatch + fcond)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -3.6279 -0.9268  0.0428  0.9225  5.0310 
+## -2.9648 -0.9155  0.0228  0.6581  5.2799 
 ## 
 ## Coefficients:
-##              Estimate Std. Error t value Pr(&gt;|t|)
-## (Intercept)  0.005443   0.601185   0.009    0.993
-## batch       -0.002722   0.278294  -0.010    0.992
+##              Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)  0.779111   0.430342   1.810   0.0756 .
+## fbatch2     -0.793963   0.527059  -1.506   0.1376  
+## fbatch3     -0.005443   0.527059  -0.010   0.9918  
+## fcond1      -1.025284   0.430342  -2.382   0.0206 *
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 1.76 on 58 degrees of freedom
-## Multiple R-squared:  1.649e-06,  Adjusted R-squared:  -0.01724 
-## F-statistic: 9.564e-05 on 1 and 58 DF,  p-value: 0.9922
-## 
-## 
-## Call:
-## lm(formula = pc[, 4] ~ batch)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -3.4434 -0.9316 -0.2952  0.5110  7.4221 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)
-## (Intercept)  -0.5671     0.5790  -0.980    0.331
-## batch         0.2836     0.2680   1.058    0.294
-## 
-## Residual standard error: 1.695 on 58 degrees of freedom
-## Multiple R-squared:  0.01893,    Adjusted R-squared:  0.002019 
-## F-statistic: 1.119 on 1 and 58 DF,  p-value: 0.2944
+## Residual standard error: 1.667 on 56 degrees of freedom
+## Multiple R-squared:  0.1342, Adjusted R-squared:  0.08784 
+## F-statistic: 2.894 on 3 and 56 DF,  p-value: 0.04318
 ## 
 ## 
 ## Call:
-## lm(formula = pc[, 5] ~ batch)
+## lm(formula = pc[, 4] ~ fbatch + fcond)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -5.7680 -0.5803  0.1409  0.6726  3.4479 
+## -3.6322 -0.8311 -0.2285  0.4871  7.2334 
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)
-## (Intercept)   0.7490     0.5625   1.332    0.188
-## batch        -0.3745     0.2604  -1.438    0.156
+## (Intercept)  -0.4656     0.4426  -1.052    0.297
+## fbatch2       0.2736     0.5421   0.505    0.616
+## fbatch3       0.5671     0.5421   1.046    0.300
+## fcond1        0.3708     0.4426   0.838    0.406
 ## 
-## Residual standard error: 1.647 on 58 degrees of freedom
-## Multiple R-squared:  0.03444,    Adjusted R-squared:  0.01779 
-## F-statistic: 2.069 on 1 and 58 DF,  p-value: 0.1557</code></pre>
+## Residual standard error: 1.714 on 56 degrees of freedom
+## Multiple R-squared:  0.03108,    Adjusted R-squared:  -0.02082 
+## F-statistic: 0.5988 on 3 and 56 DF,  p-value: 0.6184
+## 
+## 
+## Call:
+## lm(formula = pc[, 5] ~ fbatch + fcond)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5.7811 -0.6142  0.1258  0.6663  3.5820 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)   0.7510     0.4236   1.773   0.0817 .
+## fbatch2      -0.9589     0.5188  -1.848   0.0699 .
+## fbatch3      -0.7490     0.5188  -1.444   0.1544  
+## fcond1       -0.3634     0.4236  -0.858   0.3947  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.641 on 56 degrees of freedom
+## Multiple R-squared:  0.07455,    Adjusted R-squared:  0.02497 
+## F-statistic: 1.504 on 3 and 56 DF,  p-value: 0.2235</code></pre>
 </div>
 
 

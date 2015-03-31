@@ -11,11 +11,25 @@
 #' batchtest(pca, batch)
 batchtest <- function(pca, batch, mod=NULL)  {
   pc <- pca$x 
-  s1 <- summary(lm(pc[,1]~batch))
-  s2 <- summary(lm(pc[,2]~batch))
-  s3 <- summary(lm(pc[,3]~batch))
-  s4 <- summary(lm(pc[,4]~batch))
-  s5 <- summary(lm(pc[,5]~batch))
+  fbatch <- as.factor(batch)
+  condition <- NULL
+  if(!is.null(mod)) {
+    condition = mod[,2]
+  }
+  if(is.null(condition)) {
+    s1 <- summary(lm(pc[,1]~fbatch))
+    s2 <- summary(lm(pc[,2]~fbatch))
+    s3 <- summary(lm(pc[,3]~fbatch))
+    s4 <- summary(lm(pc[,4]~fbatch))
+    s5 <- summary(lm(pc[,5]~fbatch))
+  } else  {
+    fcond <- as.factor(condition)
+    s1 <- summary(lm(pc[,1]~fbatch + fcond))
+    s2 <- summary(lm(pc[,2]~fbatch + fcond))
+    s3 <- summary(lm(pc[,3]~fbatch + fcond))
+    s4 <- summary(lm(pc[,4]~fbatch + fcond))
+    s5 <- summary(lm(pc[,5]~fbatch + fcond))
+  }
   print(s1)
   print(s2)
   print(s3)
