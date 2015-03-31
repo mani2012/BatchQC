@@ -15,7 +15,8 @@ This is a summary of the given data matrix for the first 12 genes.
 ```{r, echo=FALSE, message=FALSE}
 #{r, echo=FALSE, message=FALSE, results='asis'}
 #knitr::kable(head(dat[1:10]), format="html")
-datasummary <- summary(dat)
+datasummary <- summary(t(dat))
+panderOptions("table.split.table", 120)  ## table split at 100 (default 80) characters in a line
 pander(datasummary[,1:12])
 ```
 
