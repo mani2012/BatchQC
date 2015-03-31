@@ -45,8 +45,12 @@ batchqc_pca <- function(data.matrix, batch, mod=NULL)  {
 #' batchqc_pca_svd(data.matrix, batch)
 batchqc_pca_svd <- function(data.matrix, batch, mod=NULL)  {
   res <- makeSVD(data.matrix)
-  res1 <- pcRes(res$v,res$d, modmatrix[,2], batch)
-  fcond <- as.factor(modmatrix[,2])
+  condition <- NULL
+  if(!is.null(mod)) {
+    condition = mod[,2]
+  }
+  res1 <- pcRes(res$v,res$d, condition, batch)
+  fcond <- as.factor(condition)
   ncond <- nlevels(fcond)
   bc <- rainbow(ncond)
   intcond <- as.integer(fcond)

@@ -38,9 +38,10 @@ batchQC_analyze <- function(data.matrix, batch, mod=NULL)  {
 #' nperbatch <- 10
 #' batch <- rep(1:nbatch, each=nperbatch)
 #' batchQC(data.matrix, batch)
-batchQC <- function(data.matrix, batch, mod=NULL, 
+batchQC <- function(dat, batch, mod=NULL, 
                            report_file="batchqc_report.html",
                            report_dir=".")  {
+  dat <- as.matrix(dat)
   rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
   #rmarkdown::draft("batchqc_report.Rmd", template = "batchqc", package = "BatchQC")
   outputfile <- rmarkdown::render(rmdfile, output_file=report_file, output_dir=report_dir)
