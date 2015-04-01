@@ -30,7 +30,7 @@ biocLite(c('limma', 'preprocessCore', 'sva'))
 ```
 
 Next, use [devtools](https://github.com/hadley/devtools) to install the latest
-version of cbcbSEQ from Github:
+version of BatchQC from Github:
 ```r
 require(devtools)
 install_github("BatchQC", user="mani2012", build_vignettes=TRUE)
@@ -59,4 +59,15 @@ modmatrix = model.matrix(~as.factor(condition), data=pdata)
 batchQC(data.matrix, batch=batch, mod=modmatrix, 
         report_file="batchqc_report.html", report_dir=".")
 
+```
+
+### apply combat
+```r
+combat_data.matrix = ComBat(dat=data.matrix, batch=batch, mod=modmatrix)
+```
+
+### Rerun the BatchQC pipeline on the batch adjusted data
+```r
+batchQC(combat_data.matrix, batch=batch, mod=modmatrix, 
+        report_file="batchqc_combat_adj_report.html", report_dir=".")
 ```
