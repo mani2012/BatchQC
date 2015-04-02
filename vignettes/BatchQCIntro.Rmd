@@ -33,12 +33,23 @@ Next, use [devtools](https://github.com/hadley/devtools) to install the latest
 version of BatchQC from Github:
 ```r
 require(devtools)
-install_github("BatchQC", user="mani2012", build_vignettes=TRUE)
+install_github("mani2012/BatchQC", build_vignettes=TRUE)
+```
+
+Install 'pandoc' package by following the instructions at the following URL:
+http://johnmacfarlane.net/pandoc/installing.html
+
+Install 'pander' package by following the instructions at the following URL:
+http://rapporter.github.io/pander/
+
+```r
+require(devtools)
+install_github('Rapporter/pander')
 ```
 
 If all went well you should now be able to load BatchQC. Here is an example use of the pipeline.
 
-### simulate data
+### Simulate data
 ```r
 nbatch <- 3
 ncond <- 2
@@ -47,7 +58,7 @@ data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=nperco
                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
 
 ```
-### apply BatchQC
+### Apply BatchQC
 ```r
 batch <- rep(1:nbatch, each=ncond*npercond)
 condition <- rep(rep(1:ncond, each=npercond), nbatch)
@@ -61,7 +72,7 @@ batchQC(data.matrix, batch=batch, mod=modmatrix,
 
 ```
 
-### apply combat
+### Apply combat
 ```r
 combat_data.matrix = ComBat(dat=data.matrix, batch=batch, mod=modmatrix)
 ```
