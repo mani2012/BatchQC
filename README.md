@@ -20,6 +20,8 @@ few dependencies that BatchQC uses:
 ```r
 source("http://bioconductor.org/biocLite.R")
 biocLite(c('limma', 'preprocessCore', 'sva'))
+install.packages("devtools")
+install.packages("corpcor")
 ```
 
 Next, use [devtools](https://github.com/hadley/devtools) to install the latest
@@ -48,9 +50,10 @@ vignette('BatchQCIntro', package='BatchQC')
 
 ## Troubleshooting with Installation
 
-If you are having issues with the installation, you may have to setup local directory, if you do not have permissions to install in the default location for R.
+If you are having issues with the installation, you may have to setup local directory, if you do not have permissions to install in the default location for R. You may also want to load a version of R 3.1 or higher.
 ```r
 export R_LIBS="/my_own_local_directory/R_libs"
+module load R/R-3.1.1
 ```
 
 And do something like the following
