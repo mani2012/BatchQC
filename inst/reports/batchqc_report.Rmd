@@ -29,6 +29,21 @@ This is a heatmap of the given data matrix showing the batch effects and variati
 batchqc_heatmap(dat, batch=batch, mod=mod)
 ```
 
+Sample Correlations
+====================
+
+This is a heatmap of the correlation between samples.
+
+```{r, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+batchqc_correlation(dat, batch=batch, mod=mod)
+```
+
+This plot helps identify outlying samples.
+
+```{r, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+batchqc_corscatter(dat, batch=batch, mod=mod)
+```
+
 PCA: Principal Component Analysis
 =================================
 

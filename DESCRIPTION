@@ -13,7 +13,9 @@ Depends: MCMCpack,
     corpcor,
     rmarkdown,
     knitr,
-    pander
+    pander,
+    gplots,
+    matrixStats
 Collate: 
     'simulate_data.R'
     'heatmap.R'
