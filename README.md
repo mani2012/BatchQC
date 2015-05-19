@@ -19,7 +19,7 @@ few dependencies that BatchQC uses:
 
 ```r
 source("http://bioconductor.org/biocLite.R")
-biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor'))
+biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 'matrixStats'))
 ```
 
 Next, use [devtools](https://github.com/hadley/devtools) to install the latest

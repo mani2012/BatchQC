@@ -22,5 +22,7 @@ Collate:
     'pca.R'
     'batchtest.R'
     'batchQC.R'
+    'correlation.R'
+    'utils.R'
 Suggests: testthat
 VignetteBuilder: knitr
