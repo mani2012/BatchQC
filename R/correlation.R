@@ -34,7 +34,8 @@ batchqc_corscatter <- function(data.matrix, batch, mod=NULL) {
   lcounts <- lcpms$y
   
   cormat <- cor(lcounts)
-  med_correlation <- matrixStats::rowMedians(cormat)
+  med_cor <- matrixStats::rowMedians(cormat)
+  suggested_cutoff <- quantile(med_cor, p=.25) - 1.5 * IQR(med_cor)
   
   fbatch <- as.factor(batch)
   nbatch <- nlevels(fbatch)
@@ -47,4 +48,10 @@ batchqc_corscatter <- function(data.matrix, batch, mod=NULL) {
     # do something here
   }
   
+  ylim <- c(pmin(min(med_cor), suggested_cutoff), max(med_cor))
+  plot(med_cor, xaxt="n", ylim=ylim, ylab="median pairwise correlation", xlab="", pch=19,
+       cex=1.4, col=cc)
+  axis(side=1, at=seq(along=med_cor), labels=seq(along=med_cor))
+  abline(v=seq(along=med_cor), lty=3, lwd=.8)
+  abline(h=suggested_cutoff, lty=2)
 }
