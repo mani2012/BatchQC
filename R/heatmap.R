@@ -10,6 +10,9 @@
 #' batch <- rep(1:nbatch, each=nperbatch)
 #' batchqc_heatmap(data.matrix, batch)
 batchqc_heatmap <- function(data.matrix, batch, mod=NULL)  {
+  lcpm <- log2CPM(data.matrix)
+  lcounts <- lcpm$y
+  
   fbatch <- as.factor(batch)
   nbatch <- nlevels(fbatch)
   bc <- rainbow(nbatch)
@@ -20,5 +23,5 @@ batchqc_heatmap <- function(data.matrix, batch, mod=NULL)  {
     #print ("Need to implement this part")
     # do something here
   }
-  heatmap(data.matrix, ColSideColors=cc)  
+  hcbHeatmap(lcounts, ColSideColors=cc)  
 }
