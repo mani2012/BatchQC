@@ -1,3 +1,5 @@
+library(BatchQC)
+
 ### simulate data
 nbatch <- 3
 ncond <- 2
