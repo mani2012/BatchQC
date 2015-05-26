@@ -31,6 +31,7 @@ batchQC_analyze <- function(data.matrix, batch, mod=NULL)  {
 #' @param mod Model matrix for outcome of interest and other covariates besides batch
 #' @param report_file Output report file name 
 #' @param report_dir Output report directory path 
+#' @param report_option Number with its binary bits representing the plots to display and hide in the report 
 #' @param view_report when TRUE, opens the report in a browser 
 #' @return pca Principal Components Analysis object of the data
 #' @export
@@ -41,7 +42,7 @@ batchQC_analyze <- function(data.matrix, batch, mod=NULL)  {
 #' batchQC(data.matrix, batch)
 batchQC <- function(dat, batch, mod=NULL, 
                     report_file="batchqc_report.html", 
-                    report_dir=".", 
+                    report_dir=".", report_option=511,
                     view_report=TRUE)  {
   if (report_dir==".") { report_dir=getwd() }
   dat <- as.matrix(dat)
