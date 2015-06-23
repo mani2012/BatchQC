@@ -42,11 +42,12 @@ batchQC_analyze <- function(data.matrix, batch, mod=NULL)  {
 #' batchQC(data.matrix, batch)
 batchQC <- function(dat, batch, mod=NULL, 
                     report_file="batchqc_report.html", 
-                    report_dir=".", report_option=511,
+                    report_dir=".", report_option_binary="111111111",
                     view_report=TRUE)  {
   if (report_dir==".") { report_dir=getwd() }
   dat <- as.matrix(dat)
   rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
+  report_option <- BinToDec(report_option_binary)
   #rmarkdown::draft("batchqc_report.Rmd", template = "batchqc", package = "BatchQC")
   outputfile <- rmarkdown::render(rmdfile, output_file=report_file, output_dir=report_dir)
   if (view_report)  {
