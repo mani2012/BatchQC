@@ -9,7 +9,7 @@ output:
 ---
 
 ```{r, echo=FALSE}
-eval_cell_1 = (bitwAnd(report_option, 1)==1)
+eval_cell_1 = (report_option_vector[1]=="1")
 ```
 `r if (eval_cell_1) 'Data Summary'`
 `r if (eval_cell_1) '============'`
@@ -22,7 +22,7 @@ boxplot(t(dat)[,1:12])
 ```
 
 ```{r, echo=FALSE}
-eval_cell_2 = (bitwAnd(report_option, 2)==2)
+eval_cell_2 = (report_option_vector[2]=="1")
 ```
 `r if (eval_cell_2) 'Heatmap'`
 `r if (eval_cell_2) '======='`
@@ -32,7 +32,7 @@ batchqc_heatmap(dat, batch=batch, mod=mod)
 ```
 
 ```{r, echo=FALSE}
-eval_cell_3 = (bitwAnd(report_option, 4)==4)
+eval_cell_3 = (report_option_vector[3]=="1")
 ```
 `r if (eval_cell_3) 'Sample Correlations'`
 `r if (eval_cell_3) '==================='`
@@ -42,7 +42,7 @@ batchqc_correlation(dat, batch=batch, mod=mod)
 ```
 
 ```{r, echo=FALSE}
-eval_cell_4 = (bitwAnd(report_option, 8)==8)
+eval_cell_4 = (report_option_vector[4]=="1")
 ```
 `r if (eval_cell_4) 'This plot helps identify outlying samples.'`
 ```{r, eval=eval_cell_4, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
@@ -50,7 +50,7 @@ batchqc_corscatter(dat, batch=batch, mod=mod)
 ```
 
 ```{r, echo=FALSE}
-eval_cell_5 = (bitwAnd(report_option, 16)==16)
+eval_cell_5 = (report_option_vector[5]=="1")
 ```
 `r if (eval_cell_5) 'PCA: Principal Component Analysis'`
 `r if (eval_cell_5) '================================='`
@@ -60,7 +60,7 @@ pca <- batchqc_pca(dat, batch=batch, mod=mod)
 ```
 
 ```{r, echo=FALSE}
-eval_cell_6 = (bitwAnd(report_option, 32)==32)
+eval_cell_6 = (report_option_vector[6]=="1")
 ```
 `r if (eval_cell_6) 'PCA Proportion Variation and correlation'`
 `r if (eval_cell_6) '========================================'`
@@ -69,7 +69,7 @@ res <- batchqc_pca_svd(dat, batch=batch, mod=mod)
 ```
 
 ```{r, echo=FALSE}
-eval_cell_7 = (bitwAnd(report_option, 64)==64)
+eval_cell_7 = (report_option_vector[7]=="1")
 ```
 `r if (eval_cell_7) 'PCA Proportion Variation and correlation Table'`
 `r if (eval_cell_7) '=============================================='`
@@ -79,7 +79,7 @@ pander(res)
 ```
 
 ```{r, echo=FALSE}
-eval_cell_8 = (bitwAnd(report_option, 128)==128)
+eval_cell_8 = (report_option_vector[8]=="1")
 ```
 `r if (eval_cell_8) 'Combat Plots'`
 `r if (eval_cell_8) '============'`
@@ -90,7 +90,7 @@ print(kstest)
 ```
 
 ```{r, echo=FALSE}
-eval_cell_9 = (bitwAnd(report_option, 256)==256)
+eval_cell_9 = (report_option_vector[9]=="1")
 ```
 `r if (eval_cell_9) 'Batch Effects testing'`
 `r if (eval_cell_9) '====================='`

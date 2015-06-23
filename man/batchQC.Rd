@@ -6,7 +6,8 @@
 with information including whether the batch needs to be adjusted}
 \usage{
 batchQC(dat, batch, mod = NULL, report_file = "batchqc_report.html",
-  report_dir = ".")
+  report_dir = ".", report_option_binary = "111111111",
+  view_report = TRUE)
 }
 \arguments{
 \item{batch}{Batch covariate}
@@ -16,6 +17,10 @@ batchQC(dat, batch, mod = NULL, report_file = "batchqc_report.html",
 \item{report_file}{Output report file name}
 
 \item{report_dir}{Output report directory path}
+
+\item{report_option_binary}{9 bits Binary String representing the plots to display and hide in the report}
+
+\item{view_report}{when TRUE, opens the report in a browser}
 
 \item{data.matrix}{Given data or simulated data from rnaseq_sim()}
 }
