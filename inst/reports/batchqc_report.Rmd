@@ -14,10 +14,11 @@ eval_cell_1 = (bitwAnd(report_option, 1)==1)
 `r if (eval_cell_1) 'Data Summary'`
 `r if (eval_cell_1) '============'`
 `r if (eval_cell_1) 'This is a summary of the given data matrix for the first 12 genes.'`
-```{r eval=eval_cell_1, echo=FALSE, message=FALSE}
+```{r eval=eval_cell_1, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
 datasummary <- summary(t(dat))
 panderOptions("table.split.table", 120)  ## table split at 100 (default 80) characters in a line
 pander(datasummary[,1:12])
+boxplot(t(dat)[,1:12])
 ```
 
 ```{r, echo=FALSE}
