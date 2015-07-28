@@ -6,6 +6,8 @@ output:
   html_vignette:
     toc: true
     toc_depth: 2
+    template: batchQC.html
+    self_contained: no
 ---
 
 ```{r, echo=FALSE}
