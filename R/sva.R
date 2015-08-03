@@ -33,8 +33,4 @@ batchQC_sva=function(data.matrix, modmatrix){
 }
 
 
-    
-}
-
-
 
