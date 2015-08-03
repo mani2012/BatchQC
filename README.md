@@ -47,6 +47,7 @@ If all went well you should now be able to load BatchQC:
 ```r
 require(BatchQC)
 vignette('BatchQCIntro', package='BatchQC')
+vignette('BatchQC_examples', package='BatchQC')
 ```
 
 ## Troubleshooting with Installation
