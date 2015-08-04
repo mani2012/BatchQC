@@ -3,14 +3,20 @@
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param batch Batch covariate 
 #' @param mod Model matrix for outcome of interest and other covariates besides batch
+#' @param max_display Maximum number of rows to display in heat map 
 #' @export
 #' @examples
 #' nbatch <- 10
 #' nperbatch <- 10
 #' batch <- rep(1:nbatch, each=nperbatch)
 #' batchqc_heatmap(data.matrix, batch)
-batchqc_heatmap <- function(data.matrix, batch, mod=NULL)  {
-  lcpm <- log2CPM(data.matrix)
+batchqc_heatmap <- function(data.matrix, batch, mod=NULL, max_display=50)  {
+  size <- dim(data.matrix)[1]
+  reduced.data.matrix <- data.matrix
+  if (size > max_display)  {
+    reduced.data.matrix <- data.matrix[1:max_display,]
+  }
+  lcpm <- log2CPM(reduced.data.matrix)
   lcounts <- lcpm$y
   
   fbatch <- as.factor(batch)
