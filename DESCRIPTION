@@ -24,5 +24,6 @@ Collate:
     'batchQC.R'
     'correlation.R'
     'utils.R'
+    'sva.R'
 Suggests: testthat
 VignetteBuilder: knitr

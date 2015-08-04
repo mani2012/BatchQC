@@ -1,5 +1,5 @@
 ---
-title: "batchQC Report"
+title: "BatchQC Report"
 author: "Solaiappan Manimaran"
 date: "`r Sys.Date()`"
 output: 
@@ -8,6 +8,7 @@ output:
     toc_depth: 2
     template: batchQC.html
     self_contained: no
+    lib_dir: libs
 ---
 
 ```{r, echo=FALSE}

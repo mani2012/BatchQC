@@ -2,7 +2,11 @@
 title: "BatchQC Examples"
 author: "Claire Ruberman"
 date: "`r Sys.Date()`"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{BatchQC_examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 ```{r, echo=FALSE, cache=TRUE,message=FALSE}
 source("http://bioconductor.org/biocLite.R")
@@ -17,15 +21,8 @@ install_github('Rapporter/pander')
 
 require(BatchQC)
 vignette('BatchQCIntro', package='BatchQC')
+vignette('BatchQC_examples', package='BatchQC')
 
-
-# source('~/Desktop/Leek/BatchQC Project/BatchQC/R/heatmap.R')
-# source('~/Desktop/Leek/BatchQC Project/BatchQC/R/batchQC.R', encoding = 'UTF-8')
-# source('~/Desktop/Leek/BatchQC Project/BatchQC/R/correlation.R')
-# source('~/Desktop/Leek/BatchQC Project/BatchQC/R/pca.R')
-# source('~/Desktop/Leek/BatchQC Project/BatchQC/R/simulate_data.R')
-# source('~/Desktop/Leek/BatchQC Project/BatchQC/R/utils.R')
-# source('~/Desktop/Leek/BatchQC Project/BatchQC/R/sva.R')
 ```
 
 ```{r, echo=FALSE, cache=TRUE,message=FALSE}
