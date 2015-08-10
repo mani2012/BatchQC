@@ -21,7 +21,17 @@ eval_cell_1 = (report_option_vector[1]=="1")
 datasummary <- summary(t(dat))
 panderOptions("table.split.table", 120)  ## table split at 100 (default 80) characters in a line
 pander(datasummary[,1:12])
-boxplot(t(dat)[,1:12])
+```
+
+```{r, echo=FALSE}
+eval_cell_1_1 = (report_option_vector[1]=="1")
+```
+`r if (eval_cell_1_1) 'Sample Boxplots'`
+`r if (eval_cell_1_1) '======='`
+`r if (eval_cell_1_1) 'Boxplots for all values for each of the samples and are colored by batch membership.'`
+
+```{r eval=eval_cell_1_1, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+boxplot(log2CPM(dat)$y,col=as.numeric(as.factor(batch)),main="Sample Boxplots (colored by batch)",xlab="Samples")
 ```
 
 ```{r, echo=FALSE}

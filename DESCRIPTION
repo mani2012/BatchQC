@@ -1,10 +1,10 @@
 Package: BatchQC
 Type: Package
 Title: BatchQC - Batch effects Quality Control
-Version: 1.0
+Version: 1.1
 Date: 2015-02-27
 Author: Solaiappan Manimaran
-Maintainer: Solaiappan Manimaran <mani2012@bu.edu>
+Maintainer: Solaiappan Manimaran <mani2012@bu.edu>, W. Evan Johnson <wej@bu.edu>
 Description: Provides Quality Control of sequencing samples by deducing if there is batch effect and adjusts for it. 
 License: GNU GPL (version 2 or later)
 Depends: MCMCpack,
