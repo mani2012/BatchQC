@@ -49,6 +49,8 @@ batchQC <- function(dat, batch, mod=NULL,
   rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
   report_option_vector <- unlist(strsplit(as.character(report_option_binary), ""))
   #rmarkdown::draft("batchqc_report.Rmd", template = "batchqc", package = "BatchQC")
+  static_lib_dir <- system.file("reports/libs", package = "BatchQC")
+  file.copy(static_lib_dir, report_dir, recursive=TRUE)
   outputfile <- rmarkdown::render(rmdfile, output_file=report_file, output_dir=report_dir)
   if (view_report)  {
     browseURL(outputfile)
