@@ -8,7 +8,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
-```{r, echo=FALSE, cache=TRUE,message=FALSE}
+```r
 source("http://bioconductor.org/biocLite.R")
 biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 'matrixStats'))
 
@@ -25,7 +25,7 @@ vignette('BatchQC_examples', package='BatchQC')
 
 ```
 
-```{r, echo=FALSE, cache=TRUE,message=FALSE}
+```r
 # Determine the number of surrogate variables to estimate in the model
     ## By default uses the permutation based procedure (method="be")
 # Estimate the surrogate variables using the 2 step approach proposed by Leek and Storey 2007 
@@ -66,7 +66,7 @@ batchQC_sva=function(data.matrix, modmatrix){
 ## Simulated Example
 ###### (a) Use the data simulating mechanism from the batchQC package
 
-```{r, echo=FALSE, cache=TRUE,message=FALSE}
+```r
 # Simulate Count Data
 ## output is ngenes by (nbatch x ncond x npercond) matrix
 ## ggstep: Gene to Gene step variation
@@ -183,7 +183,7 @@ hist(pValuesSv,main="Adjusted p-Values for SVs")
 
 ###### (b) Use the data simulating mechanism from the batchQC package, adding additional expression heterogeneity from a dichotomous unmodeled factor, independent of both batch and condition
 
-```{r, echo=FALSE, cache=TRUE,message=FALSE}
+```r
 # Use simulated data as before, except genes 10 to 25 affected by an independent unobserved factor
 unmodeled.factor.indicator=rbinom(60,1,.5)
 
@@ -291,7 +291,7 @@ hist(pValuesSv.eh,main="Adjusted p-Values for SVs (Added EH)")
 
 
 ## Bladder Batch Example
-```{r, echo=FALSE, cache=TRUE, eval=TRUE}
+```r
 ## Bladder batch data
 source("http://bioconductor.org/biocLite.R")
 biocLite("bladderbatch")
