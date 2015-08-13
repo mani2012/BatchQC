@@ -43,7 +43,7 @@ batchQC_analyze <- function(data.matrix, batch, mod=NULL)  {
 batchQC <- function(dat, batch, mod=NULL, 
                     report_file="batchqc_report.html", 
                     report_dir=".", report_option_binary="111111111",
-                    view_report=TRUE)  {
+                    view_report=TRUE, interactive=TRUE)  {
   if (report_dir==".") { report_dir=getwd() }
   dat <- as.matrix(dat)
   rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
@@ -54,6 +54,15 @@ batchQC <- function(dat, batch, mod=NULL,
   outputfile <- rmarkdown::render(rmdfile, output_file=report_file, output_dir=report_dir)
   if (view_report)  {
     browseURL(outputfile)
+  }
+  if (interactive)  {
+    appDir <- system.file("shiny", "BatchQC", package = "BatchQC")
+    if (appDir == "") {
+      stop("Could not find shiny directory. Try re-installing BatchQC.", call. = FALSE)
+    }
+    pca <- batchqc_pca(dat, batch=batch, mod=mod)
+    pc <- data.frame(pca$x)
+    shiny::runApp(appDir, display.mode = "normal")
   }
   return(outputfile)
 }
