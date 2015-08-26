@@ -60,8 +60,8 @@ batchQC <- function(dat, batch, mod=NULL,
     if (appDir == "") {
       stop("Could not find shiny directory. Try re-installing BatchQC.", call. = FALSE)
     }
-    pca <- batchqc_pca(dat, batch=batch, mod=mod)
-    pc <- data.frame(pca$x)
+    pca <<- batchqc_pca(dat, batch=batch, mod=mod)
+    pc <<- data.frame(pca$x)
     shiny::runApp(appDir, display.mode = "normal")
   }
   return(outputfile)
