@@ -14,6 +14,7 @@ batchqc_correlation <- function(data.matrix, batch, mod=NULL) {
   lcounts <- lcpms$y
   
   cormat <- cor(lcounts)
+  shinyInput <<- c(shinyInput, list("cormat"=cormat))
   
   fbatch <- as.factor(batch)
   nbatch <- nlevels(fbatch)

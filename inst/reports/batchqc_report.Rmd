@@ -70,6 +70,7 @@ eval_cell_5 = (report_option_vector[5]=="1")
 `r if (eval_cell_5) 'This is a plot of the top two principal components and showing the variation with respect to batch effects and different conditions.'`
 ```{r, eval=eval_cell_5, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
 pca <- batchqc_pca(dat, batch=batch, mod=mod)
+shinyInput <<- c(shinyInput, list("pc"=data.frame(pca$x)))
 ```
 
 ```{r, echo=FALSE}

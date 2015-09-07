@@ -46,6 +46,7 @@ batchQC <- function(dat, batch, mod=NULL,
                     view_report=TRUE, interactive=TRUE)  {
   if (report_dir==".") { report_dir=getwd() }
   dat <- as.matrix(dat)
+  shinyInput <<- list("data"=dat, "batch"=batch, "mod"=mod)
   rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
   report_option_vector <- unlist(strsplit(as.character(report_option_binary), ""))
   #rmarkdown::draft("batchqc_report.Rmd", template = "batchqc", package = "BatchQC")
@@ -60,8 +61,6 @@ batchQC <- function(dat, batch, mod=NULL,
     if (appDir == "") {
       stop("Could not find shiny directory. Try re-installing BatchQC.", call. = FALSE)
     }
-    pca <<- batchqc_pca(dat, batch=batch, mod=mod)
-    pc <<- data.frame(pca$x)
     shiny::runApp(appDir, display.mode = "normal")
   }
   return(outputfile)
@@ -138,19 +137,24 @@ combatPlot <- function(dat=data.matrix, batch, mod=NULL, par.prior=TRUE, prior.p
   if (!NAs){
     gamma.hat <- solve(t(batch.design)%*%batch.design)%*%t(batch.design)%*%t(as.matrix(s.data))
   } else{
-    gamma.hat=apply(s.data,1,Beta.NA,batch.design)
-    
+    gamma.hat <- apply(s.data,1,Beta.NA,batch.design)
   }
+  shinyInput <<- c(shinyInput, list("gamma.hat"=gamma.hat))
   delta.hat <- NULL
   for (i in batches){
     delta.hat <- rbind(delta.hat,apply(s.data[,i], 1, var,na.rm=T))
   }
+  shinyInput <<- c(shinyInput, list("delta.hat"=delta.hat))
   
   ##Find Priors
   gamma.bar <- apply(gamma.hat, 1, mean)
+  shinyInput <<- c(shinyInput, list("gamma.bar"=gamma.bar))
   t2 <- apply(gamma.hat, 1, var)
+  shinyInput <<- c(shinyInput, list("t2"=t2))
   a.prior <- apply(delta.hat, 1, aprior)
+  shinyInput <<- c(shinyInput, list("a.prior"=a.prior))
   b.prior <- apply(delta.hat, 1, bprior)
+  shinyInput <<- c(shinyInput, list("b.prior"=b.prior))
   
   
   ##Plot empirical and parametric priors
