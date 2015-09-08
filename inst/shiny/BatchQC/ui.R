@@ -58,7 +58,7 @@ shinyUI(navbarPage("BatchQC",
                        checkboxInput("combat", "ComBat", FALSE)
                     )
                   ),
-                   tabPanel("Combat",
+                   tabPanel("ComBat",
                             sidebarLayout(
                               sidebarPanel(
                                 numericInput('batches', 'Batch', 1,
@@ -66,7 +66,7 @@ shinyUI(navbarPage("BatchQC",
                               ),
                               mainPanel(
                                 tabsetPanel(
-                                  tabPanel("Combat Plots", plotOutput("densityQQPlots")),
+                                  tabPanel("ComBat Plots", plotOutput("densityQQPlots")),
                                   tabPanel("Summary", verbatimTextOutput("kstest"))
                                 )
                               )
