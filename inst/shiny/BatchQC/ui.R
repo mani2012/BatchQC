@@ -2,12 +2,18 @@ library(shiny)
 library(ggvis)
 library(d3heatmap)
 
+minbatch <- function(batch1){
+  batch2 <- as.factor(batch1)
+  batch3 <- split(batch1,batch2)
+  return(min(unlist(lapply(1:length(batch3), function(x) length(batch3[[x]])))))
+}
+
 shinyUI(navbarPage("BatchQC",
                    tabPanel("Box Plots",
                             sidebarLayout(
                               sidebarPanel(
-                                numericInput('noSamples', 'Number of Samples', 1,
-                                             min = 1, max = ncol(data.matrix))
+                                numericInput('noSamples', 'No. of Samples Per Batch', 1,
+                                             min = 1, max = minbatch(batch))
                               ),
                               mainPanel(
                                 tabsetPanel(
@@ -29,7 +35,6 @@ shinyUI(navbarPage("BatchQC",
                         mainPanel(
                           tabsetPanel(
                           tabPanel("PCA", ggvisOutput("plot")),
-                            tabPanel("SVD", plotOutput("svd")),
                             tabPanel("Summary", verbatimTextOutput("PCAsummary")),
                             tabPanel("Table",tableOutput("PCAtable"))
                           )

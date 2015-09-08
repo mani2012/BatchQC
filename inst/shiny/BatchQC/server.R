@@ -12,6 +12,7 @@ plotPC <- function(v, d, x, y, ...){
 }
 
 shinyServer(function(input, output, session) {
+  #needed information from BatchQC
   pc <- shinyInput$pc
   cormat <- shinyInput$cormat
   delta.hat <- shinyInput$delta.hat
@@ -21,11 +22,14 @@ shinyServer(function(input, output, session) {
   t2 <- shinyInput$t2
   a.prior <- shinyInput$a.prior
   b.prior <- shinyInput$b.prior
+  
+  #interactive PCA
   PCA <- reactive({
     data.frame(pc[, c(input$xcol,input$ycol)])
   })
+  
+  #interactive PCA plot
   vis_pc <- reactive({
-      #interactive PCA plot
       pc$id <- 1:nrow(pc)  
       
       all_values <- function(x) {
@@ -38,71 +42,73 @@ shinyServer(function(input, output, session) {
         ggvis(~get(names(pc)[input$xcol]), ~get(names(pc)[input$ycol]), fill = ~factor(batch), key := ~id) %>%
         layer_points(size := 75, size.hover := 200) %>%
         add_tooltip(all_values, "hover") %>%
-        set_options(hover_duration = 150) %>%
+        set_options(hover_duration = 50) %>%
         add_axis("x", title = paste0("PC",input$xcol), properties = axis_props(
-          title = list(fontSize = 20),
-          labels = list(fontSize = 15)
+          title = list(fontSize = 15),
+          labels = list(fontSize = 10)
         )) %>%
         add_axis("y", title = paste0("PC",input$ycol), properties = axis_props(
-          title = list(fontSize = 20),
-          labels = list(fontSize = 15)
+          title = list(fontSize = 15),
+          labels = list(fontSize = 10)
         )) %>%
         add_legend("fill", title = "Batches", properties = legend_props(
-          title = list(fontSize = 20),
-          labels = list(fontSize = 15)
+          title = list(fontSize = 15),
+          labels = list(fontSize = 10)
         ))
   })
+  
+  #interactive PCA summary
   vis_pc %>% bind_shiny("plot")
   output$PCAsummary <- renderPrint({
-    summary(pca)
+    summary(PCA())
   })
+  
+  #interactive PCA table
   output$PCAtable <- renderTable({
     PCA()
   })
-  
-  output$svd <- renderPlot({
-    plotPC(res$v,res$d, input$xcol, input$ycol,
-           col=cc, # color by condition
-           pch=19, main="PCA plot",
-           xlim=c(min(res$v[,input$xcol])-.08,max(res$v[,input$xcol])+.08),
-           ylim=c(min(res$v[,input$ycol])-.08,max(res$v[,input$ycol])+.08))
-    text(res$v[,input$xcol], res$v[,input$ycol], batch, pos=1, cex=0.6)
-  }) 
-  
+
+  #interactive boxplot
+  BP <- reactive({
+    dat <- lcounts
+    batch1 <- as.factor(batch)
+    batch2 <- split(which(batch == batch1), batch1)
+    batch3 <- unlist(lapply(1:length(batch2), function(x) batch2[[x]][1:input$noSamples]))
+    dat[,batch3]
+  })
   #interactive boxplot
   vis_bp <- reactive({
-    dat <- data.frame(data.matrix[,1:input$noSamples])
-    colnames(dat) <- seq(1:input$noSamples)
-    dat1 <- melt(dat, id = NULL)
-    dat1$batch <- as.character(batch)[1:input$noSamples]
-    dat1 %>% ggvis(x = ~variable, y = ~value, fill = ~variable) %>% layer_boxplots() %>%
-    add_axis("x", title = paste0("Samples"), properties = axis_props(
-      title = list(fontSize = 15),
-      labels = list(fontSize = 10)
-    )) %>%
-      add_axis("y", title = "Expression", title_offset = 75, properties = axis_props(
+    batch4 <- split(batch, as.factor(batch))
+    batch5 <- unlist(lapply(1:length(batch4), function(x) batch4[[x]][1:input$noSamples]))
+    dat1 <- BP()
+    colnames(dat1) <- seq(1:ncol(dat1))
+    dat2 <- melt(as.data.frame(dat1, stringsAsFactors = FALSE))
+    dat2$batch <- as.factor(unlist(lapply(1:length(batch5), function(x) rep(batch5[x], nrow(dat1)))))
+    dat2 %>% group_by(batch) %>%
+      ggvis(~variable, ~value, fill = ~batch) %>% layer_boxplots() %>%
+      add_axis("x", title = paste(input$noSamples, "Samples Per Batch", sep =" "), properties = axis_props(
+        title = list(fontSize = 15),
+        labels = list(fontSize = 5, angle = 90)
+      )) %>%
+      add_axis("y", title = "Exression", properties = axis_props(
         title = list(fontSize = 15),
         labels = list(fontSize = 10)
       )) %>%
-      add_legend("fill", title = paste0(input$noSamples, " Samples"), properties = legend_props(
+      add_legend("fill", title = "Batches", properties = legend_props(
         title = list(fontSize = 15),
         labels = list(fontSize = 10)
       ))
   })
   vis_bp %>% bind_shiny("Boxplot")
-  data <- reactive({  
-    dat <- data.frame(data.matrix[,1:input$noSamples])
-    colnames(dat) <- seq(1:input$noSamples)
-    dat
-  })
   output$BPsummary <- renderPrint({
-    summary(data())
+    summary(BP())
   })
   
   output$BPtable <- renderTable({
-    data()
+    BP()
   })
   
+  #interactive scatter plot
   output$outliers <- renderPlot({
     BatchQC::batchqc_corscatter(data.matrix, batch, mod = shinyInput$mod)
   })
@@ -125,21 +131,22 @@ shinyServer(function(input, output, session) {
       dendrogram = if (input$cluster2) "both" else "none"
     ) })
   
+  #interactive density plots
   output$densityQQPlots <- renderPlot({
     layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
     tmp <- density(gamma.hat[input$batches,])
-    plot(tmp,  type='l', main="Density Plot")
+    plot(tmp,  type='l', main="Density Plot",lwd=2)
     xx <- seq(min(tmp$x), max(tmp$x), length=100)
-    lines(xx,dnorm(xx,gamma.bar[input$batches],sqrt(t2[input$batches])), col=2)
+    lines(xx,dnorm(xx,gamma.bar[input$batches],sqrt(t2[input$batches])), col=2,lwd=2)
     qqnorm(gamma.hat[input$batches,])	
-    qqline(gamma.hat[input$batches,], col=2)
+    qqline(gamma.hat[input$batches,], col=2,lwd=2)
     tmp <- density(delta.hat[input$batches,])
     invgam <- 1/rgamma(ncol(delta.hat),a.prior[input$batches],b.prior[input$batches])
     tmp1 <- density(invgam)
-    plot(tmp, main="Density Plot", ylim=c(0,max(tmp$y,tmp1$y)))
-    lines(tmp1, col=2)
+    plot(tmp, main="Density Plot", ylim=c(0,max(tmp$y,tmp1$y)),lwd=2)
+    lines(tmp1, col=2,lwd=2)
     qqplot(delta.hat[input$batches,], invgam, xlab="Sample Quantiles", ylab='Theoretical Quantiles')	
-    lines(c(0,max(invgam)),c(0,max(invgam)),col=2)	
+    lines(c(0,max(invgam)),c(0,max(invgam)),col=2,lwd=2)	
     title('Q-Q Plot')
   })
   output$kstest <- renderPrint({  
