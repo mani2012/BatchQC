@@ -12,7 +12,7 @@ shinyUI(navbarPage("BatchQC",
                    tabPanel("Box Plots",
                             sidebarLayout(
                               sidebarPanel(
-                                numericInput('noSamples', 'No. of Samples Per Batch', 1,
+                                numericInput('noSamples', 'No. of Sample(s) Per Batch', 1,
                                              min = 1, max = minbatch(batch))
                               ),
                               mainPanel(
@@ -68,5 +68,7 @@ shinyUI(navbarPage("BatchQC",
                                 )
                               )
                             )
-                   )
+                   ),
+                  tabPanel("Circos")
+      
 ))

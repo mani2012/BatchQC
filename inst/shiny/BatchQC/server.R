@@ -82,11 +82,13 @@ shinyServer(function(input, output, session) {
     batch5 <- unlist(lapply(1:length(batch4), function(x) batch4[[x]][1:input$noSamples]))
     dat1 <- BP()
     colnames(dat1) <- seq(1:ncol(dat1))
-    dat2 <- melt(as.data.frame(dat1, stringsAsFactors = FALSE))
+    dat2 <- melt(as.data.frame(dat1))
     dat2$batch <- as.factor(unlist(lapply(1:length(batch5), function(x) rep(batch5[x], nrow(dat1)))))
     dat2 %>% group_by(batch) %>%
       ggvis(~variable, ~value, fill = ~batch) %>% layer_boxplots() %>%
-      add_axis("x", title = paste(input$noSamples, "Samples Per Batch", sep =" "), properties = axis_props(
+      add_tooltip(summary, "hover") %>%
+      set_options(hover_duration = 50) %>%
+      add_axis("x", title = paste(input$noSamples, "Sample(s) Per Batch", sep =" "), properties = axis_props(
         title = list(fontSize = 15),
         labels = list(fontSize = 5, angle = 90)
       )) %>%
