@@ -86,8 +86,6 @@ shinyServer(function(input, output, session) {
     dat2$batch <- as.factor(unlist(lapply(1:length(batch5), function(x) rep(batch5[x], nrow(dat1)))))
     dat2 %>% group_by(batch) %>%
       ggvis(~variable, ~value, fill = ~batch) %>% layer_boxplots() %>%
-      add_tooltip(summary, "hover") %>%
-      set_options(hover_duration = 50) %>%
       add_axis("x", title = paste(input$noSamples, "Sample(s) Per Batch", sep =" "), properties = axis_props(
         title = list(fontSize = 15),
         labels = list(fontSize = 5, angle = 90)
@@ -156,6 +154,6 @@ shinyServer(function(input, output, session) {
   })
   output$circos <- renderPlot({
     my.plot(data.matrix, batch, input$AggMethod)
-  })
+  }, width=800, height=800)
 })
 
