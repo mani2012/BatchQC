@@ -69,6 +69,22 @@ shinyUI(navbarPage("BatchQC",
                               )
                             )
                    ),
-                  tabPanel("Circos")
+                  tabPanel("Circular Dendrogram",
+                           sidebarLayout(
+                             sidebarPanel(
+                               selectInput("CorMethod", "Correlation Method:",
+                                           c("Spearman"="spearman")),
+                               selectInput("AggMethod", "Agglomeration Method:",
+                                           c("Complete"="complete",
+                                             "Ward" = "ward.D2",
+                                             "Average" = "average",
+                                             "McQuitty" = "mcquitty",
+                                             "Single" = "single"))
+                             ),
+                             mainPanel(
+                               plotOutput("circos")
+                             )
+                           )
+                  )
       
 ))
