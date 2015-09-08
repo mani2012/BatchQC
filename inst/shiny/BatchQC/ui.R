@@ -25,6 +25,39 @@ shinyUI(navbarPage("BatchQC",
                               )
                             )
                    ),
+                   tabPanel("Sample Correlations", plotOutput("outliers")),
+                   tabPanel("Heatmaps",
+                            tabsetPanel(
+                              tabPanel("Heatmap",
+                                       #selectInput("palette", "Palette", c("RdBu","Greens", "Blues")),
+                                       checkboxInput("cluster1", "Apply clustering"),
+                                       d3heatmapOutput("heatmap")
+                              ),
+                              tabPanel("Sample Correlations",
+                                       checkboxInput("cluster2", "Apply clustering"),
+                                       d3heatmapOutput("correlation")
+                              ),
+                              checkboxInput("combat", "ComBat", FALSE)
+                            )
+                   ),
+                   tabPanel("Circular Dendrogram",
+                            sidebarLayout(
+                              sidebarPanel(
+                                selectInput("CorMethod", "Correlation Method:",
+                                            c("Spearman"="spearman")),
+                                selectInput("AggMethod", "Agglomeration Method:",
+                                            c("Complete"="complete",
+                                              "Ward" = "ward.D2",
+                                              "Average" = "average",
+                                              "McQuitty" = "mcquitty",
+                                              "Single" = "single")),
+                                checkboxInput("combat", "ComBat", FALSE)
+                              ),
+                              mainPanel(
+                                plotOutput("circos")
+                              )
+                            )
+                   ),
                    tabPanel("PCA Analysis",
                       sidebarLayout(
                         sidebarPanel(
@@ -43,21 +76,6 @@ shinyUI(navbarPage("BatchQC",
                         )
                       )
                     ),
-                   tabPanel("Outliers", plotOutput("outliers")),
-                   tabPanel("Heatmaps",
-                     tabsetPanel(
-                       tabPanel("Heatmap",
-                                #selectInput("palette", "Palette", c("RdBu","Greens", "Blues")),
-                                checkboxInput("cluster1", "Apply clustering"),
-                                d3heatmapOutput("heatmap")
-                        ),
-                       tabPanel("Sample Correlations",
-                               checkboxInput("cluster2", "Apply clustering"),
-                               d3heatmapOutput("correlation")
-                       ),
-                       checkboxInput("combat", "ComBat", FALSE)
-                    )
-                  ),
                    tabPanel("ComBat",
                             sidebarLayout(
                               sidebarPanel(
@@ -71,24 +89,6 @@ shinyUI(navbarPage("BatchQC",
                                 )
                               )
                             )
-                   ),
-                  tabPanel("Circular Dendrogram",
-                           sidebarLayout(
-                             sidebarPanel(
-                               selectInput("CorMethod", "Correlation Method:",
-                                           c("Spearman"="spearman")),
-                               selectInput("AggMethod", "Agglomeration Method:",
-                                           c("Complete"="complete",
-                                             "Ward" = "ward.D2",
-                                             "Average" = "average",
-                                             "McQuitty" = "mcquitty",
-                                             "Single" = "single")),
-                               checkboxInput("combat", "ComBat", FALSE)
-                             ),
-                             mainPanel(
-                               plotOutput("circos")
-                             )
-                           )
-                  )
+                   )
       
 ))
