@@ -13,7 +13,8 @@ shinyUI(navbarPage("BatchQC",
                             sidebarLayout(
                               sidebarPanel(
                                 numericInput('noSamples', 'No. of Sample(s) Per Batch', 1,
-                                             min = 1, max = minbatch(batch))
+                                             min = 1, max = minbatch(batch)),
+                                checkboxInput("combat", "ComBat", FALSE)
                               ),
                               mainPanel(
                                 tabsetPanel(
@@ -30,7 +31,8 @@ shinyUI(navbarPage("BatchQC",
                           numericInput('xcol', 'Principal Component (x-axis)', 1,
                             min = 1, max = 50),
                           numericInput('ycol', 'Principal Component (y-axis)', 2,
-                            min = 1, max = 50)
+                            min = 1, max = 50),
+                          checkboxInput("combat", "ComBat", FALSE)
                         ),
                         mainPanel(
                           tabsetPanel(
@@ -52,7 +54,8 @@ shinyUI(navbarPage("BatchQC",
                        tabPanel("Sample Correlations",
                                checkboxInput("cluster2", "Apply clustering"),
                                d3heatmapOutput("correlation")
-                       )
+                       ),
+                       checkboxInput("combat", "ComBat", FALSE)
                     )
                   ),
                    tabPanel("Combat",
@@ -69,6 +72,23 @@ shinyUI(navbarPage("BatchQC",
                               )
                             )
                    ),
-                  tabPanel("Circos")
+                  tabPanel("Circular Dendrogram",
+                           sidebarLayout(
+                             sidebarPanel(
+                               selectInput("CorMethod", "Correlation Method:",
+                                           c("Spearman"="spearman")),
+                               selectInput("AggMethod", "Agglomeration Method:",
+                                           c("Complete"="complete",
+                                             "Ward" = "ward.D2",
+                                             "Average" = "average",
+                                             "McQuitty" = "mcquitty",
+                                             "Single" = "single")),
+                               checkboxInput("combat", "ComBat", FALSE)
+                             ),
+                             mainPanel(
+                               plotOutput("circos")
+                             )
+                           )
+                  )
       
 ))

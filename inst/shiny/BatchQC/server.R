@@ -154,5 +154,8 @@ shinyServer(function(input, output, session) {
   output$kstest <- renderPrint({  
     ks.test(gamma.hat[input$batches,], "pnorm", gamma.bar[input$batches], sqrt(t2[input$batches])) # two-sided, exact
   })
+  output$circos <- renderPlot({
+    my.plot(data.matrix, batch, input$AggMethod)
+  })
 })
 
