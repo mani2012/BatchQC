@@ -25,5 +25,6 @@ Collate:
     'correlation.R'
     'utils.R'
     'sva.R'
+    'Circos.R'
 Suggests: testthat
 VignetteBuilder: knitr
