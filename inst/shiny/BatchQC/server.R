@@ -42,7 +42,6 @@ shinyServer(function(input, output, session) {
         ggvis(~get(names(pc)[input$xcol]), ~get(names(pc)[input$ycol]), fill = ~factor(batch), key := ~id) %>%
         layer_points(size := 75, size.hover := 200) %>%
         add_tooltip(all_values, "hover") %>%
-        set_options(hover_duration = 50) %>%
         add_axis("x", title = paste0("PC",input$xcol), properties = axis_props(
           title = list(fontSize = 15),
           labels = list(fontSize = 10)
@@ -86,6 +85,7 @@ shinyServer(function(input, output, session) {
     dat2$batch <- as.factor(unlist(lapply(1:length(batch5), function(x) rep(batch5[x], nrow(dat1)))))
     dat2 %>% group_by(batch) %>%
       ggvis(~variable, ~value, fill = ~batch) %>% layer_boxplots() %>%
+      add_tooltip(function(dat2){paste0("Sample: ", dat2$variable, "<br>", "Batch: ",dat2$batch)}, "hover") %>%
       add_axis("x", title = paste(input$noSamples, "Sample(s) Per Batch", sep =" "), properties = axis_props(
         title = list(fontSize = 15),
         labels = list(fontSize = 5, angle = 90)
