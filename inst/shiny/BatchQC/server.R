@@ -152,8 +152,34 @@ shinyServer(function(input, output, session) {
   output$kstest <- renderPrint({  
     ks.test(gamma.hat[input$batches,], "pnorm", gamma.bar[input$batches], sqrt(t2[input$batches])) # two-sided, exact
   })
+  myheight <- function(){
+    prefix <- 'output_'
+    name <- "circos"
+    width <- session$clientData[[paste(prefix, name, '_width', sep='')]];
+    height <- session$clientData[[paste(prefix, name, '_height', sep='')]];
+    if (is.null(width) || is.null(height) || width <= 0 || height <= 0)
+      return(NULL)
+    if (width<height) {
+      return(width)
+    } else {
+      return(height)
+    }
+  }
+  mywidth <- function(){
+    prefix <- 'output_'
+    name <- "circos"
+    width <- session$clientData[[paste(prefix, name, '_width', sep='')]];
+    height <- session$clientData[[paste(prefix, name, '_height', sep='')]];
+    if (is.null(width) || is.null(height) || width <= 0 || height <= 0)
+      return(NULL)
+    if (height<width) {
+      return(height)
+    } else {
+      return(width)
+    }
+  }
   output$circos <- renderPlot({
     my.plot(data.matrix, batch, input$AggMethod)
-  }, width=800, height=800)
+  }, width=mywidth, height=myheight)
 })
 
