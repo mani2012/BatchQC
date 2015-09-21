@@ -75,14 +75,15 @@ shinyServer(function(input, output, session) {
     batch1 <- as.factor(batch)
     batch2 <- split(which(batch == batch1), batch1)
     batch3 <- unlist(lapply(1:length(batch2), function(x) batch2[[x]][1:input$noSamples]))
-    dat[,batch3]
+    dat1 <- dat[,batch3]
+    colnames(dat1) <- seq(1:ncol(dat))[batch3]
+    dat1
   })
   #interactive boxplot
   vis_bp <- reactive({
     batch4 <- split(batch, as.factor(batch))
     batch5 <- unlist(lapply(1:length(batch4), function(x) batch4[[x]][1:input$noSamples]))
     dat1 <- BP()
-    colnames(dat1) <- seq(1:ncol(dat1))
     dat2 <- melt(as.data.frame(dat1), measure.var=colnames(dat1))
     dat2$batch <- as.factor(unlist(lapply(1:length(batch5), function(x) rep(batch5[x], nrow(dat1)))))
     dat2 %>% group_by(batch) %>%
@@ -116,13 +117,14 @@ shinyServer(function(input, output, session) {
     cond1 <- as.factor(condition)
     cond2 <- split(which(condition == cond1), cond1)
     cond3 <- unlist(lapply(1:length(cond2), function(x) cond2[[x]][1:input$ncSamples]))
-    dat[,cond3]
+    dat1 <- dat[,cond3]
+    colnames(dat1) <- seq(1:ncol(dat))[cond3]
+    dat1
   })
   diffex_bp <- reactive({
     cond4 <- split(condition, as.factor(condition))
     cond5 <- unlist(lapply(1:length(cond4), function(x) cond4[[x]][1:input$ncSamples]))
     dat1 <- DE()
-    colnames(dat1) <- seq(1:ncol(dat1))
     dat2 <- melt(as.data.frame(dat1), measure.var=colnames(dat1))
     dat2$condition <- as.factor(unlist(lapply(1:length(cond5), function(x) rep(cond5[x], nrow(dat1)))))
     dat2 %>% group_by(condition) %>%
