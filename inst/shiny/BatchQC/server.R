@@ -22,6 +22,8 @@ shinyServer(function(input, output, session) {
   t2 <- shinyInput$t2
   a.prior <- shinyInput$a.prior
   b.prior <- shinyInput$b.prior
+  batch <- shinyInput$batch
+  condition <- shinyInput$condition
   
   #interactive PCA
   PCA <- reactive({
@@ -81,7 +83,7 @@ shinyServer(function(input, output, session) {
     batch5 <- unlist(lapply(1:length(batch4), function(x) batch4[[x]][1:input$noSamples]))
     dat1 <- BP()
     colnames(dat1) <- seq(1:ncol(dat1))
-    dat2 <- melt(as.data.frame(dat1))
+    dat2 <- melt(as.data.frame(dat1), measure.var=colnames(dat1))
     dat2$batch <- as.factor(unlist(lapply(1:length(batch5), function(x) rep(batch5[x], nrow(dat1)))))
     dat2 %>% group_by(batch) %>%
       ggvis(~variable, ~value, fill = ~batch) %>% layer_boxplots() %>%
@@ -90,7 +92,7 @@ shinyServer(function(input, output, session) {
         title = list(fontSize = 15),
         labels = list(fontSize = 5, angle = 90)
       )) %>%
-      add_axis("y", title = "Exression", properties = axis_props(
+      add_axis("y", title = "Expression", properties = axis_props(
         title = list(fontSize = 15),
         labels = list(fontSize = 10)
       )) %>%
@@ -106,6 +108,46 @@ shinyServer(function(input, output, session) {
   
   output$BPtable <- renderTable({
     BP()
+  })
+  
+  #interactive Differential Expression boxplot
+  DE <- reactive({
+    dat <- lcounts
+    cond1 <- as.factor(condition)
+    cond2 <- split(which(condition == cond1), cond1)
+    cond3 <- unlist(lapply(1:length(cond2), function(x) cond2[[x]][1:input$ncSamples]))
+    dat[,cond3]
+  })
+  diffex_bp <- reactive({
+    cond4 <- split(condition, as.factor(condition))
+    cond5 <- unlist(lapply(1:length(cond4), function(x) cond4[[x]][1:input$ncSamples]))
+    dat1 <- DE()
+    colnames(dat1) <- seq(1:ncol(dat1))
+    dat2 <- melt(as.data.frame(dat1), measure.var=colnames(dat1))
+    dat2$condition <- as.factor(unlist(lapply(1:length(cond5), function(x) rep(cond5[x], nrow(dat1)))))
+    dat2 %>% group_by(condition) %>%
+      ggvis(~variable, ~value, fill = ~condition) %>% layer_boxplots() %>%
+      add_tooltip(function(dat2){paste0("Sample: ", dat2$variable, "<br>", "Condition: ",dat2$condition)}, "hover") %>%
+      add_axis("x", title = paste(input$ncSamples, "Sample(s) Per Condition", sep =" "), properties = axis_props(
+        title = list(fontSize = 15),
+        labels = list(fontSize = 5, angle = 90)
+      )) %>%
+      add_axis("y", title = "Expression", properties = axis_props(
+        title = list(fontSize = 15),
+        labels = list(fontSize = 10)
+      )) %>%
+      add_legend("fill", title = "Conditions", properties = legend_props(
+        title = list(fontSize = 15),
+        labels = list(fontSize = 10)
+      ))
+  })
+  diffex_bp %>% bind_shiny("DiffExPlot")
+  output$DEsummary <- renderPrint({
+    summary(DE())
+  })
+  
+  output$DEtable <- renderTable({
+    DE()
   })
   
   #interactive scatter plot

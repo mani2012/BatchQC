@@ -13,7 +13,7 @@ shinyUI(navbarPage("BatchQC",
                             sidebarLayout(
                               sidebarPanel(
                                 numericInput('noSamples', 'No. of Sample(s) Per Batch', 1,
-                                             min = 1, max = minbatch(batch)),
+                                             min = 1, max = minbatch(shinyInput$batch)),
                                 checkboxInput("combat", "ComBat", FALSE)
                               ),
                               mainPanel(
@@ -25,7 +25,23 @@ shinyUI(navbarPage("BatchQC",
                               )
                             )
                    ),
-                   tabPanel("Sample Correlations", plotOutput("outliers")),
+                   tabPanel("Differential Expression",
+                            sidebarLayout(
+                              sidebarPanel(
+                                numericInput('ncSamples', 'No. of Sample(s) Per Condition', 1,
+                                             min = 1, max = minbatch(shinyInput$condition)),
+                                checkboxInput("combat", "ComBat", FALSE)
+                              ),
+                              mainPanel(
+                                tabsetPanel(
+                                  tabPanel("Differential Expression",ggvisOutput("DiffExPlot")), 
+                                  tabPanel("Summary", verbatimTextOutput("DEsummary")),
+                                  tabPanel("Table", tableOutput("DEtable")) 
+                                )
+                              )
+                            )
+                   ),
+                   tabPanel("Median Correlations", plotOutput("outliers")),
                    tabPanel("Heatmaps",
                             tabsetPanel(
                               tabPanel("Heatmap",
@@ -54,7 +70,7 @@ shinyUI(navbarPage("BatchQC",
                                 checkboxInput("combat", "ComBat", FALSE)
                               ),
                               mainPanel(
-                                plotOutput("circos")
+                                plotOutput("circos", width = "100%")
                               )
                             )
                    ),

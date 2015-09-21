@@ -16,7 +16,7 @@ pdata <- data.frame(sample, batch, condition)
 modmatrix = model.matrix(~as.factor(condition), data=pdata)
 #pca <- batchQC_analyze(data.matrix, batch=batch, mod=modmatrix)
 
-batchQC(data.matrix, batch=batch, mod=modmatrix, 
+batchQC(data.matrix, batch=batch, condition=condition, 
         report_file="batchqc_report.html", report_dir=".", report_option_binary="111111111",
         view_report=FALSE, interactive=TRUE)
 
@@ -26,6 +26,6 @@ combat_data.matrix = ComBat(dat=data.matrix, batch=batch, mod=modmatrix)
 
 ### Rerun the BatchQC pipeline on the batch adjusted data
 #pca <- batchQC_analyze(combat_data.matrix, batch=batch, mod=modmatrix)
-batchQC(combat_data.matrix, batch=batch, mod=modmatrix, 
+batchQC(combat_data.matrix, batch=batch, condition=condition, 
         report_file="batchqc_combat_adj_report.html", report_dir=".", report_option_binary="110011111",
         interactive=FALSE)

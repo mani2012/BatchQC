@@ -28,7 +28,7 @@ batchQC_analyze <- function(data.matrix, batch, mod=NULL)  {
 #' 
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param batch Batch covariate 
-#' @param mod Model matrix for outcome of interest and other covariates besides batch
+#' @param condition Covariates or conditions of interest besides batch
 #' @param report_file Output report file name 
 #' @param report_dir Output report directory path 
 #' @param report_option_binary 9 bits Binary String representing the plots to display and hide in the report 
@@ -40,13 +40,14 @@ batchQC_analyze <- function(data.matrix, batch, mod=NULL)  {
 #' nperbatch <- 10
 #' batch <- rep(1:nbatch, each=nperbatch)
 #' batchQC(data.matrix, batch)
-batchQC <- function(dat, batch, mod=NULL, 
+batchQC <- function(dat, batch, condition=NULL, 
                     report_file="batchqc_report.html", 
                     report_dir=".", report_option_binary="111111111",
                     view_report=TRUE, interactive=TRUE)  {
+  mod = model.matrix(~as.factor(condition), data=pdata)
   if (report_dir==".") { report_dir=getwd() }
   dat <- as.matrix(dat)
-  shinyInput <<- list("data"=dat, "batch"=batch, "mod"=mod)
+  shinyInput <<- list("data"=dat, "batch"=batch, "condition"=condition)
   rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
   report_option_vector <- unlist(strsplit(as.character(report_option_binary), ""))
   #rmarkdown::draft("batchqc_report.Rmd", template = "batchqc", package = "BatchQC")
