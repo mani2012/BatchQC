@@ -8,12 +8,16 @@ minbatch <- function(batch1){
   return(min(unlist(lapply(1:length(batch3), function(x) length(batch3[[x]])))))
 }
 
+maxbatchElems <- minbatch(shinyInput$batch)
+maxcondElems <- minbatch(shinyInput$condition)
+defaultDisp <- 30
 shinyUI(navbarPage("BatchQC",
                    tabPanel("Box Plots",
                             sidebarLayout(
                               sidebarPanel(
-                                numericInput('noSamples', 'No. of Sample(s) Per Batch', 1,
-                                             min = 1, max = minbatch(shinyInput$batch)),
+                                numericInput('noSamples', 'No. of Sample(s) Per Batch', 
+                                             if (maxbatchElems>defaultDisp) defaultDisp else maxbatchElems,
+                                             min = 1, max = maxbatchElems),
                                 checkboxInput("combat", "ComBat", FALSE)
                               ),
                               mainPanel(
@@ -28,8 +32,10 @@ shinyUI(navbarPage("BatchQC",
                    tabPanel("Differential Expression",
                             sidebarLayout(
                               sidebarPanel(
-                                numericInput('ncSamples', 'No. of Sample(s) Per Condition', 1,
-                                             min = 1, max = minbatch(shinyInput$condition)),
+                                numericInput('ncSamples', 'No. of Sample(s) Per Condition', 
+                                             if (maxcondElems>defaultDisp) defaultDisp else maxcondElems,
+                                             min = 1, max = maxcondElems),
+                                checkboxInput("colbybatch", "Color By Batches", FALSE),
                                 checkboxInput("combat", "ComBat", FALSE)
                               ),
                               mainPanel(

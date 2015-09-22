@@ -127,9 +127,12 @@ shinyServer(function(input, output, session) {
     dat1 <- DE()
     dat2 <- melt(as.data.frame(dat1), measure.var=colnames(dat1))
     dat2$condition <- as.factor(unlist(lapply(1:length(cond5), function(x) rep(cond5[x], nrow(dat1)))))
-    dat2 %>% group_by(condition) %>%
-      ggvis(~variable, ~value, fill = ~condition) %>% layer_boxplots() %>%
-      add_tooltip(function(dat2){paste0("Sample: ", dat2$variable, "<br>", "Condition: ",dat2$condition)}, "hover") %>%
+    dat2$batch <- as.factor(unlist(lapply(as.numeric(colnames(dat1)), function(x) rep(batch[x], nrow(dat1)))))
+    dat2 %>% group_by(batch) %>%
+      ggvis(~variable, ~value, fill = if (input$colbybatch) ~batch else ~condition) %>% layer_boxplots() %>%
+      add_tooltip(function(dat2){paste0("Sample: ", dat2$variable, "<br>", 
+                                        if (input$colbybatch) "Batch: " else "Condition: ",
+                                        if (input$colbybatch) dat2$batch else dat2$condition)}, "hover") %>%
       add_axis("x", title = paste(input$ncSamples, "Sample(s) Per Condition", sep =" "), properties = axis_props(
         title = list(fontSize = 15),
         labels = list(fontSize = 5, angle = 90)
@@ -138,7 +141,7 @@ shinyServer(function(input, output, session) {
         title = list(fontSize = 15),
         labels = list(fontSize = 10)
       )) %>%
-      add_legend("fill", title = "Conditions", properties = legend_props(
+      add_legend("fill", title = if (input$colbybatch) "Batches" else "Conditions", properties = legend_props(
         title = list(fontSize = 15),
         labels = list(fontSize = 10)
       ))
