@@ -44,16 +44,20 @@ batchQC <- function(dat, batch, condition=NULL,
                     report_file="batchqc_report.html", 
                     report_dir=".", report_option_binary="111111111",
                     view_report=TRUE, interactive=TRUE)  {
+  pdata <- data.frame(batch, condition)
   mod = model.matrix(~as.factor(condition), data=pdata)
   if (report_dir==".") { report_dir=getwd() }
   dat <- as.matrix(dat)
-  shinyInput <<- list("data"=dat, "batch"=batch, "condition"=condition)
+  shinyInput <<- list("data"=dat, "batch"=batch, "condition"=condition, 
+                      "report_dir"=report_dir)
   rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
   report_option_vector <- unlist(strsplit(as.character(report_option_binary), ""))
   #rmarkdown::draft("batchqc_report.Rmd", template = "batchqc", package = "BatchQC")
   static_lib_dir <- system.file("reports/libs", package = "BatchQC")
   file.copy(static_lib_dir, report_dir, recursive=TRUE)
   outputfile <- rmarkdown::render(rmdfile, output_file=report_file, output_dir=report_dir)
+  shinyInputOrig <<- shinyInput
+  shinyInputCombat <<- NULL
   if (view_report)  {
     browseURL(outputfile)
   }

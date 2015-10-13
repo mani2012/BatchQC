@@ -36,7 +36,20 @@ shinyUI(navbarPage("BatchQC",
                                              if (maxcondElems>defaultDisp) defaultDisp else maxcondElems,
                                              min = 1, max = maxcondElems),
                                 checkboxInput("colbybatch", "Color By Batches", FALSE),
-                                checkboxInput("combat", "ComBat", FALSE)
+                                checkboxInput("combatDE", "ComBat", FALSE),
+                                # This makes web page load the JS file in the HTML head.
+                                #singleton(
+                                #  tags$head(tags$script(src = "message-handler.js"))
+                                #)
+                                singleton(
+                                  tags$head(tags$script(
+                                    'Shiny.addCustomMessageHandler("testmessage",
+                                    function(message) {
+                                        alert(message);
+                                      }
+                                    );'
+                                  ))
+                                )
                               ),
                               mainPanel(
                                 tabsetPanel(
@@ -59,7 +72,7 @@ shinyUI(navbarPage("BatchQC",
                                        checkboxInput("cluster2", "Apply clustering"),
                                        d3heatmapOutput("correlation")
                               ),
-                              checkboxInput("combat", "ComBat", FALSE)
+                              checkboxInput("combatHM", "ComBat", FALSE)
                             )
                    ),
                    tabPanel("Circular Dendrogram",
@@ -73,7 +86,7 @@ shinyUI(navbarPage("BatchQC",
                                               "Average" = "average",
                                               "McQuitty" = "mcquitty",
                                               "Single" = "single")),
-                                checkboxInput("combat", "ComBat", FALSE)
+                                checkboxInput("combatCD", "ComBat", FALSE)
                               ),
                               mainPanel(
                                 plotOutput("circos", width = "100%")
@@ -87,7 +100,7 @@ shinyUI(navbarPage("BatchQC",
                             min = 1, max = 50),
                           numericInput('ycol', 'Principal Component (y-axis)', 2,
                             min = 1, max = 50),
-                          checkboxInput("combat", "ComBat", FALSE)
+                          checkboxInput("combatPCA", "ComBat", FALSE)
                         ),
                         mainPanel(
                           tabsetPanel(
@@ -102,12 +115,16 @@ shinyUI(navbarPage("BatchQC",
                             sidebarLayout(
                               sidebarPanel(
                                 numericInput('batches', 'Batch', 1,
-                                             min = 1, max = nrow(shinyInput$delta.hat))
+                                             min = 1, max = nrow(shinyInput$delta.hat)),
+                                br(),
+                                actionButton("runCombat", "Run ComBat"),
+                                p("Click the button to run ComBat and see the results in the other tabs.")
                               ),
                               mainPanel(
                                 tabsetPanel(
                                   tabPanel("ComBat Plots", plotOutput("densityQQPlots")),
-                                  tabPanel("Summary", verbatimTextOutput("kstest"))
+                                  tabPanel("Summary", verbatimTextOutput("kstest")),
+                                  tabPanel("ComBat Output", verbatimTextOutput("combatOutText"))
                                 )
                               )
                             )

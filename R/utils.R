@@ -12,6 +12,12 @@ BinToDec <- function(x)
 log2CPM <- function(qcounts, lib.size=NULL){
   if (is.null(lib.size)) 
     lib.size <- colSums(qcounts)
+  minimum <- min(qcounts)
+  if (minimum < 0)  {
+    qcounts <- qcounts-minimum
+  }
+  avg <- mean(qcounts)
+  qcounts <- apply(qcounts,1:2,FUN=function(x){ifelse(x<=0,avg,x)})
   y <- t(log2(t(qcounts + 0.5)/(lib.size + 1) * 1e+06))
   return(list(y=y, lib.size=lib.size))
 }

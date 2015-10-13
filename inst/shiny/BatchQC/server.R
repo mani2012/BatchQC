@@ -2,6 +2,7 @@ library(shiny)
 library(ggvis)
 library(d3heatmap)
 library(reshape2)
+library(BatchQC)
 plotPC <- function(v, d, x, y, ...){
     pcVar <- round((d^2)/sum(d^2)*100,2)
     
@@ -19,11 +20,39 @@ shinyServer(function(input, output, session) {
   gamma.hat <- shinyInput$gamma.hat
   gamma.bar <- shinyInput$gamma.bar
   lcounts <- shinyInput$lcounts
-  t2 <- shinyInput$t2
   a.prior <- shinyInput$a.prior
   b.prior <- shinyInput$b.prior
   batch <- shinyInput$batch
   condition <- shinyInput$condition
+  
+  setInputs <- function(combatFlag)  {
+    if (combatFlag)  {
+      shinyInput <<- shinyInputCombat
+      pc <<- shinyInput$pc
+      cormat <<- shinyInput$cormat
+      delta.hat <<- shinyInput$delta.hat
+      gamma.hat <<- shinyInput$gamma.hat
+      gamma.bar <<- shinyInput$gamma.bar
+      lcounts <<- shinyInput$lcounts
+      a.prior <<- shinyInput$a.prior
+      b.prior <<- shinyInput$b.prior
+      batch <<- shinyInput$batch
+      condition <<- shinyInput$condition
+    } else  {
+      shinyInput <<- shinyInputOrig
+      pc <<- shinyInput$pc
+      cormat <<- shinyInput$cormat
+      delta.hat <<- shinyInput$delta.hat
+      gamma.hat <<- shinyInput$gamma.hat
+      gamma.bar <<- shinyInput$gamma.bar
+      lcounts <<- shinyInput$lcounts
+      a.prior <<- shinyInput$a.prior
+      b.prior <<- shinyInput$b.prior
+      batch <<- shinyInput$batch
+      condition <<- shinyInput$condition
+    }
+  }
+  #setInputs(FALSE)
   
   #interactive PCA
   PCA <- reactive({
@@ -32,7 +61,19 @@ shinyServer(function(input, output, session) {
   
   #interactive PCA plot
   vis_pc <- reactive({
-      pc$id <- 1:nrow(pc)  
+    if (input$combatPCA)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateCheckboxInput(session, "combatPCA", value=FALSE)
+      } else  {
+        setInputs(TRUE)
+      }
+    } else  {
+      setInputs(FALSE)
+    }
+
+    pc$id <- 1:nrow(pc)  
       
       all_values <- function(x) {
         if(is.null(x)) return(NULL)
@@ -113,6 +154,11 @@ shinyServer(function(input, output, session) {
   
   #interactive Differential Expression boxplot
   DE <- reactive({
+    if (input$combatDE)  {
+      if (is.null(shinyInputCombat))  {
+        updateCheckboxInput(session, "combatDE", value=FALSE)
+      }
+    }
     dat <- lcounts
     cond1 <- as.factor(condition)
     cond2 <- split(which(condition == cond1), cond1)
@@ -122,6 +168,17 @@ shinyServer(function(input, output, session) {
     dat1
   })
   diffex_bp <- reactive({
+    if (input$combatDE)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateCheckboxInput(session, "combatDE", value=FALSE)
+      } else  {
+        setInputs(TRUE)
+      }
+    } else  {
+      setInputs(FALSE)
+    }
     cond4 <- split(condition, as.factor(condition))
     cond5 <- unlist(lapply(1:length(cond4), function(x) cond4[[x]][1:input$ncSamples]))
     dat1 <- DE()
@@ -157,11 +214,22 @@ shinyServer(function(input, output, session) {
   
   #interactive scatter plot
   output$outliers <- renderPlot({
-    BatchQC::batchqc_corscatter(data.matrix, batch, mod = shinyInput$mod)
+    BatchQC::batchqc_corscatter(shinyInput$data, shinyInput$batch, mod = shinyInput$mod)
   })
 
   #interactive heatmap
   output$heatmap <- renderD3heatmap({
+    if (input$combatHM)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateCheckboxInput(session, "combatHM", value=FALSE)
+      } else  {
+        setInputs(TRUE)
+      }
+    } else  {
+      setInputs(FALSE)
+    }
     d3heatmap(
       lcounts,
       colors = "RdBu",
@@ -170,6 +238,17 @@ shinyServer(function(input, output, session) {
     ) })
   
   output$correlation <- renderD3heatmap({
+    if (input$combatHM)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateCheckboxInput(session, "combatHM", value=FALSE)
+      } else  {
+        setInputs(TRUE)
+      }
+    } else  {
+      setInputs(FALSE)
+    }
     d3heatmap(
       cormat,
       colors = "RdBu",
@@ -184,7 +263,7 @@ shinyServer(function(input, output, session) {
     tmp <- density(gamma.hat[input$batches,])
     plot(tmp,  type='l', main="Density Plot",lwd=2)
     xx <- seq(min(tmp$x), max(tmp$x), length=100)
-    lines(xx,dnorm(xx,gamma.bar[input$batches],sqrt(t2[input$batches])), col=2,lwd=2)
+    lines(xx,dnorm(xx,gamma.bar[input$batches],sqrt(shinyInput$t2[input$batches])), col=2,lwd=2)
     qqnorm(gamma.hat[input$batches,])	
     qqline(gamma.hat[input$batches,], col=2,lwd=2)
     tmp <- density(delta.hat[input$batches,])
@@ -197,8 +276,32 @@ shinyServer(function(input, output, session) {
     title('Q-Q Plot')
   })
   output$kstest <- renderPrint({  
-    ks.test(gamma.hat[input$batches,], "pnorm", gamma.bar[input$batches], sqrt(t2[input$batches])) # two-sided, exact
+    ks.test(gamma.hat[input$batches,], "pnorm", gamma.bar[input$batches], sqrt(shinyInput$t2[input$batches])) # two-sided, exact
   })
+
+  combatOutText <- eventReactive(input$runCombat, {
+    if (is.null(shinyInputCombat))  {
+      pdata <- data.frame(batch, condition)
+      mod <- model.matrix(~as.factor(shinyInput$condition), data=pdata)
+      combat_data <- ComBat(dat=shinyInput$data, batch=shinyInput$batch, mod=mod)
+      shinyInput <<- list("data"=combat_data, "batch"=batch, "condition"=condition,
+                          "report_dir"=shinyInputOrig$report_dir)
+      rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
+      report_option_binary="110011111"
+      report_option_vector <- unlist(strsplit(as.character(report_option_binary), ""))
+      dat <- as.matrix(combat_data)
+      outputfile <- rmarkdown::render(rmdfile, output_file="combat_batchqc_report.html", 
+                                      output_dir=shinyInput$report_dir)
+      shinyInputCombat <<- shinyInput
+      "Finished running ComBat. Select the other tabs to view the ComBat results"
+    } else  {
+      "Already ran ComBat. Select the other tabs to view the ComBat results"
+    }
+  })
+  output$combatOutText <- renderText({
+    combatOutText()
+  })
+  
   myheight <- function(){
     prefix <- 'output_'
     name <- "circos"
@@ -226,7 +329,18 @@ shinyServer(function(input, output, session) {
     }
   }
   output$circos <- renderPlot({
-    my.plot(data.matrix, batch, input$AggMethod)
+    if (input$combatCD)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateCheckboxInput(session, "combatCD", value=FALSE)
+      } else  {
+        setInputs(TRUE)
+      }
+    } else  {
+      setInputs(FALSE)
+    }
+    my.plot(shinyInput$data, shinyInput$batch, input$AggMethod)
   }, width=mywidth, height=myheight)
 })
 
