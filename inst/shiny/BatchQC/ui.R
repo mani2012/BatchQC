@@ -11,7 +11,7 @@ minbatch <- function(batch1){
 maxbatchElems <- minbatch(shinyInput$batch)
 maxcondElems <- minbatch(shinyInput$condition)
 defaultDisp <- 30
-shinyUI(navbarPage("BatchQC",
+shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE, 
                    tabPanel("Box Plots",
                             sidebarLayout(
                               sidebarPanel(
@@ -46,6 +46,15 @@ shinyUI(navbarPage("BatchQC",
                                     'Shiny.addCustomMessageHandler("testmessage",
                                     function(message) {
                                         alert(message);
+                                      }
+                                    );'
+                                  ))
+                                ),
+                                singleton(
+                                  tags$head(tags$script(
+                                    'Shiny.addCustomMessageHandler("combatoutput",
+                                    function(message) {
+                                        $("a:contains(ComBat Output)").click();
                                       }
                                     );'
                                   ))
@@ -122,9 +131,10 @@ shinyUI(navbarPage("BatchQC",
                               ),
                               mainPanel(
                                 tabsetPanel(
+                                  id="CombatMain",
                                   tabPanel("ComBat Plots", plotOutput("densityQQPlots")),
                                   tabPanel("Summary", verbatimTextOutput("kstest")),
-                                  tabPanel("ComBat Output", verbatimTextOutput("combatOutText"))
+                                  tabPanel("ComBat Output", value="ComBatOutput", verbatimTextOutput("combatOutText"))
                                 )
                               )
                             )

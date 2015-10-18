@@ -278,6 +278,11 @@ shinyServer(function(input, output, session) {
   output$kstest <- renderPrint({  
     ks.test(gamma.hat[input$batches,], "pnorm", gamma.bar[input$batches], sqrt(shinyInput$t2[input$batches])) # two-sided, exact
   })
+  observe({
+    if (input$runCombat > 0)  {
+      updateTabsetPanel(session, inputId="CombatMain", selected = "ComBatOutput")
+    }
+  })
 
   combatOutText <- eventReactive(input$runCombat, {
     if (is.null(shinyInputCombat))  {
