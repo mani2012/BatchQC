@@ -12,29 +12,16 @@ maxbatchElems <- minbatch(shinyInput$batch)
 maxcondElems <- minbatch(shinyInput$condition)
 defaultDisp <- 30
 shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE, 
-                   tabPanel("Box Plots",
-                            sidebarLayout(
-                              sidebarPanel(
-                                numericInput('noSamples', 'No. of Sample(s) Per Batch', 
-                                             if (maxbatchElems>defaultDisp) defaultDisp else maxbatchElems,
-                                             min = 1, max = maxbatchElems),
-                                checkboxInput("combat", "ComBat", FALSE)
-                              ),
-                              mainPanel(
-                                tabsetPanel(
-                                  tabPanel("Boxplot",ggvisOutput("Boxplot")), 
-                                  tabPanel("Summary", verbatimTextOutput("BPsummary")),
-                                  tabPanel("Table", tableOutput("BPtable")) 
-                                )
-                              )
-                            )
-                   ),
                    tabPanel("Differential Expression",
                             sidebarLayout(
                               sidebarPanel(
                                 numericInput('ncSamples', 'No. of Sample(s) Per Condition', 
                                              if (maxcondElems>defaultDisp) defaultDisp else maxcondElems,
                                              min = 1, max = maxcondElems),
+                                numericInput('noSamples', 'No. of Sample(s) Per Batch', 
+                                             if (maxbatchElems>defaultDisp) defaultDisp else maxbatchElems,
+                                             min = 1, max = maxbatchElems),
+                                checkboxInput("sortbybatch", "Sort By Batches First", FALSE),
                                 checkboxInput("colbybatch", "Color By Batches", FALSE),
                                 checkboxInput("combatDE", "ComBat", FALSE),
                                 # This makes web page load the JS file in the HTML head.
@@ -46,15 +33,6 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                                     'Shiny.addCustomMessageHandler("testmessage",
                                     function(message) {
                                         alert(message);
-                                      }
-                                    );'
-                                  ))
-                                ),
-                                singleton(
-                                  tags$head(tags$script(
-                                    'Shiny.addCustomMessageHandler("combatoutput",
-                                    function(message) {
-                                        $("a:contains(ComBat Output)").click();
                                       }
                                     );'
                                   ))

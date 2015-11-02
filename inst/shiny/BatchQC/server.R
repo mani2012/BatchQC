@@ -112,6 +112,11 @@ shinyServer(function(input, output, session) {
 
   #interactive boxplot
   BP <- reactive({
+    if (input$combatDE)  {
+      if (is.null(shinyInputCombat))  {
+        updateCheckboxInput(session, "combatDE", value=FALSE)
+      }
+    }
     dat <- lcounts
     batch1 <- as.factor(batch)
     batch2 <- split(which(batch == batch1), batch1)
@@ -120,38 +125,6 @@ shinyServer(function(input, output, session) {
     colnames(dat1) <- seq(1:ncol(dat))[batch3]
     dat1
   })
-  #interactive boxplot
-  vis_bp <- reactive({
-    batch4 <- split(batch, as.factor(batch))
-    batch5 <- unlist(lapply(1:length(batch4), function(x) batch4[[x]][1:input$noSamples]))
-    dat1 <- BP()
-    dat2 <- melt(as.data.frame(dat1), measure.var=colnames(dat1))
-    dat2$batch <- as.factor(unlist(lapply(1:length(batch5), function(x) rep(batch5[x], nrow(dat1)))))
-    dat2 %>% group_by(batch) %>%
-      ggvis(~variable, ~value, fill = ~batch) %>% layer_boxplots() %>%
-      add_tooltip(function(dat2){paste0("Sample: ", dat2$variable, "<br>", "Batch: ",dat2$batch)}, "hover") %>%
-      add_axis("x", title = paste(input$noSamples, "Sample(s) Per Batch", sep =" "), properties = axis_props(
-        title = list(fontSize = 15),
-        labels = list(fontSize = 5, angle = 90)
-      )) %>%
-      add_axis("y", title = "Expression", properties = axis_props(
-        title = list(fontSize = 15),
-        labels = list(fontSize = 10)
-      )) %>%
-      add_legend("fill", title = "Batches", properties = legend_props(
-        title = list(fontSize = 15),
-        labels = list(fontSize = 10)
-      ))
-  })
-  vis_bp %>% bind_shiny("Boxplot")
-  output$BPsummary <- renderPrint({
-    summary(BP())
-  })
-  
-  output$BPtable <- renderTable({
-    BP()
-  })
-  
   #interactive Differential Expression boxplot
   DE <- reactive({
     if (input$combatDE)  {
@@ -179,12 +152,21 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(FALSE)
     }
-    cond4 <- split(condition, as.factor(condition))
-    cond5 <- unlist(lapply(1:length(cond4), function(x) cond4[[x]][1:input$ncSamples]))
-    dat1 <- DE()
-    dat2 <- melt(as.data.frame(dat1), measure.var=colnames(dat1))
-    dat2$condition <- as.factor(unlist(lapply(1:length(cond5), function(x) rep(cond5[x], nrow(dat1)))))
-    dat2$batch <- as.factor(unlist(lapply(as.numeric(colnames(dat1)), function(x) rep(batch[x], nrow(dat1)))))
+    if (input$sortbybatch)  {
+      batch4 <- split(batch, as.factor(batch))
+      batch5 <- unlist(lapply(1:length(batch4), function(x) batch4[[x]][1:input$noSamples]))
+      dat1 <- BP()
+      dat2 <- melt(as.data.frame(dat1), measure.var=colnames(dat1))
+      dat2$batch <- as.factor(unlist(lapply(1:length(batch5), function(x) rep(batch5[x], nrow(dat1)))))
+      dat2$condition <- as.factor(unlist(lapply(as.numeric(colnames(dat1)), function(x) rep(condition[x], nrow(dat1)))))
+    } else  {
+      cond4 <- split(condition, as.factor(condition))
+      cond5 <- unlist(lapply(1:length(cond4), function(x) cond4[[x]][1:input$ncSamples]))
+      dat1 <- DE()
+      dat2 <- melt(as.data.frame(dat1), measure.var=colnames(dat1))
+      dat2$condition <- as.factor(unlist(lapply(1:length(cond5), function(x) rep(cond5[x], nrow(dat1)))))
+      dat2$batch <- as.factor(unlist(lapply(as.numeric(colnames(dat1)), function(x) rep(batch[x], nrow(dat1)))))
+    }
     dat2 %>% group_by(batch) %>%
       ggvis(~variable, ~value, fill = if (input$colbybatch) ~batch else ~condition) %>% layer_boxplots() %>%
       add_tooltip(function(dat2){paste0("Sample: ", dat2$variable, "<br>", 
@@ -205,11 +187,19 @@ shinyServer(function(input, output, session) {
   })
   diffex_bp %>% bind_shiny("DiffExPlot")
   output$DEsummary <- renderPrint({
-    summary(DE())
+    if (input$sortbybatch)  {
+      summary(BP())
+    } else  {
+      summary(DE())
+    }
   })
   
   output$DEtable <- renderTable({
-    DE()
+    if (input$sortbybatch)  {
+      BP()
+    } else  {
+      DE()
+    }
   })
   
   #interactive scatter plot
