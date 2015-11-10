@@ -172,7 +172,10 @@ shinyServer(function(input, output, session) {
       add_tooltip(function(dat2){paste0("Sample: ", dat2$variable, "<br>", 
                                         if (input$colbybatch) "Batch: " else "Condition: ",
                                         if (input$colbybatch) dat2$batch else dat2$condition)}, "hover") %>%
-      add_axis("x", title = paste(input$ncSamples, "Sample(s) Per Condition", sep =" "), properties = axis_props(
+      add_axis("x", title = if (input$sortbybatch) 
+        paste(input$noSamples, "Sample(s) Per Batch", sep =" ")
+        else paste(input$ncSamples, "Sample(s) Per Condition", sep =" "), 
+        properties = axis_props(
         title = list(fontSize = 15),
         labels = list(fontSize = 5, angle = 90)
       )) %>%
