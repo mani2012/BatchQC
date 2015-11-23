@@ -3,6 +3,7 @@ library(ggvis)
 library(d3heatmap)
 library(reshape2)
 library(BatchQC)
+library(HTShape)
 plotPC <- function(v, d, x, y, ...){
     pcVar <- round((d^2)/sum(d^2)*100,2)
     
@@ -249,6 +250,42 @@ shinyServer(function(input, output, session) {
       labRow = sample,
       dendrogram = if (input$cluster2) "both" else "none"
     ) })
+
+  #Shape plots
+  output$SOplot <- renderPlot({
+    if (input$combatShape)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateCheckboxInput(session, "combatShape", value=FALSE)
+      } else  {
+        setInputs(TRUE)
+      }
+    } else  {
+      setInputs(FALSE)
+    }
+    res <- HTShape::fitShape(lcounts, nLmom = 4)
+    #t3 <- res$lrats[, "t3"] # Grab L-skew estimates.
+    #t4 <- res$lrats[, "t4"] # Grab L-kurt estimates.
+    t3 <- res$lrats["LR3", ] # Grab L-skew estimates.
+    t4 <- res$lrats["LR4", ] # Grab L-kurt estimates.
+    HTShape::plotSO(t3, t4, verbose = FALSE)
+  })
+  output$Manova <- renderPlot({
+    if (input$combatShape)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateCheckboxInput(session, "combatShape", value=FALSE)
+      } else  {
+        setInputs(TRUE)
+      }
+    } else  {
+      setInputs(FALSE)
+    }
+    HTShape::shapeManova(lcounts, batch, lrats=TRUE, plot = TRUE,
+                         groupCol=rep("green",length(shinyInput$batch)))
+  })
   
   #interactive density plots
   output$densityQQPlots <- renderPlot({

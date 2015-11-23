@@ -11,6 +11,7 @@ minbatch <- function(batch1){
 maxbatchElems <- minbatch(shinyInput$batch)
 maxcondElems <- minbatch(shinyInput$condition)
 defaultDisp <- 30
+nbatch <- nlevels(as.factor(shinyInput$batch))
 shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE, 
                    tabPanel("Differential Expression",
                             sidebarLayout(
@@ -98,6 +99,21 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                         )
                       )
                     ),
+                   tabPanel("Shape",
+                            sidebarLayout(
+                              sidebarPanel(
+                                numericInput('batchnum', 'Batch', 1,
+                                             min = 1, max = nbatch),
+                                checkboxInput("combatShape", "ComBat", FALSE)
+                              ),
+                              mainPanel(
+                                tabsetPanel(
+                                  tabPanel("SO Plot", plotOutput("SOplot")),
+                                  tabPanel("Manova", plotOutput("Manova"))
+                                )
+                              )
+                            )
+                   ),
                    tabPanel("ComBat",
                             sidebarLayout(
                               sidebarPanel(
