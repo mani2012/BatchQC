@@ -30,9 +30,10 @@ biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 
 ```
 
 Next, use [devtools](https://github.com/hadley/devtools) to install the latest
-version of BatchQC from Github:
+version of HTShape and BatchQC from Github:
 ```r
 require(devtools)
+install_github("kokrah/HTShape")
 install_github("mani2012/BatchQC", build_vignettes=TRUE)
 ```
 
