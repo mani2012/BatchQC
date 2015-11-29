@@ -415,6 +415,14 @@ shinyServer(function(input, output, session) {
   output$combatOutText <- renderText({
     combatOutText()
   })
+  output$svasummary <- renderText({
+    nsample <- dim(data.matrix)[2]
+    sample <- 1:nsample
+    pdata <- data.frame(sample, batch, condition)
+    modmatrix = model.matrix(~as.factor(condition), data=pdata)
+    n.sv <- batchQC_num.sv(data.matrix, modmatrix)
+    paste("Number of Surrogate Variables found in the given data:", n.sv)
+  })
   
   myheight <- function(){
     prefix <- 'output_'
