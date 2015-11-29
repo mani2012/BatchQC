@@ -520,3 +520,79 @@ hcbHeatmap <-
         )
       invisible(retval)
     }
+
+batchqc_f.pvalue <- function(dat,mod,mod0){  ## F-test (full/reduced model) and returns R2 values (full/reduced) as well. 
+  mod00 <- matrix(rep(1,ncol(dat)),ncol=1)
+  n <- dim(dat)[2]
+  m <- dim(dat)[1]
+  df1 <- dim(mod)[2]
+  df0 <- dim(mod0)[2]
+  p <- rep(0,m)
+  Id <- diag(n)
+  
+  resid <- dat %*% (Id - mod %*% solve(t(mod) %*% mod) %*% t(mod))
+  rss1 <- rowSums(resid*resid)
+  rm(resid)
+  
+  resid0 <- dat %*% (Id - mod0 %*% solve(t(mod0) %*% mod0) %*% t(mod0))
+  rss0 <- rowSums(resid0*resid0)
+  rm(resid0)
+  #co
+  resid00 <- dat %*% (Id - mod00 %*% solve(t(mod00) %*% mod00) %*% t(mod00))
+  rss00 <- rowSums(resid00*resid00)
+  rm(resid00)
+  
+  r2_full <- 1-rss1/rss00
+  r2_reduced <- 1-rss0/rss00
+  
+  fstats <- ((rss0 - rss1)/(df1-df0))/(rss1/(n-df1))
+  p <-  1-pf(fstats,df1=(df1-df0),df2=(n-df1))
+  return(list(p=p,r2_full=r2_full,r2_reduced=r2_reduced))
+}
+
+batchqc_explained_variation <- function(data.matrix,condition,batch) {
+  cond_mod <- model.matrix(~as.factor(condition))
+  batch_mod <- model.matrix(~as.factor(batch))
+  mod <- cbind(cond_mod,batch_mod[,-1])
+  
+  cond_test <- batchqc_f.pvalue(data.matrix, mod, batch_mod)
+  batch_test <- batchqc_f.pvalue(data.matrix, mod, cond_mod)
+  
+  cond_ps <- cond_test$p
+  batch_ps <- batch_test$p
+  
+  r2_full <- cond_test$r2_full
+  cond_r2 <- batch_test$r2_reduced
+  batch_r2 <- cond_test$r2_reduced
+  explained_variation <- round(cbind("Full (Condition+Batch)"=r2_full,Condition=cond_r2,Batch=batch_r2,"Condition/Batch Overlap"=cond_r2+batch_r2-r2_full),5)*100
+  rownames(explained_variation) <- rownames(data.matrix)
+  batchqc_ev <- list(explained_variation=explained_variation, cond_test=cond_test,
+                     batch_test=batch_test)
+  
+  return(batchqc_ev)
+}
+
+batchqc_pc_explained_variation <- function(pcs,vars,condition,batch) {
+  cond_mod <- model.matrix(~as.factor(condition))
+  batch_mod <- model.matrix(~as.factor(batch))
+  mod <- cbind(cond_mod,batch_mod[,-1])
+  cond_test <- batchqc_f.pvalue(pcs, mod, batch_mod)
+  batch_test <- batchqc_f.pvalue(pcs, mod, cond_mod)
+  cond_ps <- round(cond_test$p,5)
+  batch_ps <- round(batch_test$p,5)
+  r2_full <- round(cond_test$r2_full*100,1)
+  cond_r2 <- round(batch_test$r2_reduced*100,1)
+  batch_r2 <- round(cond_test$r2_reduced*100,1)
+  overlap_r2 <- round((cond_test$r2_reduced+batch_test$r2_reduced-cond_test$r2_full)*100,1)
+  explained_variation <- cbind(
+    "Proportion of Variance"=vars,
+    "Cumulated Proportion of Variance"=cumsum(vars), 
+    "Percent Variation Explained by Either Condition or Batch"=r2_full,
+    "Percent Variation Explained by Condition"=cond_r2,
+    "Condition Significance (p-value)"=cond_ps,
+    "Percent Variation Explained by Batch"=batch_r2,
+    "Batch Significance (p-value)"=batch_ps,
+    "Percent Variation Explained by both Condition and Batch"=overlap_r2)
+  rownames(explained_variation) <- rownames(pcs)
+  return(explained_variation)
+}

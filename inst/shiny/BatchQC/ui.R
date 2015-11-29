@@ -13,6 +13,34 @@ maxcondElems <- minbatch(shinyInput$condition)
 defaultDisp <- 30
 nbatch <- nlevels(as.factor(shinyInput$batch))
 shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE, 
+                   tabPanel("Summary",
+                            tabsetPanel(
+                              tabPanel("Confounding", 
+                                       br(),
+                                       h3("Number of samples in each Batch and Condition"),
+                                       tableOutput("CondBatchTable"),
+                                       br(),
+                                       h3("Measures of confounding between Batch and Condition"),
+                                       tableOutput("ConfoundTable")
+                              ),
+                              tabPanel("Variation Analysis", 
+                                       br(),
+                                       h3("Variation explained by Batch and Condition"),
+                                       plotOutput("VariationPlot"),
+                                       br(),
+                                       tableOutput("VariationTable")
+                              ),
+                              tabPanel("P-value Analysis", 
+                                       br(),
+                                       h3("Distribution of Batch and Condition Effect p-values Across Genes"),
+                                       tableOutput("PvalueTable"),
+                                       br(),
+                                       plotOutput("BatchPvaluePlot"),
+                                       br(),
+                                       plotOutput("ConditionPvaluePlot")
+                              )
+                            )
+                   ),
                    tabPanel("Differential Expression",
                             sidebarLayout(
                               sidebarPanel(
@@ -92,9 +120,10 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                         ),
                         mainPanel(
                           tabsetPanel(
-                          tabPanel("PCA", ggvisOutput("plot")),
+                            tabPanel("PCA", ggvisOutput("plot")),
                             tabPanel("Summary", verbatimTextOutput("PCAsummary")),
-                            tabPanel("Table",tableOutput("PCAtable"))
+                            tabPanel("Table",tableOutput("PCAtable")),
+                            tabPanel("Explained Variation",tableOutput("PCAExplainedVariation"))
                           )
                         )
                       )
@@ -132,6 +161,21 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                                 )
                               )
                             )
+                   ),
+                   tabPanel("SVA",
+                            sidebarLayout(
+                              sidebarPanel(
+                                actionButton("runSVA", "Run SVA"),
+                                p("Click the button to run SVA and see the results in the other tabs.")
+                              ),
+                              mainPanel(
+                                tabsetPanel(
+                                  id="SVAMain",
+                                  tabPanel("Summary", verbatimTextOutput("svasummary")),
+                                  tabPanel("SVA Output", value="SVAOutput", verbatimTextOutput("SVAOutText"))
+                                )
+                              )
+                            )
                    )
-      
+                   
 ))

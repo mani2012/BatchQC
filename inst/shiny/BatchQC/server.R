@@ -55,6 +55,79 @@ shinyServer(function(input, output, session) {
   }
   #setInputs(FALSE)
   
+  #Summary Table
+  catbatch <- function(x) { paste("Batch", x) }
+  catcondition <- function(x) { paste("Condition", x) }
+  output$CondBatchTable <- renderTable({
+    counts = table(condition,batch)
+    countsmatrix <- as.matrix(counts)
+    colnames(countsmatrix) <- sapply(colnames(countsmatrix), catbatch, simplify=TRUE)
+    rownames(countsmatrix) <- sapply(rownames(countsmatrix), catcondition, simplify=TRUE)
+    countsmatrix
+  })
+  output$ConfoundTable <- renderTable({
+    counts = table(condition,batch)
+    rowsums = apply(counts, 1, sum)
+    colsums = apply(counts, 2, sum)
+    tablesum = sum(rowsums)
+    expected = matrix(0,nrow(counts),ncol(counts)) 
+    for (i in 1:nrow(counts)){for (j in 1:ncol(counts)){expected[i,j]=rowsums[i]*colsums[j]/tablesum}}
+    chi=sum((counts-expected)^2/expected)
+    mmin=min(nrow(counts),ncol(counts))
+    confound1 = sqrt(chi*mmin/((chi+tablesum)*(mmin-1)))  ## Standardized Pearson Correlation Coefficient
+    confound2 = sqrt(chi/(tablesum*(mmin-1)))  ## Cramer's V
+    confound <- matrix(c(confound1, confound2), nrow=1)
+    colnames(confound) <- c("Standardized Pearson Correlation Coefficient","Cramer's V")
+    rownames(confound) <- c("Confounding Coefficients (0=no confounding, 1=complete confounding)")
+    confound
+  })
+
+  #Variation Analysis
+  output$VariationTable <- renderTable({
+    batchqc_ev <- batchqc_explained_variation(data.matrix, condition, batch)
+    batchqc_ev$explained_variation
+  })
+  #Variation plots
+  output$VariationPlot <- renderPlot({
+    batchqc_ev <- batchqc_explained_variation(data.matrix, condition, batch)
+    apply(batchqc_ev$explained_variation,2,summary)
+    boxplot(batchqc_ev$explained_variation,ylab="Percent Explained Variation",
+            main="Percent of Variation Explained by Source")
+  })
+  
+  #P-Value Analysis
+  output$PvalueTable <- renderTable({
+    batchqc_ev <- batchqc_explained_variation(data.matrix, condition, batch)
+    cond_ps <- batchqc_ev$cond_test$p
+    batch_ps <- batchqc_ev$batch_test$p
+    pvalue_table <- rbind('Condition P-values'=c(summary(cond_ps),"Ps<0.05"=mean(cond_ps<=0.05)),
+          'Batch P-values'=c(summary(batch_ps),"Ps<0.05"=mean(batch_ps<=0.05)))
+    pvalue_table
+  })
+  #P-Value plots
+  output$BatchPvaluePlot <- renderPlot({
+    batchqc_ev <- batchqc_explained_variation(data.matrix, condition, batch)
+    cond_ps <- batchqc_ev$cond_test$p
+    batch_ps <- batchqc_ev$batch_test$p
+    nf <- layout(mat = matrix(c(1,2),2,1, byrow=TRUE),  height = c(1,3))
+    #par(mar=c(3.1, 3.1, 1.1, 2.1))
+    par(mar=c(3,3,1,2))
+    boxplot(batch_ps, horizontal=TRUE,  outline=TRUE,ylim=c(0,1), frame=F, col = "green1")
+    hist(batch_ps,xlim=c(0,1), col = "pink",main='')
+    title("Distribution of Batch Effect p-values Across Genes")
+  })
+  output$ConditionPvaluePlot <- renderPlot({
+    batchqc_ev <- batchqc_explained_variation(data.matrix, condition, batch)
+    cond_ps <- batchqc_ev$cond_test$p
+    nf <- layout(mat = matrix(c(1,2),2,1, byrow=TRUE),  height = c(1,3))
+    #par(mar=c(3.1, 3.1, 1.1, 2.1))
+    par(mar=c(3,3,1,2))
+    boxplot(cond_ps, horizontal=TRUE,  outline=TRUE,ylim=c(0,1), frame=F, col = "green1")
+    hist(cond_ps,xlim=c(0,1), col = "pink",main='')
+    title("Distribution of Condition Effect p-values Across Genes")
+  })
+  
+  
   #interactive PCA
   PCA <- reactive({
     data.frame(pc[, c(input$xcol,input$ycol)])
@@ -109,6 +182,12 @@ shinyServer(function(input, output, session) {
   #interactive PCA table
   output$PCAtable <- renderTable({
     PCA()
+  })
+
+  output$PCAExplainedVariation <- renderTable({
+    pcs <- t(pc) 
+    explained_variation <- batchqc_pc_explained_variation(pcs, shinyInput$vars, condition, batch)
+    explained_variation
   })
 
   #interactive boxplot
