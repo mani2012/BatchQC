@@ -18,6 +18,9 @@ batchqc_heatmap <- function(data.matrix, batch, mod=NULL, max_display=50)  {
   }
   lcpm <- log2CPM(reduced.data.matrix)
   lcounts <- lcpm$y
+  if (!exists("shinyInput"))  {
+    shinyInput <<- list("data"=data.matrix, "batch"=batch)
+  }
   shinyInput <<- c(shinyInput, list("lcounts"=lcounts))
   
   fbatch <- as.factor(batch)
