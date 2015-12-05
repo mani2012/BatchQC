@@ -52,7 +52,8 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                                              min = 1, max = maxbatchElems),
                                 checkboxInput("sortbybatch", "Sort By Batches First", FALSE),
                                 checkboxInput("colbybatch", "Color By Batches", FALSE),
-                                checkboxInput("combatDE", "ComBat", FALSE),
+                                radioButtons('batchDE', 'Batch Adjustment',
+                                             c('None'=0, 'Combat'=1,'SVA'=2), 0),
                                 # This makes web page load the JS file in the HTML head.
                                 #singleton(
                                 #  tags$head(tags$script(src = "message-handler.js"))
@@ -81,14 +82,17 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                             tabsetPanel(
                               tabPanel("Heatmap",
                                        #selectInput("palette", "Palette", c("RdBu","Greens", "Blues")),
+                                       radioButtons('batchHM1', 'Batch Adjustment',
+                                                    c('None'=0, 'Combat'=1,'SVA'=2), 0),
                                        checkboxInput("cluster1", "Apply clustering"),
                                        d3heatmapOutput("heatmap")
                               ),
                               tabPanel("Sample Correlations",
+                                       radioButtons('batchHM2', 'Batch Adjustment',
+                                                    c('None'=0, 'Combat'=1,'SVA'=2), 0),
                                        checkboxInput("cluster2", "Apply clustering"),
                                        d3heatmapOutput("correlation")
-                              ),
-                              checkboxInput("combatHM", "ComBat", FALSE)
+                              )
                             )
                    ),
                    tabPanel("Circular Dendrogram",
@@ -102,7 +106,8 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                                               "Average" = "average",
                                               "McQuitty" = "mcquitty",
                                               "Single" = "single")),
-                                checkboxInput("combatCD", "ComBat", FALSE)
+                                radioButtons('batchCD', 'Batch Adjustment',
+                                             c('None'=0, 'Combat'=1,'SVA'=2), 0)
                               ),
                               mainPanel(
                                 plotOutput("circos", width = "100%")
@@ -116,7 +121,9 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                             min = 1, max = 50),
                           numericInput('ycol', 'Principal Component (y-axis)', 2,
                             min = 1, max = 50),
-                          checkboxInput("combatPCA", "ComBat", FALSE)
+                          #checkboxInput("combatPCA", "ComBat", FALSE)
+                          radioButtons('batchPCA', 'Batch Adjustment',
+                                       c('None'=0, 'Combat'=1,'SVA'=2), 0)
                         ),
                         mainPanel(
                           tabsetPanel(
@@ -133,7 +140,8 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                               sidebarPanel(
                                 numericInput('batchnum', 'Batch', 1,
                                              min = 1, max = nbatch),
-                                checkboxInput("combatShape", "ComBat", FALSE)
+                                radioButtons('batchShape', 'Batch Adjustment',
+                                             c('None'=0, 'Combat'=1,'SVA'=2), 0)
                               ),
                               mainPanel(
                                 tabsetPanel(
@@ -165,6 +173,7 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                    tabPanel("SVA",
                             sidebarLayout(
                               sidebarPanel(
+                                checkboxInput("fsvaOption", "Frozen SVA (Default: Regression Adjusted)", FALSE),
                                 actionButton("runSVA", "Run SVA"),
                                 p("Click the button to run SVA and see the results in the other tabs.")
                               ),

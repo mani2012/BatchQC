@@ -58,6 +58,9 @@ batchQC <- function(dat, batch, condition=NULL,
   outputfile <- rmarkdown::render(rmdfile, output_file=report_file, output_dir=report_dir)
   shinyInputOrig <<- shinyInput
   shinyInputCombat <<- NULL
+  shinyInputSVAf <<- NULL
+  shinyInputSVAr <<- NULL
+  shinyInputSVA <<- NULL
   if (view_report)  {
     browseURL(outputfile)
   }
