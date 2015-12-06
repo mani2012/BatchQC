@@ -396,7 +396,8 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
-    res <- HTShape::fitShape(lcounts, nLmom = 4)
+    lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
+    res <- HTShape::fitShape(lcounts_adj, nLmom = 4)
     #t3 <- res$lrats[, "t3"] # Grab L-skew estimates.
     #t4 <- res$lrats[, "t4"] # Grab L-kurt estimates.
     t3 <- res$lrats["LR3", ] # Grab L-skew estimates.
@@ -425,7 +426,8 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
-    HTShape::shapeManova(lcounts, batch, lrats=TRUE, plot = TRUE,
+    lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
+    HTShape::shapeManova(lcounts_adj, batch, lrats=TRUE, plot = TRUE,
                          groupCol=rep("green",length(shinyInput$batch)))
   })
   

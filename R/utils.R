@@ -596,3 +596,15 @@ batchqc_pc_explained_variation <- function(pcs,vars,condition,batch) {
   rownames(explained_variation) <- rownames(pcs)
   return(explained_variation)
 }
+
+## Adjust the data to remove the variation across conditions
+batchQC_condition_adjusted=function(data.matrix, batch, condition){
+  y <- data.matrix
+  pdata <- data.frame(batch, condition)
+  X <- model.matrix(~as.factor(batch)+as.factor(condition), data=pdata)
+  Hat <- solve(t(X)%*%X)%*%t(X)
+  beta <- (Hat%*%t(y))
+  P <- nlevels(as.factor(batch))
+  condition_adjusted <- y-t(as.matrix(X[,-c(1:P)])%*%beta[-c(1:P),])
+  return(condition_adjusted)
+}
