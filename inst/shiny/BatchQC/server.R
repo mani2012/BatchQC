@@ -427,8 +427,9 @@ shinyServer(function(input, output, session) {
       setInputs(0)
     }
     lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
+    bf <- as.factor(shinyInput$batch)
     HTShape::shapeManova(lcounts_adj, batch, lrats=TRUE, plot = TRUE,
-                         groupCol=rep("green",length(shinyInput$batch)))
+                         groupCol=rainbow(nlevels(bf))[bf] )
   })
   
   #interactive density plots
