@@ -75,12 +75,12 @@ shinyServer(function(input, output, session) {
 
   #Variation Analysis
   output$VariationTable <- renderTable({
-    batchqc_ev <- batchqc_explained_variation(data.matrix, condition, batch)
+    batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     batchqc_ev$explained_variation
   })
   #Variation plots
   output$VariationPlot <- renderPlot({
-    batchqc_ev <- batchqc_explained_variation(data.matrix, condition, batch)
+    batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     apply(batchqc_ev$explained_variation,2,summary)
     boxplot(batchqc_ev$explained_variation,ylab="Percent Explained Variation",
             main="Percent of Variation Explained by Source")
@@ -88,7 +88,7 @@ shinyServer(function(input, output, session) {
   
   #P-Value Analysis
   output$PvalueTable <- renderTable({
-    batchqc_ev <- batchqc_explained_variation(data.matrix, condition, batch)
+    batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     cond_ps <- batchqc_ev$cond_test$p
     batch_ps <- batchqc_ev$batch_test$p
     pvalue_table <- rbind('Condition P-values'=c(summary(cond_ps),"Ps<0.05"=mean(cond_ps<=0.05)),
@@ -97,7 +97,7 @@ shinyServer(function(input, output, session) {
   })
   #P-Value plots
   output$BatchPvaluePlot <- renderPlot({
-    batchqc_ev <- batchqc_explained_variation(data.matrix, condition, batch)
+    batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     cond_ps <- batchqc_ev$cond_test$p
     batch_ps <- batchqc_ev$batch_test$p
     nf <- layout(mat = matrix(c(1,2),2,1, byrow=TRUE),  height = c(1,3))
@@ -108,7 +108,7 @@ shinyServer(function(input, output, session) {
     title("Distribution of Batch Effect p-values Across Genes")
   })
   output$ConditionPvaluePlot <- renderPlot({
-    batchqc_ev <- batchqc_explained_variation(data.matrix, condition, batch)
+    batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     cond_ps <- batchqc_ev$cond_test$p
     nf <- layout(mat = matrix(c(1,2),2,1, byrow=TRUE),  height = c(1,3))
     #par(mar=c(3.1, 3.1, 1.1, 2.1))
@@ -482,11 +482,11 @@ shinyServer(function(input, output, session) {
     combatOutText()
   })
   output$svasummary <- renderText({
-    nsample <- dim(data.matrix)[2]
+    nsample <- dim(shinyInput$data)[2]
     sample <- 1:nsample
     pdata <- data.frame(sample, batch, condition)
     modmatrix = model.matrix(~as.factor(condition), data=pdata)
-    n.sv <- batchQC_num.sv(data.matrix, modmatrix)
+    n.sv <- batchQC_num.sv(shinyInput$data, modmatrix)
     paste("Number of Surrogate Variables found in the given data:", n.sv)
   })
   observe({
