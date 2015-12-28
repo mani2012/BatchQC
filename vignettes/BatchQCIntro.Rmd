@@ -90,3 +90,13 @@ batchQC(combat_data.matrix, batch=batch, condition=condition,
         report_option_binary="110011111",
         interactive=FALSE)
 ```
+### Real dataset
+```r
+data(example_batchqc_data)
+batch <- batch_indicator$V1
+condition <- batch_indicator$V2
+batchQC(signature_data, batch=batch, condition=condition, 
+        report_file="batchqc_signature_data_report.html", report_dir=".", 
+        report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
+```
