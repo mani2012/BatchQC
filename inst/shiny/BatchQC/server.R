@@ -365,6 +365,8 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    nsample <- dim(shinyInput$data)[2]
+    sample <- 1:nsample
     d3heatmap(
       cormat,
       colors = "RdBu",
