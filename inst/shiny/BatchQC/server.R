@@ -453,7 +453,17 @@ shinyServer(function(input, output, session) {
     title('Q-Q Plot')
   })
   output$kstest <- renderPrint({  
-    ks.test(gamma.hat[input$batches,], "pnorm", gamma.bar[input$batches], sqrt(shinyInput$t2[input$batches])) # two-sided, exact
+    ksout <- ks.test(gamma.hat[input$batches,], "pnorm", gamma.bar[input$batches], 
+                     sqrt(shinyInput$t2[input$batches])) # two-sided, exact
+    summarytext <- "Batch mean distribution across genes: Normal vs Empirical distribution"
+    summarytext <- paste(summarytext, "Two-sided Kolmogorov-Smirnov test", sep="\n")
+    summarytext <- paste(summarytext, "Selected Batch: ", sep="\n")
+    summarytext <- paste(summarytext, input$batches, sep="")
+    summarytext <- paste(summarytext, "Statistic D = ", sep="\n")
+    summarytext <- paste(summarytext, signif(ksout$statistic, 4), sep="")
+    summarytext <- paste(summarytext, "p-value = ", sep="\n")
+    summarytext <- paste(summarytext, signif(ksout$p.value, 4), sep="")
+    cat(summarytext)
   })
   observe({
     if (input$runCombat > 0)  {
