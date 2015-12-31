@@ -463,6 +463,20 @@ shinyServer(function(input, output, session) {
     summarytext <- paste(summarytext, signif(ksout$statistic, 4), sep="")
     summarytext <- paste(summarytext, "p-value = ", sep="\n")
     summarytext <- paste(summarytext, signif(ksout$p.value, 4), sep="")
+
+    invgam <- 1/rgamma(ncol(delta.hat),a.prior[input$batches],b.prior[input$batches])
+    ksvarout <- ks.test(delta.hat[input$batches,], invgam) # two-sided, exact
+    summarytext <- paste(summarytext, 
+        "\n\nBatch Variance distribution across genes: Inverse Gamma vs Empirical distribution", 
+        sep="\n")
+    summarytext <- paste(summarytext, "Two-sided Kolmogorov-Smirnov test", sep="\n")
+    summarytext <- paste(summarytext, "Selected Batch: ", sep="\n")
+    summarytext <- paste(summarytext, input$batches, sep="")
+    summarytext <- paste(summarytext, "Statistic D = ", sep="\n")
+    summarytext <- paste(summarytext, signif(ksvarout$statistic, 4), sep="")
+    summarytext <- paste(summarytext, "p-value = ", sep="\n")
+    summarytext <- paste(summarytext, signif(ksvarout$p.value, 4), sep="")
+    
     cat(summarytext)
   })
   observe({
