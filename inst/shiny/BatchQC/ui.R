@@ -70,9 +70,10 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                               ),
                               mainPanel(
                                 tabsetPanel(
-                                  tabPanel("Differential Expression",ggvisOutput("DiffExPlot")), 
+                                  tabPanel("Expression Plots",ggvisOutput("DiffExPlot")), 
                                   tabPanel("Summary", verbatimTextOutput("DEsummary")),
-                                  tabPanel("Table", tableOutput("DEtable")) 
+                                  tabPanel("Table", tableOutput("DEtable")), 
+                                  tabPanel("LIMMA",tableOutput("LimmaTable")) 
                                 )
                               )
                             )

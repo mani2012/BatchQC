@@ -4,6 +4,7 @@ library(d3heatmap)
 library(reshape2)
 library(BatchQC)
 library(HTShape)
+library(limma)
 plotPC <- function(v, d, x, y, ...){
     pcVar <- round((d^2)/sum(d^2)*100,2)
     
@@ -306,6 +307,35 @@ shinyServer(function(input, output, session) {
     } else  {
       DE()
     }
+  })
+  
+  output$LimmaTable <- renderTable({
+    if (input$batchDE==1)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(1)
+      }
+    } else if (input$batchDE==2) {
+      if (is.null(shinyInputSVA))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run SVA from the SVA tab')
+        updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(2)
+      }
+    } else  {
+      setInputs(0)
+    }
+    pdata <- data.frame(batch, condition)
+    mod <- model.matrix(~as.factor(condition), data=pdata)
+    fit <- lmFit(shinyInput$data, mod)
+    fit2 <- eBayes(fit)
+    topTable(fit2, coef = 2)
   })
   
   #interactive scatter plot
