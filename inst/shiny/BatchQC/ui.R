@@ -107,6 +107,7 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                                               "Average" = "average",
                                               "McQuitty" = "mcquitty",
                                               "Single" = "single")),
+                                checkboxInput("colbybatchCD", "Color By Batches", FALSE),
                                 radioButtons('batchCD', 'Batch Adjustment',
                                              c('None'=0, 'Combat'=1,'SVA'=2), 0)
                               ),

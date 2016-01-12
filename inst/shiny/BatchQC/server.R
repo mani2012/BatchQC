@@ -647,7 +647,9 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
-    my.plot(shinyInput$data, shinyInput$batch, input$AggMethod)
+    my.plot(shinyInput$data, 
+            if (input$colbybatchCD) shinyInput$batch else shinyInput$condition, 
+            input$AggMethod)
   }, width=mywidth, height=myheight)
 })
 
