@@ -122,7 +122,7 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                             min = 1, max = 50),
                           numericInput('ycol', 'Principal Component (y-axis)', 2,
                             min = 1, max = 50),
-                          #checkboxInput("combatPCA", "ComBat", FALSE)
+                          checkboxInput("colbybatchPCA", "Color By Batches", FALSE),
                           radioButtons('batchPCA', 'Batch Adjustment',
                                        c('None'=0, 'Combat'=1,'SVA'=2), 0)
                         ),

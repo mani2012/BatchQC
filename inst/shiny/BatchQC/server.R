@@ -158,7 +158,7 @@ shinyServer(function(input, output, session) {
       }
     
       pc %>%
-        ggvis(~get(names(pc)[input$xcol]), ~get(names(pc)[input$ycol]), fill = ~factor(batch), key := ~id) %>%
+        ggvis(~get(names(pc)[input$xcol]), ~get(names(pc)[input$ycol]), fill = if (input$colbybatchPCA) ~factor(batch) else ~factor(condition), key := ~id) %>%
         layer_points(size := 75, size.hover := 200) %>%
         add_tooltip(all_values, "hover") %>%
         add_axis("x", title = paste0("PC",input$xcol), properties = axis_props(
@@ -169,7 +169,7 @@ shinyServer(function(input, output, session) {
           title = list(fontSize = 15),
           labels = list(fontSize = 10)
         )) %>%
-        add_legend("fill", title = "Batches", properties = legend_props(
+        add_legend("fill", title = if (input$colbybatchPCA) "Batches" else "Conditions", properties = legend_props(
           title = list(fontSize = 15),
           labels = list(fontSize = 10)
         ))
