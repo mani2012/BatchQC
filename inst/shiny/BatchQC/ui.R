@@ -146,8 +146,8 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                               ),
                               mainPanel(
                                 tabsetPanel(
-                                  tabPanel("SO Plot", plotOutput("SOplot")),
-                                  tabPanel("Manova", plotOutput("Manova"))
+                                  tabPanel("Manova", plotOutput("Manova")),
+                                  tabPanel("SO Plot", plotOutput("SOplot"))
                                 )
                               )
                             )
