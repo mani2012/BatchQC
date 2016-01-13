@@ -76,11 +76,45 @@ shinyServer(function(input, output, session) {
 
   #Variation Analysis
   output$VariationTable <- renderTable({
+    if (input$batchVA==1)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateRadioButtons(session, "batchVA", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(1)
+      }
+    } else if (input$batchVA==2) {
+      if (is.null(shinyInputSVA))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run SVA from the SVA tab')
+        updateRadioButtons(session, "batchVA", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(2)
+      }
+    } else  {
+      setInputs(0)
+    }
     batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     batchqc_ev$explained_variation
   })
   #Variation plots
   output$VariationPlot <- renderPlot({
+    if (input$batchVA==1)  {
+      if (is.null(shinyInputCombat))  {
+      } else  {
+        setInputs(1)
+      }
+    } else if (input$batchVA==2) {
+      if (is.null(shinyInputSVA))  {
+      } else  {
+        setInputs(2)
+      }
+    } else  {
+      setInputs(0)
+    }
     batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     apply(batchqc_ev$explained_variation,2,summary)
     boxplot(batchqc_ev$explained_variation,ylab="Percent Explained Variation",
@@ -89,6 +123,27 @@ shinyServer(function(input, output, session) {
   
   #P-Value Analysis
   output$PvalueTable <- renderTable({
+    if (input$batchPA==1)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateRadioButtons(session, "batchPA", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(1)
+      }
+    } else if (input$batchPA==2) {
+      if (is.null(shinyInputSVA))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run SVA from the SVA tab')
+        updateRadioButtons(session, "batchPA", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(2)
+      }
+    } else  {
+      setInputs(0)
+    }
     batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     cond_ps <- batchqc_ev$cond_test$p
     batch_ps <- batchqc_ev$batch_test$p
@@ -98,6 +153,19 @@ shinyServer(function(input, output, session) {
   })
   #P-Value plots
   output$BatchPvaluePlot <- renderPlot({
+    if (input$batchPA==1)  {
+      if (is.null(shinyInputCombat))  {
+      } else  {
+        setInputs(1)
+      }
+    } else if (input$batchPA==2) {
+      if (is.null(shinyInputSVA))  {
+      } else  {
+        setInputs(2)
+      }
+    } else  {
+      setInputs(0)
+    }
     batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     cond_ps <- batchqc_ev$cond_test$p
     batch_ps <- batchqc_ev$batch_test$p
@@ -109,6 +177,19 @@ shinyServer(function(input, output, session) {
     title("Distribution of Batch Effect p-values Across Genes")
   })
   output$ConditionPvaluePlot <- renderPlot({
+    if (input$batchPA==1)  {
+      if (is.null(shinyInputCombat))  {
+      } else  {
+        setInputs(1)
+      }
+    } else if (input$batchPA==2) {
+      if (is.null(shinyInputSVA))  {
+      } else  {
+        setInputs(2)
+      }
+    } else  {
+      setInputs(0)
+    }
     batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     cond_ps <- batchqc_ev$cond_test$p
     nf <- layout(mat = matrix(c(1,2),2,1, byrow=TRUE),  height = c(1,3))
