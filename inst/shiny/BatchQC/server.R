@@ -5,6 +5,9 @@ library(reshape2)
 library(BatchQC)
 library(HTShape)
 library(limma)
+library(nlme)
+library(lme4)
+
 plotPC <- function(v, d, x, y, ...){
     pcVar <- round((d^2)/sum(d^2)*100,2)
     
@@ -417,6 +420,98 @@ shinyServer(function(input, output, session) {
     fit <- lmFit(shinyInput$data, mod)
     fit2 <- eBayes(fit)
     topTable(fit2, coef = 2)
+  })
+  
+  output$GlsTable <- renderTable({
+    if (input$batchDE==1)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(1)
+      }
+    } else if (input$batchDE==2) {
+      if (is.null(shinyInputSVA))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run SVA from the SVA tab')
+        updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(2)
+      }
+    } else  {
+      setInputs(0)
+    }
+    pdata <- data.frame(batch, condition)
+    mod <- model.matrix(~as.factor(condition), data=pdata)
+    fit <- lmFit(shinyInput$data, mod)
+    fit2 <- eBayes(fit)
+#     cormat <- cor(shinyInput$data)
+#     corvector <- cormat[lower.tri(cormat)]
+#     fit <- gls(data=shinyInput$data, corr=corSymm(corVector))
+#     fit2 <- eBayes(fit)
+    topTable(fit2, coef = 2)
+  })
+  
+  output$MixEffTable <- renderTable({
+    if (input$batchDE==1)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(1)
+      }
+    } else if (input$batchDE==2) {
+      if (is.null(shinyInputSVA))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run SVA from the SVA tab')
+        updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(2)
+      }
+    } else  {
+      setInputs(0)
+    }
+    pdata <- data.frame(batch, condition)
+    mod <- model.matrix(~as.factor(condition), data=pdata)
+    #fit <- lmFit(shinyInput$data, mod)
+    #fit2 <- eBayes(fit)
+    pvalues <- NULL
+    lim <- nrow(shinyInput$data)
+    if (lim > 100)  {lim <- 100}
+    for (i in 1:lim){
+      full_model <- lmer(as.numeric(shinyInput$data[i,])~condition+(1|batch))
+      null_model <- lmer(as.numeric(shinyInput$data[i,])~(1|batch))
+      pvalues=rbind(pvalues, anova(null_model, full_model)$'Pr(>Chisq)'[2])
+    }
+    rownames(pvalues)=rownames(shinyInput$data)
+    if (is.null(rownames(pvalues)))  {
+      rownames(pvalues) <- 1:lim
+    }
+#     sigpvalues=pvalues[which(apply(pvalues,1,min)<.05)]
+#     #sigpvalues <- signif(sigpvalues, digits=4)
+#     sigpvalues <- round(sigpvalues, digits=4)
+#     sigpnames=rownames(pvalues)[which(apply(pvalues,1,min)<.05)]
+#     sigptable <- as.table(cbind(sigpnames, sigpvalues))
+#     sigptable <- sigptable[order(rank(sigpvalues), sigpnames),]
+#     colnames(sigptable) <- c("Name", "P-Value")
+#     rownames(sigptable) <- 1:length(sigpvalues)
+#     sigptable
+
+    pvalues <- round(pvalues, digits=4)
+    pnames <- rownames(pvalues)
+    ptable <- as.table(cbind(pnames, pvalues))
+    ptable <- ptable[order(rank(pvalues), pnames),]
+    colnames(ptable) <- c("Name", "P-Value")
+    rownames(ptable) <- 1:length(pvalues)
+    ptable <- head(ptable, n=10)
+    ptable
+    
   })
   
   #interactive scatter plot

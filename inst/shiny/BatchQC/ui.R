@@ -77,7 +77,9 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                                   tabPanel("Expression Plots",ggvisOutput("DiffExPlot")), 
                                   tabPanel("Summary", verbatimTextOutput("DEsummary")),
                                   tabPanel("Table", tableOutput("DEtable")), 
-                                  tabPanel("LIMMA",tableOutput("LimmaTable")) 
+                                  tabPanel("LIMMA",tableOutput("LimmaTable")),
+                                  tabPanel("GLS",tableOutput("GlsTable")), 
+                                  tabPanel("Mixed Effects",tableOutput("MixEffTable")) 
                                 )
                               )
                             )

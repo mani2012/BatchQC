@@ -15,7 +15,9 @@ Depends: MCMCpack,
     knitr,
     pander,
     gplots,
-    matrixStats
+    matrixStats,
+    nlme,
+    lme4
 Collate: 
     'simulate_data.R'
     'heatmap.R'
