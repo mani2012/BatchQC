@@ -693,22 +693,32 @@ shinyServer(function(input, output, session) {
 
   combatOutText <- eventReactive(input$runCombat, {
     if (is.null(shinyInputCombat))  {
-      pdata <- data.frame(batch, condition)
-      mod <- model.matrix(~as.factor(shinyInput$condition), data=pdata)
-      combat_data <- ComBat(dat=shinyInput$data, batch=shinyInput$batch, mod=mod)
-      shinyInput <<- list("data"=combat_data, "batch"=batch, "condition"=condition,
-                          "report_dir"=shinyInputOrig$report_dir)
-      rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
-      report_option_binary="110011111"
-      report_option_vector <<- unlist(strsplit(as.character(report_option_binary), ""))
-      #dat <- as.matrix(combat_data)
-      outputfile <- rmarkdown::render(rmdfile, output_file="combat_batchqc_report.html", 
-                                      output_dir=shinyInput$report_dir)
-      shinyInputCombat <<- shinyInput
-      "Finished running ComBat. Select the other tabs to view the ComBat results"
+      outText <- "Finished running ComBat. Select the other tabs to view the ComBat results"
     } else  {
-      "Already ran ComBat. Select the other tabs to view the ComBat results"
+      outText <- "Finished re-running ComBat. Select the other tabs to view the ComBat results"
     }
+    pdata <- data.frame(batch, condition)
+    mean.only = FALSE
+    if (input$optionMeanOnly==1)  {
+      mean.only = TRUE
+    }
+    par.prior = TRUE
+    if (input$optionParameter==1)  {
+      par.prior = FALSE
+    }
+    mod <- model.matrix(~as.factor(shinyInput$condition), data=pdata)
+    combat_data <- ComBat(dat=shinyInput$data, batch=shinyInput$batch, mod=mod, 
+                          par.prior=par.prior, mean.only=mean.only)
+    shinyInput <<- list("data"=combat_data, "batch"=batch, "condition"=condition,
+                        "report_dir"=shinyInputOrig$report_dir)
+    rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
+    report_option_binary="110011111"
+    report_option_vector <<- unlist(strsplit(as.character(report_option_binary), ""))
+    #dat <- as.matrix(combat_data)
+    outputfile <- rmarkdown::render(rmdfile, output_file="combat_batchqc_report.html", 
+                                    output_dir=shinyInput$report_dir)
+    shinyInputCombat <<- shinyInput
+    outText
   })
   output$combatOutText <- renderText({
     combatOutText()
