@@ -639,7 +639,33 @@ shinyServer(function(input, output, session) {
     HTShape::shapeManova(lcounts_adj, batch, lrats=TRUE, plot = TRUE,
                          groupCol=rainbow(nlevels(bf))[bf] )
   })
-  
+  output$BatchMeanVar <- renderPlot({
+    if (input$batchShape==1)  {
+      if (is.null(shinyInputCombat))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(1)
+      }
+    } else if (input$batchShape==2) {
+      if (is.null(shinyInputSVA))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run SVA from the SVA tab')
+        updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(2)
+      }
+    } else  {
+      setInputs(0)
+    }
+    lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
+    bf <- as.factor(shinyInput$batch)
+    batchQC_shapeVariation(lcounts_adj, batch, plot = TRUE, groupCol=rainbow(nlevels(bf))[bf] )
+  })
+
   #interactive density plots
   output$densityQQPlots <- renderPlot({
     layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))

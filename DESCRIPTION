@@ -28,5 +28,6 @@ Collate:
     'utils.R'
     'sva.R'
     'Circos.R'
+    'shapeAnalysis.R'
 Suggests: testthat
 VignetteBuilder: knitr
