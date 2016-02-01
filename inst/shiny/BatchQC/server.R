@@ -479,8 +479,6 @@ shinyServer(function(input, output, session) {
     }
     pdata <- data.frame(batch, condition)
     mod <- model.matrix(~as.factor(condition), data=pdata)
-    #fit <- lmFit(shinyInput$data, mod)
-    #fit2 <- eBayes(fit)
     pvalues <- NULL
     lim <- nrow(shinyInput$data)
     if (lim > 100)  {lim <- 100}
@@ -493,16 +491,6 @@ shinyServer(function(input, output, session) {
     if (is.null(rownames(pvalues)))  {
       rownames(pvalues) <- 1:lim
     }
-#     sigpvalues=pvalues[which(apply(pvalues,1,min)<.05)]
-#     #sigpvalues <- signif(sigpvalues, digits=4)
-#     sigpvalues <- round(sigpvalues, digits=4)
-#     sigpnames=rownames(pvalues)[which(apply(pvalues,1,min)<.05)]
-#     sigptable <- as.table(cbind(sigpnames, sigpvalues))
-#     sigptable <- sigptable[order(rank(sigpvalues), sigpnames),]
-#     colnames(sigptable) <- c("Name", "P-Value")
-#     rownames(sigptable) <- 1:length(sigpvalues)
-#     sigptable
-
     pvalues <- round(pvalues, digits=4)
     pnames <- rownames(pvalues)
     ptable <- as.table(cbind(pnames, pvalues))
