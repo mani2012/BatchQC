@@ -30,13 +30,21 @@ batchQC_shapeVariation = function (data, groups, plot=FALSE, groupCol=NULL) {
   ps = 1-pf(Fstat,df1-df0,n-df1)
   mpval = ps[1]
   vpval = ps[2]
+  mpvaltext <- round(mpval, 4)
+  if (mpvaltext==0)  {
+    mpvaltext <- "< 0.0001"
+  }
+  vpvaltext <- round(vpval, 4)
+  if (vpvaltext==0)  {
+    vpvaltext <- "< 0.0001"
+  }
   
   if (plot) {
   
     pal = colorRampPalette(c("red", "orange", "white", "steelblue3", "navy"))(n=99)
     
-    main = paste0("\nBatch Variation Analysis \n Mean Variation P-value = ", round(mpval, 4), 
-                  "\n Variance Variation P-value = ", round(vpval, 4))
+    main = paste0("\nBatch Variation Analysis \n Mean Variation P-value = ", mpvaltext, 
+                  "\n Variance Variation P-value = ", vpvaltext)
     
     gplots::heatmap.2(t(Y), trace="none", Rowv=F, Colv=F, dendrogram="none", col=pal,
                       ColSideColors=groupCol, density.info="none", scale="row",
