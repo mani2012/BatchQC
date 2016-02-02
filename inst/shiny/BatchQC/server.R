@@ -448,11 +448,31 @@ shinyServer(function(input, output, session) {
     mod <- model.matrix(~as.factor(condition), data=pdata)
     fit <- lmFit(shinyInput$data, mod)
     fit2 <- eBayes(fit)
-#     cormat <- cor(shinyInput$data)
-#     corvector <- cormat[lower.tri(cormat)]
-#     fit <- gls(data=shinyInput$data, corr=corSymm(corVector))
-#     fit2 <- eBayes(fit)
     topTable(fit2, coef = 2, number=input$noGenes)
+
+#     corrmat <- cor(shinyInput$data)
+#     corvector <- corrmat[lower.tri(corrmat)]
+#     pvalues <- NULL
+#     lim <- nrow(shinyInput$data)
+#     if (lim > 100)  {lim <- 100}
+#     for (i in 1:lim){
+#       data <- cbind(shinyInput$data[i,], batch)
+#       colnames(data) <- c("Expression", "batch")
+#       fit <- gls(Expression~batch, data=data, corr=corSymm(corvector))
+#       pvalues=rbind(pvalues, fit$'Pr(>Chisq)'[2])
+#     }
+#     rownames(pvalues)=rownames(shinyInput$data)[1:lim]
+#     if (is.null(rownames(pvalues)))  {
+#       rownames(pvalues) <- 1:lim
+#     }
+#     pvalues <- round(pvalues, digits=4)
+#     pnames <- rownames(pvalues)
+#     ptable <- as.table(cbind(pnames, pvalues))
+#     ptable <- ptable[order(rank(pvalues), pnames),]
+#     colnames(ptable) <- c("Name", "P-Value")
+#     rownames(ptable) <- 1:length(pvalues)
+#     ptable <- head(ptable, n=input$noGenes)
+#     ptable
   })
   
   output$MixEffTable <- renderTable({
@@ -726,7 +746,7 @@ shinyServer(function(input, output, session) {
     shinyInput <<- list("data"=combat_data, "batch"=batch, "condition"=condition,
                         "report_dir"=shinyInputOrig$report_dir)
     rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
-    report_option_binary="110011111"
+    report_option_binary="111111111"
     report_option_vector <<- unlist(strsplit(as.character(report_option_binary), ""))
     #dat <- as.matrix(combat_data)
     outputfile <- rmarkdown::render(rmdfile, output_file="combat_batchqc_report.html", 
@@ -760,7 +780,7 @@ shinyServer(function(input, output, session) {
         shinyInput <<- list("data"=svaf_data, "batch"=batch, "condition"=condition,
                             "report_dir"=shinyInputOrig$report_dir)
         rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
-        report_option_binary="110011111"
+        report_option_binary="111111111"
         report_option_vector <<- unlist(strsplit(as.character(report_option_binary), ""))
         #dat <- as.matrix(svaf_data)
         outputfile <- rmarkdown::render(rmdfile, output_file="svaf_batchqc_report.html", 
@@ -781,7 +801,7 @@ shinyServer(function(input, output, session) {
         shinyInput <<- list("data"=svar_data, "batch"=batch, "condition"=condition,
                             "report_dir"=shinyInputOrig$report_dir)
         rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
-        report_option_binary="110011111"
+        report_option_binary="111111111"
         report_option_vector <<- unlist(strsplit(as.character(report_option_binary), ""))
         #dat <- as.matrix(svar_data)
         outputfile <- rmarkdown::render(rmdfile, output_file="svar_batchqc_report.html", 
