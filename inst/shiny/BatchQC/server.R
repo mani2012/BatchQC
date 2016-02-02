@@ -419,7 +419,7 @@ shinyServer(function(input, output, session) {
     mod <- model.matrix(~as.factor(condition), data=pdata)
     fit <- lmFit(shinyInput$data, mod)
     fit2 <- eBayes(fit)
-    topTable(fit2, coef = 2)
+    topTable(fit2, coef = 2, number=input$noGenes)
   })
   
   output$GlsTable <- renderTable({
@@ -452,7 +452,7 @@ shinyServer(function(input, output, session) {
 #     corvector <- cormat[lower.tri(cormat)]
 #     fit <- gls(data=shinyInput$data, corr=corSymm(corVector))
 #     fit2 <- eBayes(fit)
-    topTable(fit2, coef = 2)
+    topTable(fit2, coef = 2, number=input$noGenes)
   })
   
   output$MixEffTable <- renderTable({
@@ -497,7 +497,7 @@ shinyServer(function(input, output, session) {
     ptable <- ptable[order(rank(pvalues), pnames),]
     colnames(ptable) <- c("Name", "P-Value")
     rownames(ptable) <- 1:length(pvalues)
-    ptable <- head(ptable, n=10)
+    ptable <- head(ptable, n=input$noGenes)
     ptable
     
   })

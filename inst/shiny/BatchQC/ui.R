@@ -11,6 +11,8 @@ minbatch <- function(batch1){
 maxbatchElems <- minbatch(shinyInput$batch)
 maxcondElems <- minbatch(shinyInput$condition)
 defaultDisp <- 30
+defaultGenesDisp <- 10
+maxGenes <- dim(shinyInput$data)[1]
 nbatch <- nlevels(as.factor(shinyInput$batch))
 shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE, 
                    tabPanel("Summary",
@@ -58,6 +60,9 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                                 checkboxInput("colbybatch", "Color By Batch (Default: Color By Condition)", FALSE),
                                 radioButtons('batchDE', 'Batch Adjustment',
                                              c('None'=0, 'Combat'=1,'SVA'=2), 0),
+                                numericInput('noGenes', 'No. of top Differentially Expressed Genes to display', 
+                                             if (maxGenes>defaultGenesDisp) defaultGenesDisp else maxGenes,
+                                             min = 1, max = maxGenes),
                                 # This makes web page load the JS file in the HTML head.
                                 #singleton(
                                 #  tags$head(tags$script(src = "message-handler.js"))
