@@ -487,7 +487,7 @@ shinyServer(function(input, output, session) {
       null_model <- lmer(as.numeric(shinyInput$data[i,])~(1|batch))
       pvalues=rbind(pvalues, anova(null_model, full_model)$'Pr(>Chisq)'[2])
     }
-    rownames(pvalues)=rownames(shinyInput$data)
+    rownames(pvalues)=rownames(shinyInput$data)[1:lim]
     if (is.null(rownames(pvalues)))  {
       rownames(pvalues) <- 1:lim
     }
