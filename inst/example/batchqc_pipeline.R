@@ -50,3 +50,23 @@ batchQC(combat_data.matrix, batch=batch, condition=condition,
         report_file="batchqc_combat_adj_signature_data_report.html", report_dir=".", report_option_binary="110011111",
         interactive=FALSE)
 
+
+### Real bladderbatch dataset
+library(bladderbatch)
+data(bladderdata)
+#### get annotation and data for bladder cancer data ####
+pheno <- pData(bladderEset)
+edata <- exprs(bladderEset)
+batch <- pheno$batch  ### note 5 batches, 3 covariate levels. Batch 1 contains only cancer, 2 and 3 have cancer and controls, 4 contains only biopsy, and 5 contains cancer and biopsy
+condition <- pheno$cancer
+
+#### Filtering only batch 1, 2 and 3 ####
+# index <- which((pheno$batch==1) | (pheno$batch==2) | (pheno$batch==3))
+# pheno <- pheno[index,]
+# batch <- pheno$batch
+# condition <- pheno$cancer
+# edata <- edata[,index]
+
+batchQC(edata, batch=batch, condition=condition, 
+        report_file="batchqc_report.html", report_dir=".", report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
