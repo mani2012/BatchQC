@@ -10,7 +10,7 @@ batchQC_shapeVariation = function (data, groups, plot=FALSE, groupCol=NULL) {
   sfit = fitMeanVariance(data)
   Y = sfit
   
-  mod1 = model.matrix(~as.factor(batch), data=data.frame(Y)) # model with batch
+  mod1 = model.matrix(~as.factor(groups), data=data.frame(Y)) # model with batch
   mod0 = model.matrix(~1, data=data.frame(Y)) # reduced model 
   
   ### Standard F test  ###
