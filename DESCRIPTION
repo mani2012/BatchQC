@@ -17,7 +17,8 @@ Depends: MCMCpack,
     gplots,
     matrixStats,
     nlme,
-    lme4
+    lme4,
+    moments
 Collate: 
     'simulate_data.R'
     'heatmap.R'

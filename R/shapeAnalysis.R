@@ -1,3 +1,5 @@
+require(moments)
+
 #' Perform Mean and Variance batch variation analysis
 #' 
 #' @param data Given data
@@ -7,9 +9,87 @@
 #' @export
 batchQC_shapeVariation = function (data, groups, plot=FALSE, groupCol=NULL) {
   
-  sfit = fitMeanVariance(data)
-  Y = sfit
+  Y = fitMoments(data)
   
+  ps <- overallPvalue(Y, groups)
+  batch_ps <- batchEffectPvalue(data, groups)
+  
+  mpval = ps[1]
+  vpval = ps[2]
+  spval = ps[3]
+  kpval = ps[4]
+  mpvaltext <- round(mpval, 4)
+  if (mpvaltext==0)  {
+    mpvaltext <- "< 0.0001"
+  }
+  vpvaltext <- round(vpval, 4)
+  if (vpvaltext==0)  {
+    vpvaltext <- "< 0.0001"
+  }
+  spvaltext <- round(spval, 4)
+  if (spvaltext==0)  {
+    spvaltext <- "< 0.0001"
+  }
+  kpvaltext <- round(kpval, 4)
+  if (kpvaltext==0)  {
+    kpvaltext <- "< 0.0001"
+  }
+  
+  mpval2 = batch_ps[1]
+  vpval2 = batch_ps[2]
+  spval2 = batch_ps[3]
+  kpval2 = batch_ps[4]
+  mpvaltext2 <- round(mpval2, 4)
+  if (mpvaltext2==0)  {
+    mpvaltext2 <- "< 0.0001"
+  }
+  vpvaltext2 <- round(vpval2, 4)
+  if (vpvaltext2==0)  {
+    vpvaltext2 <- "< 0.0001"
+  }
+  spvaltext2 <- round(spval2, 4)
+  if (spvaltext2==0)  {
+    spvaltext2 <- "< 0.0001"
+  }
+  kpvaltext2 <- round(kpval2, 4)
+  if (kpvaltext2==0)  {
+    kpvaltext2 <- "< 0.0001"
+  }
+  
+  if (plot) {
+  
+    pal = colorRampPalette(c("red", "orange", "white", "steelblue3", "navy"))(n=99)
+    
+    main = paste0("\n\nBatch Effect Variation Analysis \n Mean P-value: Overall = ", mpvaltext, 
+                  ", Pairwise = ", mpvaltext2, "\n Variance P-value: Overall = ", 
+                  vpvaltext, ", Pairwise = ", vpvaltext2, "\n Skewness P-value: Overall = ",
+                  spvaltext, ", Pairwise = ", spvaltext2, "\n Kurtosis P-value: Overall = ",
+                  kpvaltext, ", Pairwise = ", kpvaltext2)
+    
+    gplots::heatmap.2(t(Y), trace="none", Rowv=F, Colv=F, dendrogram="none", col=pal,
+                      ColSideColors=groupCol, density.info="none", scale="row",
+                      cexRow=1.15, 
+                      colsep=cumsum(table(groups)), main=main)
+    
+    legend("bottomleft", legend=unique(groups), pch=19, col=unique(groupCol), 
+           title="Batch")
+  }
+  c(ps, batch_ps)
+}
+
+fitMoments <- function (x) {
+  # Compute Mean and Variance
+  smean <- apply(x, 2, mean)
+  svariance <- apply(x, 2, var)
+  sskew <- apply(x, 2, skewness)
+  skurt <- apply(x, 2, kurtosis)
+  sfit <- cbind(smean, svariance, sskew, skurt)
+  colnames(sfit) = c("Mean", "Variance", "Skew", "Kurtosis")
+  rownames(sfit) = colnames(x)
+  return(sfit)
+}
+
+overallPvalue <- function(Y, groups)  {
   mod1 = model.matrix(~as.factor(groups), data=data.frame(Y)) # model with batch
   mod0 = model.matrix(~1, data=data.frame(Y)) # reduced model 
   
@@ -28,41 +108,24 @@ batchQC_shapeVariation = function (data, groups, plot=FALSE, groupCol=NULL) {
   Fstat = ( (rss0-rss1)/(df1-df0) ) / (rss1 /(n-df1) ) 
   # Compute p-value
   ps = 1-pf(Fstat,df1-df0,n-df1)
-  mpval = ps[1]
-  vpval = ps[2]
-  mpvaltext <- round(mpval, 4)
-  if (mpvaltext==0)  {
-    mpvaltext <- "< 0.0001"
-  }
-  vpvaltext <- round(vpval, 4)
-  if (vpvaltext==0)  {
-    vpvaltext <- "< 0.0001"
-  }
-  
-  if (plot) {
-  
-    pal = colorRampPalette(c("red", "orange", "white", "steelblue3", "navy"))(n=99)
-    
-    main = paste0("\nBatch Variation Analysis \n Mean Variation P-value = ", mpvaltext, 
-                  "\n Variance Variation P-value = ", vpvaltext)
-    
-    gplots::heatmap.2(t(Y), trace="none", Rowv=F, Colv=F, dendrogram="none", col=pal,
-                      ColSideColors=groupCol, density.info="none", scale="row",
-                      cexRow=1.15,
-                      colsep=cumsum(table(groups)), main=main)
-    
-    legend("bottomleft", legend=unique(groups), pch=19, col=unique(groupCol), 
-           title="Batch")
-  }
-  ps
+  return(ps)
 }
 
-fitMeanVariance <- function (x) {
-  # Compute Mean and Variance
-  smean <- apply(x, 2, mean)
-  svariance <- apply(x, 2, var)
-  sfit <- cbind(smean, svariance)
-  colnames(sfit) = c("Mean", "Variance")
-  rownames(sfit) = colnames(x)
-  return(sfit)
+batchEffectPvalue <- function(data, batch)  {
+  batch1 <- as.factor(batch)
+  batch2 <- split(which(batch == batch1), batch1)
+  meanbatch <- unlist(lapply(1:length(batch2), function(x) apply(data[,batch2[[x]]], 1, mean)))
+  varbatch <- unlist(lapply(1:length(batch2), function(x) apply(data[,batch2[[x]]], 1, var)))
+  skewbatch <- unlist(lapply(1:length(batch2), function(x) apply(data[,batch2[[x]]], 1, skewness)))
+  kurtbatch <- unlist(lapply(1:length(batch2), function(x) apply(data[,batch2[[x]]], 1, kurtosis)))
+  batcheffectmatrix <- rbind(meanbatch, varbatch, skewbatch, kurtbatch)
+  numgenes <- dim(data)[1]
+  batch3 <- rep(1:length(batch2), each=numgenes)
+  genes <- rep(1:numgenes, length(batch2))
+  genes_mod <- model.matrix(~as.factor(genes))
+  batch_mod <- model.matrix(~as.factor(batch3))
+  mod <- cbind(genes_mod,batch_mod[,-1])
+  batch_test <- batchqc_f.pvalue(batcheffectmatrix, mod, genes_mod)
+  batch_ps <- batch_test$p
+  return(batch_ps)
 }
