@@ -111,6 +111,36 @@ overallPvalue <- function(Y, groups)  {
   return(ps)
 }
 
+delta_f.pvalue <- function(dat,mod,mod0){  ## F-test (full/reduced model) and returns R2 values (full/reduced) as well. 
+  mod00 <- matrix(rep(1,ncol(dat)),ncol=1)
+  n <- dim(dat)[2]
+  m <- dim(dat)[1]
+  df1 <- dim(mod)[2]
+  df0 <- dim(mod0)[2]
+  p <- rep(0,m)
+  Id <- diag(n)
+  
+  resid <- dat %*% (Id - mod %*% solve(t(mod) %*% mod) %*% t(mod))
+  rss1 <- rowSums(resid*resid)
+  rm(resid)
+  
+  resid0 <- dat %*% (Id - mod0 %*% solve(t(mod0) %*% mod0) %*% t(mod0))
+  rss0 <- rowSums(resid0*resid0)
+  rm(resid0)
+  #co
+  resid00 <- dat %*% (Id - mod00 %*% solve(t(mod00) %*% mod00) %*% t(mod00))
+  rss00 <- rowSums(resid00*resid00)
+  rm(resid00)
+  
+  r2_full <- 1-rss1/rss00
+  r2_reduced <- 1-rss0/rss00
+  
+  delta <- apply(dat, 1, mean)*0.03
+  fstats <- ((rss0 - rss1)/(df1-df0))/(delta + rss1/(n-df1))
+  p <-  1-pf(fstats,df1=(df1-df0),df2=(n-df1))
+  return(list(p=p,r2_full=r2_full,r2_reduced=r2_reduced))
+}
+
 batchEffectPvalue <- function(data, batch)  {
   batch1 <- as.factor(batch)
   batch2 <- split(which(batch == batch1), batch1)
@@ -125,7 +155,7 @@ batchEffectPvalue <- function(data, batch)  {
   genes_mod <- model.matrix(~as.factor(genes))
   batch_mod <- model.matrix(~as.factor(batch3))
   mod <- cbind(genes_mod,batch_mod[,-1])
-  batch_test <- batchqc_f.pvalue(batcheffectmatrix, mod, genes_mod)
+  batch_test <- delta_f.pvalue(batcheffectmatrix, mod, genes_mod)
   batch_ps <- batch_test$p
   return(batch_ps)
 }
