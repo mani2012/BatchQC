@@ -53,50 +53,56 @@ install_github('Rapporter/pander')
 
 If all went well you should now be able to load BatchQC. Here is an example use of the pipeline.
 
-### Simulate data
+### Simulate data and Apply BatchQC
 ```r
+library(BatchQC)
 nbatch <- 3
 ncond <- 2
 npercond <- 10
 data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
-
-```
-### Apply BatchQC
-```r
 batch <- rep(1:nbatch, each=ncond*npercond)
 condition <- rep(rep(1:ncond, each=npercond), nbatch)
-nsample <- nbatch*ncond*npercond
-sample <- 1:nsample
-pdata <- data.frame(sample, batch, condition)
-modmatrix = model.matrix(~as.factor(condition), data=pdata)
-
 batchQC(data.matrix, batch=batch, condition=condition, 
         report_file="batchqc_report.html", report_dir=".", 
         report_option_binary="111111111",
         view_report=FALSE, interactive=TRUE)
 
 ```
-
-### Apply combat
+### Apply combat and rerun the BatchQC pipeline on the batch adjusted data
 ```r
+nsample <- nbatch*ncond*npercond
+sample <- 1:nsample
+pdata <- data.frame(sample, batch, condition)
+modmatrix = model.matrix(~as.factor(condition), data=pdata)
 combat_data.matrix = ComBat(dat=data.matrix, batch=batch, mod=modmatrix)
-```
-
-### Rerun the BatchQC pipeline on the batch adjusted data
-```r
 batchQC(combat_data.matrix, batch=batch, condition=condition, 
         report_file="batchqc_combat_adj_report.html", report_dir=".", 
         report_option_binary="110011111",
         interactive=FALSE)
 ```
-### Real dataset
+
+### Apply BatchQC on a real signature dataset
 ```r
+library(BatchQC)
 data(example_batchqc_data)
 batch <- batch_indicator$V1
 condition <- batch_indicator$V2
 batchQC(signature_data, batch=batch, condition=condition, 
         report_file="batchqc_signature_data_report.html", report_dir=".", 
         report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
+```
+### Apply BatchQC on a real bladderbatch dataset
+```r
+library(BatchQC)
+library(bladderbatch)
+data(bladderdata)
+pheno <- pData(bladderEset)
+edata <- exprs(bladderEset)
+batch <- pheno$batch  ### note 5 batches, 3 covariate levels. Batch 1 contains only cancer, 2 and 3 have cancer and controls, 4 contains only biopsy, and 5 contains cancer and biopsy
+condition <- pheno$cancer
+batchQC(edata, batch=batch, condition=condition, 
+        report_file="batchqc_report.html", report_dir=".", report_option_binary="111111111",
         view_report=FALSE, interactive=TRUE)
 ```
