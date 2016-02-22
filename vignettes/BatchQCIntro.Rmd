@@ -29,14 +29,6 @@ source("http://bioconductor.org/biocLite.R")
 biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'nlme', 'lme4', 'moments'))
 ```
 
-Next, use [devtools](https://github.com/hadley/devtools) to install the latest
-version of HTShape and BatchQC from Github:
-```r
-require(devtools)
-install_github("kokrah/HTShape")
-install_github("mani2012/BatchQC", build_vignettes=TRUE)
-```
-
 Install 'pandoc' package by following the instructions at the following URL:
 http://johnmacfarlane.net/pandoc/installing.html
 
@@ -49,6 +41,13 @@ http://rapporter.github.io/pander/
 ```r
 require(devtools)
 install_github('Rapporter/pander')
+```
+Next, use [devtools](https://github.com/hadley/devtools) to install the latest
+version of HTShape and BatchQC from Github:
+```r
+require(devtools)
+install_github("kokrah/HTShape")
+install_github("mani2012/BatchQC", build_vignettes=TRUE)
 ```
 
 If all went well you should now be able to load BatchQC. Here is an example use of the pipeline.
