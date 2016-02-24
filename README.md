@@ -34,6 +34,12 @@ http://rapporter.github.io/pander/
 require(devtools)
 install_github('Rapporter/pander')
 ```
+Install the latest development version of sva:
+```r
+require(devtools)
+install_github('jtleek/sva-devel')
+```
+
 Next, use [devtools](https://github.com/hadley/devtools) to install the latest
 version of HTShape and BatchQC from Github:
 ```r
