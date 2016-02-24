@@ -28,7 +28,6 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                               tabPanel("Variation Analysis", 
                                        radioButtons('batchVA', 'Batch Adjustment',
                                                     c('None'=0, 'Combat'=1,'SVA'=2), 0),
-                                       br(),
                                        h3("Variation explained by Batch and Condition"),
                                        plotOutput("VariationPlot"),
                                        br(),
@@ -37,10 +36,8 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                               tabPanel("P-value Analysis", 
                                        radioButtons('batchPA', 'Batch Adjustment',
                                                     c('None'=0, 'Combat'=1,'SVA'=2), 0),
-                                       br(),
                                        h3("Distribution of Batch and Condition Effect p-values Across Genes"),
                                        tableOutput("PvalueTable"),
-                                       br(),
                                        plotOutput("BatchPvaluePlot"),
                                        br(),
                                        plotOutput("ConditionPvaluePlot")
@@ -82,9 +79,9 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                                   tabPanel("Expression Plots",ggvisOutput("DiffExPlot")), 
                                   tabPanel("Summary", verbatimTextOutput("DEsummary")),
                                   tabPanel("Table", tableOutput("DEtable")), 
-                                  tabPanel("LIMMA",tableOutput("LimmaTable")),
-                                  tabPanel("GLS",tableOutput("GlsTable")), 
-                                  tabPanel("Mixed Effects",tableOutput("MixEffTable")) 
+                                  tabPanel("LIMMA",tableOutput("LimmaTable"))
+                                  #tabPanel("GLS",tableOutput("GlsTable")), 
+                                  #tabPanel("Mixed Effects",tableOutput("MixEffTable")) 
                                 )
                               )
                             )
