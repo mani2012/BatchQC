@@ -10,17 +10,16 @@ data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=nperco
 ### apply BatchQC
 batch <- rep(1:nbatch, each=ncond*npercond)
 condition <- rep(rep(1:ncond, each=npercond), nbatch)
-nsample <- nbatch*ncond*npercond
-sample <- 1:nsample
-pdata <- data.frame(sample, batch, condition)
-modmatrix = model.matrix(~as.factor(condition), data=pdata)
-
 batchQC(data.matrix, batch=batch, condition=condition, 
         report_file="batchqc_report.html", report_dir=".", report_option_binary="111111111",
         view_report=FALSE, interactive=TRUE)
 
 
 ### apply combat
+nsample <- nbatch*ncond*npercond
+sample <- 1:nsample
+pdata <- data.frame(sample, batch, condition)
+modmatrix = model.matrix(~as.factor(condition), data=pdata)
 combat_data.matrix = ComBat(dat=data.matrix, batch=batch, mod=modmatrix)
 
 ### Rerun the BatchQC pipeline on the batch adjusted data
@@ -68,5 +67,13 @@ condition <- pheno$cancer
 # edata <- edata[,index]
 
 batchQC(edata, batch=batch, condition=condition, 
+        report_file="batchqc_report.html", report_dir=".", report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
+
+data <- read.delim("arielGeneric.txt")
+sampleinfo <- read.delim("arielGenericSampleInfo.txt")
+batch <- sampleinfo$Batch
+condition <- as.factor(sampleinfo$Treatment)
+batchQC(data, batch=batch, condition=condition, 
         report_file="batchqc_report.html", report_dir=".", report_option_binary="111111111",
         view_report=FALSE, interactive=TRUE)
