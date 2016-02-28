@@ -60,10 +60,10 @@ batchQC_shapeVariation = function (data, groups, plot=FALSE, groupCol=NULL) {
   
     pal = colorRampPalette(c("red", "orange", "white", "steelblue3", "navy"))(n=99)
     
-    main = paste0("\n\nBatch Effect Variation Analysis \n Mean P-value: Overall = ", mpvaltext, 
-                  ", Pairwise = ", mpvaltext2, "\n Variance P-value: Overall = ", 
-                  vpvaltext, ", Pairwise = ", vpvaltext2, "\n Skewness P-value: Overall = ",
-                  spvaltext, ", Pairwise = ", spvaltext2, "\n Kurtosis P-value: Overall = ",
+    main = paste0("\n\nBatch Effect Variation Analysis \n Mean p-value: Overall = ", mpvaltext, 
+                  ", Pairwise = ", mpvaltext2, "\n Variance p-value: Overall = ", 
+                  vpvaltext, ", Pairwise = ", vpvaltext2, "\n Skewness p-value: Overall = ",
+                  spvaltext, ", Pairwise = ", spvaltext2, "\n Kurtosis p-value: Overall = ",
                   kpvaltext, ", Pairwise = ", kpvaltext2)
     
     gplots::heatmap.2(t(Y), trace="none", Rowv=F, Colv=F, dendrogram="none", col=pal,
