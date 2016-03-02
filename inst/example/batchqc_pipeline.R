@@ -26,19 +26,6 @@ batchQC(combat_data.matrix, batch=batch, condition=condition,
         report_file="batchqc_combat_adj_report.html", report_dir=".", report_option_binary="110011111",
         interactive=FALSE)
 
-### Generating Real signature dataset
-signature_data <- readRDS("andrea_signature_data.rds")
-batch_indicator <- readRDS("batch_indicator.rds")
-rn <- paste("Gene", 1:length(rownames(signature_data)), sep='')
-rownames(signature_data) <- rn
-condition <- batch_indicator$V2
-cn <- paste("Pathway", condition-1, sep='')
-changestring <- function(x)  { if(x=="Pathway0") "Control" else {x}}
-cn <- unlist(lapply(cn, changestring))
-cn <- paste(cn, 1:length(cn), sep='.')
-colnames(signature_data) <- cn
-save(signature_data, batch_indicator, file="example_batchqc_data.rda")
-
 ### Real signature dataset
 ### signature data—activating different growth pathway genes (treat[,2]) 
 ### in human mammary epithelial cells. 
