@@ -7,7 +7,8 @@ test_that("BatchQC functionality", {
   npercond <- 10
   data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
                             ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
-  pca <- batchQC(data.matrix, nbatch=nbatch, ncond=ncond, npercond=npercond)
+  batch <- rep(1:nbatch, each=ncond*npercond)
+  pca <- batchQC_analyze(data.matrix, batch)
   expect_equal(length(pca$x), 3000)
 })
 
