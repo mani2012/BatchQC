@@ -36,10 +36,14 @@ batchQC_analyze <- function(data.matrix, batch, mod=NULL)  {
 #' @return pca Principal Components Analysis object of the data
 #' @export
 #' @examples
-#' nbatch <- 10
-#' nperbatch <- 10
-#' batch <- rep(1:nbatch, each=nperbatch)
-#' batchQC(data.matrix, batch)
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
+#'                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' batchQC(data.matrix, batch=batch, condition=condition, view_report=FALSE, interactive=FALSE)
 batchQC <- function(dat, batch, condition=NULL, 
                     report_file="batchqc_report.html", 
                     report_dir=".", report_option_binary="111111111",
