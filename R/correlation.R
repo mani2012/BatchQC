@@ -5,15 +5,24 @@
 #' @param mod Model matrix for outcome of interest and other covariates besides batch
 #' @export
 #' @examples
-#' nbatch <- 10
-#' nperbatch <- 10
-#' batch <- rep(1:nbatch, each=nperbatch)
-#' batchqc_correlation(data.matrix, batch)
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
+#'                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' pdata <- data.frame(batch, condition)
+#' modmatrix = model.matrix(~as.factor(condition), data=pdata)
+#' batchqc_correlation(data.matrix, batch, mod=modmatrix)
 batchqc_correlation <- function(data.matrix, batch, mod=NULL) {
   lcpms <- log2CPM(data.matrix)
   lcounts <- lcpms$y
   
   cormat <- cor(lcounts)
+  if (!exists("shinyInput"))  {
+    shinyInput <<- list("data"=data.matrix, "batch"=batch)
+  }
   shinyInput <<- c(shinyInput, list("cormat"=cormat))
   
   fbatch <- as.factor(batch)
@@ -29,6 +38,23 @@ batchqc_correlation <- function(data.matrix, batch, mod=NULL) {
   hcbHeatmap(cormat, ColSideColors=cc, RowSideColors=cc)
 }
 
+#' Produce Median Correlation plot
+#' 
+#' @param data.matrix Given data or simulated data from rnaseq_sim()
+#' @param batch Batch covariate 
+#' @param mod Model matrix for outcome of interest and other covariates besides batch
+#' @export
+#' @examples
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
+#'                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' pdata <- data.frame(batch, condition)
+#' modmatrix = model.matrix(~as.factor(condition), data=pdata)
+#' batchqc_corscatter(data.matrix, batch, mod=modmatrix)
 batchqc_corscatter <- function(data.matrix, batch, mod=NULL) {
   
   lcpms <- log2CPM(data.matrix)

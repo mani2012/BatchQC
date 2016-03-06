@@ -5,10 +5,17 @@
 #' @param mod Model matrix for outcome of interest and other covariates besides batch
 #' @export
 #' @examples
-#' nbatch <- 10
-#' nperbatch <- 10
-#' batch <- rep(1:nbatch, each=nperbatch)
-#' batchtest(pca, batch)
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
+#'                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' pdata <- data.frame(batch, condition)
+#' modmatrix = model.matrix(~as.factor(condition), data=pdata)
+#' pca <- batchqc_pca(data.matrix, batch, mod=modmatrix)
+#' batchtest(pca, batch, mod=modmatrix)
 batchtest <- function(pca, batch, mod=NULL)  {
   pc <- pca$x 
   fbatch <- as.factor(batch)

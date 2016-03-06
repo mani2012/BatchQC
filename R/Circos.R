@@ -1,4 +1,10 @@
-my.plot <- function(dat, batch, AggMethod) {
+#' Produce Circos plot
+#' 
+#' @param dat Given data or simulated data from rnaseq_sim()
+#' @param batch Batch covariate 
+#' @param AggMethod Aggregation Method
+#' @export
+batchqc_circosplot <- function(dat, batch, AggMethod) {
   batch1 <- as.factor(batch)
   my.colors58 <- rainbow(length(levels(batch1)))
   my.colors30 <- "white"

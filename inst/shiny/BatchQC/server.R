@@ -867,7 +867,7 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
-    my.plot(shinyInput$data, 
+    batchqc_circosplot(shinyInput$data, 
             if (input$colbybatchCD) shinyInput$batch else shinyInput$condition, 
             input$AggMethod)
   }, width=mywidth, height=myheight)

@@ -6,10 +6,16 @@
 #' @param max_display Maximum number of rows to display in heat map 
 #' @export
 #' @examples
-#' nbatch <- 10
-#' nperbatch <- 10
-#' batch <- rep(1:nbatch, each=nperbatch)
-#' batchqc_heatmap(data.matrix, batch)
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
+#'                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' pdata <- data.frame(batch, condition)
+#' modmatrix = model.matrix(~as.factor(condition), data=pdata)
+#' batchqc_heatmap(data.matrix, batch, mod=modmatrix)
 batchqc_heatmap <- function(data.matrix, batch, mod=NULL, max_display=50)  {
   size <- dim(data.matrix)[1]
   reduced.data.matrix <- data.matrix

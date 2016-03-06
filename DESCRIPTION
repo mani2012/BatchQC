@@ -1,13 +1,15 @@
 Package: BatchQC
 Type: Package
-Title: BatchQC - Batch effects Quality Control
-Version: 1.1
-Date: 2015-02-27
+Title: Batch effects Quality Control software
+Version: 1.0
+Date: 2016-03-05
 Author: Solaiappan Manimaran
 Maintainer: Solaiappan Manimaran <mani2012@bu.edu>, W. Evan Johnson <wej@bu.edu>
-Description: Provides Quality Control of sequencing samples by deducing if there is batch effect and adjusts for it. 
-License: GNU GPL (version 2 or later)
-Depends: MCMCpack,
+Description: Provides Quality Control of sequencing samples by deducing if there
+    is batch effect and adjusts for it.
+License: GPL (>= 2)
+Depends:
+    MCMCpack,
     sva,
     limma,
     corpcor,
@@ -16,10 +18,8 @@ Depends: MCMCpack,
     pander,
     gplots,
     matrixStats,
-    nlme,
-    lme4,
     moments
-Collate: 
+Collate:
     'simulate_data.R'
     'heatmap.R'
     'pca.R'
@@ -30,5 +30,7 @@ Collate:
     'sva.R'
     'Circos.R'
     'shapeAnalysis.R'
-Suggests: testthat
+Suggests:
+    testthat
 VignetteBuilder: knitr
+RoxygenNote: 5.0.1

@@ -1,5 +1,5 @@
-#' Simple function to convert binary string to decimal
-#'
+# Simple function to convert binary string to decimal
+#
 BinToDec <- function(x) 
   sum(2^(which(rev(unlist(strsplit(as.character(x), "")) == 1))-1))
 
@@ -550,6 +550,21 @@ batchqc_f.pvalue <- function(dat,mod,mod0){  ## F-test (full/reduced model) and 
   return(list(p=p,r2_full=r2_full,r2_reduced=r2_reduced))
 }
 
+#' Returns a list of explained variation by batch and condition combinations
+#' 
+#' @param data.matrix Given data or simulated data from rnaseq_sim()
+#' @param condition Condition covariate of interest
+#' @param batch Batch covariate 
+#' @export
+#' @examples
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
+#'                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' batchqc_explained_variation(data.matrix, condition, batch)
 batchqc_explained_variation <- function(data.matrix,condition,batch) {
   cond_mod <- model.matrix(~as.factor(condition))
   batch_mod <- model.matrix(~as.factor(batch))
@@ -572,6 +587,26 @@ batchqc_explained_variation <- function(data.matrix,condition,batch) {
   return(batchqc_ev)
 }
 
+#' Returns explained variation for each principal components
+#' 
+#' @param pcs Principal components in the given data
+#' @param vars Variance of the Principal components in the given data
+#' @param condition Condition covariate of interest
+#' @param batch Batch covariate 
+#' @export
+#' @examples
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
+#'                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' pdata <- data.frame(batch, condition)
+#' modmatrix = model.matrix(~as.factor(condition), data=pdata)
+#' pca <- batchqc_pca(data.matrix, batch, mod=modmatrix)
+#' pcs <- t(data.frame(pca$x))
+#' batchqc_pc_explained_variation(pcs, data.frame(pca$sdev^2), condition, batch)
 batchqc_pc_explained_variation <- function(pcs,vars,condition,batch) {
   cond_mod <- model.matrix(~as.factor(condition))
   batch_mod <- model.matrix(~as.factor(batch))
@@ -597,7 +632,21 @@ batchqc_pc_explained_variation <- function(pcs,vars,condition,batch) {
   return(explained_variation)
 }
 
-## Adjust the data to remove the variation across conditions
+#' Returns adjusted data after remove the variation across conditions
+#' 
+#' @param data.matrix Given data or simulated data from rnaseq_sim()
+#' @param batch Batch covariate 
+#' @param condition Condition covariate of interest
+#' @export
+#' @examples
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
+#'                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' batchQC_condition_adjusted(data.matrix, batch, condition)
 batchQC_condition_adjusted=function(data.matrix, batch, condition){
   y <- data.matrix
   pdata <- data.frame(batch, condition)

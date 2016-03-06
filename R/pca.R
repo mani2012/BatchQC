@@ -7,11 +7,17 @@
 #' @return PCA object from principal component analysis
 #' @export
 #' @examples
-#' nbatch <- 10
-#' nperbatch <- 10
-#' batch <- rep(1:nbatch, each=nperbatch)
-#' batchqc_pca(data.matrix, batch)
-batchqc_pca <- function(data.matrix, batch, mod=NULL)  {
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
+#'                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' pdata <- data.frame(batch, condition)
+#' modmatrix = model.matrix(~as.factor(condition), data=pdata)
+#' batchqc_pca(data.matrix, batch, mod=modmatrix)
+batchqc_pca <- function(data.matrix, batch, mod=modmatrix)  {
   fbatch <- as.factor(batch)
   nbatch <- nlevels(fbatch)
   bc <- rainbow(nbatch)
@@ -27,6 +33,9 @@ batchqc_pca <- function(data.matrix, batch, mod=NULL)  {
   xlab <- "Principal Component PC1"
   ylab <- "Principal Component PC2"
   plot(pc[,1], pc[,2],col=cc, xlab=xlab, ylab=ylab)
+  
+  #legend("bottomright", pch=c(2,2), col=cc, c("Batch1", "Batch2"), bty="o", cex=.8, box.col="darkgreen")
+  
   return(pca)
 }
 
@@ -39,10 +48,16 @@ batchqc_pca <- function(data.matrix, batch, mod=NULL)  {
 #' @return res PCA list with two components v and d.
 #' @export
 #' @examples
-#' nbatch <- 10
-#' nperbatch <- 10
-#' batch <- rep(1:nbatch, each=nperbatch)
-#' batchqc_pca_svd(data.matrix, batch)
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
+#'                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' pdata <- data.frame(batch, condition)
+#' modmatrix = model.matrix(~as.factor(condition), data=pdata)
+#' batchqc_pca_svd(data.matrix, batch, mod=modmatrix)
 batchqc_pca_svd <- function(data.matrix, batch, mod=NULL)  {
   res <- makeSVD(data.matrix)
   condition <- NULL
@@ -75,7 +90,6 @@ batchqc_pca_svd <- function(data.matrix, batch, mod=NULL)  {
 #'
 #' @param x matrix of genes by sample (ie. the usual data matrix)
 #' @return returns a list of svd components v and d
-#' @export
 makeSVD <- function(x){
   x <- as.matrix(x)
   s <- fast.svd(x-rowMeans(x))
@@ -95,7 +109,6 @@ makeSVD <- function(x){
 #' @param condition factor describing experiment
 #' @param batch factor describing batch
 #' @return A dataframe containig variance, cum. variance, cond.R-sqrd, batch.R-sqrd
-#' @export
 pcRes <- function(v, d, condition=NULL, batch=NULL){
   pcVar <- round((d^2)/sum(d^2)*100,2)
   cumPcVar <- cumsum(pcVar) 
@@ -151,7 +164,6 @@ pcRes <- function(v, d, condition=NULL, batch=NULL){
 #' @param d from makeSVD
 #' @param ... pass options to internal plot fct.
 #' @return a plot 
-#' @export
 plotPC <- function(v, d, ...){
   pcVar <- round((d^2)/sum(d^2)*100,2)
   
