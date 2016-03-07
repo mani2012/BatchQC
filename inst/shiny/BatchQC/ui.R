@@ -8,6 +8,7 @@ minbatch <- function(batch1){
   return(min(unlist(lapply(1:length(batch3), function(x) length(batch3[[x]])))))
 }
 
+shinyInput <- getShinyInput()
 maxbatchElems <- minbatch(shinyInput$batch)
 maxcondElems <- minbatch(shinyInput$condition)
 defaultDisp <- 30

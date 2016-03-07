@@ -17,7 +17,7 @@
 #' pdata <- data.frame(batch, condition)
 #' modmatrix = model.matrix(~as.factor(condition), data=pdata)
 #' batchqc_pca(data.matrix, batch, mod=modmatrix)
-batchqc_pca <- function(data.matrix, batch, mod=modmatrix)  {
+batchqc_pca <- function(data.matrix, batch, mod=NULL)  {
   fbatch <- as.factor(batch)
   nbatch <- nlevels(fbatch)
   bc <- rainbow(nbatch)

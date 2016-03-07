@@ -4,8 +4,7 @@
 \alias{combatPlot}
 \title{Adjust for batch effects using an empirical Bayes framework}
 \usage{
-combatPlot(dat = data.matrix, batch, mod = NULL, par.prior = TRUE,
-  prior.plots = TRUE)
+combatPlot(dat, batch, mod = NULL, par.prior = TRUE, prior.plots = TRUE)
 }
 \arguments{
 \item{dat}{Genomic measure matrix (dimensions probe x sample) - for example, expression matrix}

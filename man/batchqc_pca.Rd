@@ -5,7 +5,7 @@
 \title{Performs principal component analysis and 
 produces plot of the first two principal components}
 \usage{
-batchqc_pca(data.matrix, batch, mod = modmatrix)
+batchqc_pca(data.matrix, batch, mod = NULL)
 }
 \arguments{
 \item{data.matrix}{Given data or simulated data from rnaseq_sim()}

@@ -20,10 +20,12 @@ batchqc_correlation <- function(data.matrix, batch, mod=NULL) {
   lcounts <- lcpms$y
   
   cormat <- cor(lcounts)
-  if (!exists("shinyInput"))  {
-    shinyInput <<- list("data"=data.matrix, "batch"=batch)
+  shinyInput <- getShinyInput()
+  if (is.null(shinyInput))  {
+    shinyInput <- list("data"=data.matrix, "batch"=batch)
   }
-  shinyInput <<- c(shinyInput, list("cormat"=cormat))
+  shinyInput <- c(shinyInput, list("cormat"=cormat))
+  setShinyInput(shinyInput)
   
   fbatch <- as.factor(batch)
   nbatch <- nlevels(fbatch)

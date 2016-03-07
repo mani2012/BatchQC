@@ -91,19 +91,22 @@ batchQC <- function(dat, batch, condition=NULL,
   mod = model.matrix(~as.factor(condition), data=pdata)
   if (report_dir==".") { report_dir=getwd() }
   dat <- as.matrix(dat)
-  shinyInput <<- list("data"=dat, "batch"=batch, "condition"=condition, 
+  shinyInput <- list("data"=dat, "batch"=batch, "condition"=condition, 
                       "report_dir"=report_dir)
+  setShinyInput(shinyInput)
+  options("batchqc.shinyInput"=shinyInput)
   rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
   report_option_vector <- unlist(strsplit(as.character(report_option_binary), ""))
   #rmarkdown::draft("batchqc_report.Rmd", template = "batchqc", package = "BatchQC")
   static_lib_dir <- system.file("reports/libs", package = "BatchQC")
   file.copy(static_lib_dir, report_dir, recursive=TRUE)
   outputfile <- rmarkdown::render(rmdfile, output_file=report_file, output_dir=report_dir)
-  shinyInputOrig <<- shinyInput
-  shinyInputCombat <<- NULL
-  shinyInputSVAf <<- NULL
-  shinyInputSVAr <<- NULL
-  shinyInputSVA <<- NULL
+  shinyInput <- getShinyInput()
+  setShinyInputOrig(shinyInput)
+  setShinyInputCombat(NULL)
+  setShinyInputSVAf(NULL)
+  setShinyInputSVAr(NULL)
+  setShinyInputSVA(NULL)
   if (view_report)  {
     browseURL(outputfile)
   }
@@ -134,7 +137,7 @@ batchQC <- function(dat, batch, condition=NULL,
 #' 
 #' @export
 #' 
-combatPlot <- function(dat=data.matrix, batch, mod=NULL, par.prior=TRUE, prior.plots=TRUE) {
+combatPlot <- function(dat, batch, mod=NULL, par.prior=TRUE, prior.plots=TRUE) {
   # make batch a factor and make a set of indicators for batch
   if(length(dim(batch))>1){stop("This version of ComBat only allows one batch variable")}  ## to be updated soon!
   batch <- as.factor(batch)
@@ -189,23 +192,29 @@ combatPlot <- function(dat=data.matrix, batch, mod=NULL, par.prior=TRUE, prior.p
   } else{
     gamma.hat <- apply(s.data,1,Beta.NA,batch.design)
   }
-  shinyInput <<- c(shinyInput, list("gamma.hat"=gamma.hat))
+  
+  shinyInput <- getShinyInput()
+  if (is.null(shinyInput))  {
+    shinyInput <- list("data"=dat, "batch"=batch)
+  }
+  shinyInput <- c(shinyInput, list("gamma.hat"=gamma.hat))
   delta.hat <- NULL
   for (i in batches){
     delta.hat <- rbind(delta.hat,apply(s.data[,i], 1, var,na.rm=T))
   }
-  shinyInput <<- c(shinyInput, list("delta.hat"=delta.hat))
+  shinyInput <- c(shinyInput, list("delta.hat"=delta.hat))
   
   ##Find Priors
   gamma.bar <- apply(gamma.hat, 1, mean)
-  shinyInput <<- c(shinyInput, list("gamma.bar"=gamma.bar))
+  shinyInput <- c(shinyInput, list("gamma.bar"=gamma.bar))
   t2 <- apply(gamma.hat, 1, var)
-  shinyInput <<- c(shinyInput, list("t2"=t2))
+  shinyInput <- c(shinyInput, list("t2"=t2))
   a.prior <- apply(delta.hat, 1, aprior)
-  shinyInput <<- c(shinyInput, list("a.prior"=a.prior))
+  shinyInput <- c(shinyInput, list("a.prior"=a.prior))
   b.prior <- apply(delta.hat, 1, bprior)
-  shinyInput <<- c(shinyInput, list("b.prior"=b.prior))
-  
+  shinyInput <- c(shinyInput, list("b.prior"=b.prior))
+  setShinyInput(shinyInput)
+
   
   ##Plot empirical and parametric priors
   
@@ -237,3 +246,91 @@ combatPlot <- function(dat=data.matrix, batch, mod=NULL, par.prior=TRUE, prior.p
 # Following four find empirical hyper-prior values
 aprior <- function(gamma.hat){m=mean(gamma.hat); s2=var(gamma.hat); (2*s2+m^2)/s2}
 bprior <- function(gamma.hat){m=mean(gamma.hat); s2=var(gamma.hat); (m*s2+m^3)/s2}
+Beta.NA = function(y,X){
+  des=X[!is.na(y),]
+  y1=y[!is.na(y)]
+  B <- solve(t(des)%*%des)%*%t(des)%*%y1
+  B
+}
+
+
+#' Getter function to get the shinyInput option
+#' @return shinyInput option
+#' @export
+getShinyInput <- function()  {
+  shinyInput <- getOption("batchqc.shinyInput")
+  return(shinyInput)
+}
+#' Setter function to set the shinyInput option
+#' @param x shinyInput option
+#' @export
+setShinyInput <- function(x)  {
+  options("batchqc.shinyInput"=x)
+}
+
+#' Getter function to get the shinyInputOrig option
+#' @return shinyInputOrig option
+#' @export
+getShinyInputOrig <- function()  {
+  shinyInputOrig <- getOption("batchqc.shinyInputOrig")
+  return(shinyInputOrig)
+}
+#' Setter function to set the shinyInputOrig option
+#' @param x shinyInputOrig option
+#' @export
+setShinyInputOrig <- function(x)  {
+  options("batchqc.shinyInputOrig"=x)
+}
+
+#' Getter function to get the shinyInputCombat option
+#' @return shinyInputCombat option
+#' @export
+getShinyInputCombat <- function()  {
+  shinyInputCombat <- getOption("batchqc.shinyInputCombat")
+  return(shinyInputCombat)
+}
+#' Setter function to set the shinyInputCombat option
+#' @param x shinyInputCombat option
+#' @export
+setShinyInputCombat <- function(x)  {
+  options("batchqc.shinyInputCombat"=x)
+}
+#' Getter function to get the shinyInputSVA option
+#' @return shinyInputSVA option
+#' @export
+getShinyInputSVA <- function()  {
+  shinyInputSVA <- getOption("batchqc.shinyInputSVA")
+  return(shinyInputSVA)
+}
+#' Setter function to set the shinyInputSVA option
+#' @param x shinyInputSVA option
+#' @export
+setShinyInputSVA <- function(x)  {
+  options("batchqc.shinyInputSVA"=x)
+}
+#' Getter function to get the shinyInputSVAf option
+#' @return shinyInputSVAf option
+#' @export
+getShinyInputSVAf <- function()  {
+  shinyInputSVAf <- getOption("batchqc.shinyInputSVAf")
+  return(shinyInputSVAf)
+}
+#' Setter function to set the shinyInputSVAf option
+#' @param x shinyInputSVAf option
+#' @export
+setShinyInputSVAf <- function(x)  {
+  options("batchqc.shinyInputSVAf"=x)
+}
+#' Getter function to get the shinyInputSVAr option
+#' @return shinyInputSVAr option
+#' @export
+getShinyInputSVAr <- function()  {
+  shinyInputSVAr <- getOption("batchqc.shinyInputSVAr")
+  return(shinyInputSVAr)
+}
+#' Setter function to set the shinyInputSVAr option
+#' @param x shinyInputSVAr option
+#' @export
+setShinyInputSVAr <- function(x)  {
+  options("batchqc.shinyInputSVAr"=x)
+}

@@ -5,6 +5,7 @@ library(reshape2)
 library(BatchQC)
 library(HTShape)
 library(limma)
+library(sva)
 library(nlme)
 library(lme4)
 
@@ -19,6 +20,7 @@ plotPC <- function(v, d, x, y, ...){
 
 shinyServer(function(input, output, session) {
   #needed information from BatchQC
+  shinyInput <- getShinyInput()
   pc <- shinyInput$pc
   cormat <- shinyInput$cormat
   delta.hat <- shinyInput$delta.hat
@@ -32,12 +34,13 @@ shinyServer(function(input, output, session) {
   
   setInputs <- function(batchAdjust)  {
     if (batchAdjust==1)  {
-      shinyInput <<- shinyInputCombat
+      setShinyInput(getShinyInputCombat())
     } else if (batchAdjust==2)  {
-        shinyInput <<- shinyInputSVA
+      setShinyInput(getShinyInputSVA())
     } else {
-      shinyInput <<- shinyInputOrig
+      setShinyInput(getShinyInputOrig())
     }
+    shinyInput <<- getShinyInput()
     pc <<- shinyInput$pc
     cormat <<- shinyInput$cormat
     delta.hat <<- shinyInput$delta.hat
@@ -80,7 +83,7 @@ shinyServer(function(input, output, session) {
   #Variation Analysis
   output$VariationTable <- renderTable({
     if (input$batchVA==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchVA", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -89,7 +92,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchVA==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchVA", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -106,12 +109,12 @@ shinyServer(function(input, output, session) {
   #Variation plots
   output$VariationPlot <- renderPlot({
     if (input$batchVA==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
       } else  {
         setInputs(1)
       }
     } else if (input$batchVA==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
       } else  {
         setInputs(2)
       }
@@ -127,7 +130,7 @@ shinyServer(function(input, output, session) {
   #P-Value Analysis
   output$PvalueTable <- renderTable({
     if (input$batchPA==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchPA", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -136,7 +139,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchPA==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchPA", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -157,12 +160,12 @@ shinyServer(function(input, output, session) {
   #P-Value plots
   output$BatchPvaluePlot <- renderPlot({
     if (input$batchPA==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
       } else  {
         setInputs(1)
       }
     } else if (input$batchPA==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
       } else  {
         setInputs(2)
       }
@@ -181,12 +184,12 @@ shinyServer(function(input, output, session) {
   })
   output$ConditionPvaluePlot <- renderPlot({
     if (input$batchPA==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
       } else  {
         setInputs(1)
       }
     } else if (input$batchPA==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
       } else  {
         setInputs(2)
       }
@@ -212,7 +215,7 @@ shinyServer(function(input, output, session) {
   #interactive PCA plot
   vis_pc <- reactive({
     if (input$batchPCA==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchPCA", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -221,7 +224,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchPCA==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchPCA", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -279,12 +282,12 @@ shinyServer(function(input, output, session) {
   #interactive boxplot
   BP <- reactive({
     if (input$batchDE==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
                            selected=0)
       }
     } else if (input$batchDE==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
                            selected=0)
       }
@@ -300,12 +303,12 @@ shinyServer(function(input, output, session) {
   #interactive Differential Expression boxplot
   DE <- reactive({
     if (input$batchDE==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
                            selected=0)
       }
     } else if (input$batchDE==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
                            selected=0)
       }
@@ -320,7 +323,7 @@ shinyServer(function(input, output, session) {
   })
   diffex_bp <- reactive({
     if (input$batchDE==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -329,7 +332,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchDE==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -395,7 +398,7 @@ shinyServer(function(input, output, session) {
   
   output$LimmaTable <- renderTable({
     if (input$batchDE==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -404,7 +407,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchDE==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -424,7 +427,7 @@ shinyServer(function(input, output, session) {
   
   output$GlsTable <- renderTable({
     if (input$batchDE==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -433,7 +436,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchDE==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -477,7 +480,7 @@ shinyServer(function(input, output, session) {
   
   output$MixEffTable <- renderTable({
     if (input$batchDE==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -486,7 +489,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchDE==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -530,7 +533,7 @@ shinyServer(function(input, output, session) {
   #interactive heatmap
   output$heatmap <- renderD3heatmap({
     if (input$batchHM1==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchHM1", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -539,7 +542,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchHM1==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchHM1", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -559,7 +562,7 @@ shinyServer(function(input, output, session) {
   
   output$correlation <- renderD3heatmap({
     if (input$batchHM2==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchHM2", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -568,7 +571,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchHM2==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchHM2", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -592,7 +595,7 @@ shinyServer(function(input, output, session) {
   #Shape plots
   output$SOplot <- renderPlot({
     if (input$batchShape==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -601,7 +604,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchShape==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -622,7 +625,7 @@ shinyServer(function(input, output, session) {
   })
   output$Manova <- renderPlot({
     if (input$batchShape==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -631,7 +634,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchShape==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -649,7 +652,7 @@ shinyServer(function(input, output, session) {
   })
   output$BatchMeanVar <- renderPlot({
     if (input$batchShape==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -658,7 +661,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchShape==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -726,7 +729,7 @@ shinyServer(function(input, output, session) {
   })
 
   combatOutText <- eventReactive(input$runCombat, {
-    if (is.null(shinyInputCombat))  {
+    if (is.null(getShinyInputCombat()))  {
       outText <- "Finished running ComBat. Select the other tabs to view the ComBat results"
     } else  {
       outText <- "Finished re-running ComBat. Select the other tabs to view the ComBat results"
@@ -744,14 +747,16 @@ shinyServer(function(input, output, session) {
     combat_data <- ComBat(dat=shinyInput$data, batch=shinyInput$batch, mod=mod, 
                           par.prior=par.prior, mean.only=mean.only)
     shinyInput <<- list("data"=combat_data, "batch"=batch, "condition"=condition,
-                        "report_dir"=shinyInputOrig$report_dir)
+                        "report_dir"=shinyInput$report_dir)
+    setShinyInput(shinyInput)
     rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
     report_option_binary="111111111"
     report_option_vector <<- unlist(strsplit(as.character(report_option_binary), ""))
     #dat <- as.matrix(combat_data)
     outputfile <- rmarkdown::render(rmdfile, output_file="combat_batchqc_report.html", 
                                     output_dir=shinyInput$report_dir)
-    shinyInputCombat <<- shinyInput
+    shinyInput <<- getShinyInput()
+    setShinyInputCombat(shinyInput)
     outText
   })
   output$combatOutText <- renderText({
@@ -772,45 +777,51 @@ shinyServer(function(input, output, session) {
   })
   SVAOutText <- eventReactive(input$runSVA, {
     if (input$fsvaOption)  {
-      if (is.null(shinyInputSVAf))  {
+      if (is.null(getShinyInputSVAf()))  {
         pdata <- data.frame(batch, condition)
         mod <- model.matrix(~as.factor(shinyInput$condition), data=pdata)
         sva.object <- batchQC_sva(shinyInput$data, mod)
         svaf_data <- batchQC_fsva_adjusted(shinyInput$data, mod, sva.object)
         shinyInput <<- list("data"=svaf_data, "batch"=batch, "condition"=condition,
-                            "report_dir"=shinyInputOrig$report_dir)
+                            "report_dir"=shinyInput$report_dir)
+        setShinyInput(shinyInput)
         rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
         report_option_binary="111111111"
         report_option_vector <<- unlist(strsplit(as.character(report_option_binary), ""))
         #dat <- as.matrix(svaf_data)
         outputfile <- rmarkdown::render(rmdfile, output_file="svaf_batchqc_report.html", 
                                         output_dir=shinyInput$report_dir)
-        shinyInputSVAf <<- shinyInput
-        shinyInputSVA <<- shinyInputSVAf
+        shinyInput <<- getShinyInput()
+        setShinyInput(shinyInput)
+        setShinyInputSVAf(shinyInput)
+        setShinyInputSVA(shinyInput)
         "Finished running SVA with frozen SVA option. Select the other tabs to view the SVA results."
       } else  {
-        shinyInputSVA <<- shinyInputSVAf
+        setShinyInputSVA(getShinyInputSVAf())
         "Already ran SVA with frozen SVA option. Select the other tabs to view the SVA results."
       }
     } else {
-      if (is.null(shinyInputSVAr))  {
+      if (is.null(getShinyInputSVAr()))  {
         pdata <- data.frame(batch, condition)
         mod <- model.matrix(~as.factor(shinyInput$condition), data=pdata)
         sva.object <- batchQC_sva(shinyInput$data, mod)
         svar_data <- batchQC_svregress_adjusted(shinyInput$data, mod, sva.object)
         shinyInput <<- list("data"=svar_data, "batch"=batch, "condition"=condition,
-                            "report_dir"=shinyInputOrig$report_dir)
+                            "report_dir"=shinyInput$report_dir)
+        setShinyInput(shinyInput)
         rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
         report_option_binary="111111111"
         report_option_vector <<- unlist(strsplit(as.character(report_option_binary), ""))
         #dat <- as.matrix(svar_data)
         outputfile <- rmarkdown::render(rmdfile, output_file="svar_batchqc_report.html", 
                                         output_dir=shinyInput$report_dir)
-        shinyInputSVAr <<- shinyInput
-        shinyInputSVA <<- shinyInputSVAr
+        shinyInput <<- getShinyInput()
+        setShinyInput(shinyInput)
+        setShinyInputSVAr(shinyInput)
+        setShinyInputSVA(shinyInput)
         "Finished running SVA with regression SVA option. Select the other tabs to view the SVA results."
       } else  {
-        shinyInputSVA <<- shinyInputSVAr
+        setShinyInputSVA(getShinyInputSVAr())
         "Already ran SVA with regression SVA option. Select the other tabs to view the SVA results."
       }
     }
@@ -847,7 +858,7 @@ shinyServer(function(input, output, session) {
   }
   output$circos <- renderPlot({
     if (input$batchCD==1)  {
-      if (is.null(shinyInputCombat))  {
+      if (is.null(getShinyInputCombat()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run ComBat from the ComBat tab')
         updateRadioButtons(session, "batchCD", choices=list('None'=0, 'Combat'=1,'SVA'=2), 

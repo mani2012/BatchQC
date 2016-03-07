@@ -1,12 +1,10 @@
-require(moments)
-
 #' Perform Mean and Variance batch variation analysis
 #' 
 #' @param data Given data
 #' @param groups a character vector indicating sample group membership
 #' @param plot Indicate whether to generate plot
 #' @param groupCol group color
-#' @import gplots
+#' @import gplots moments
 #' @export
 batchQC_shapeVariation = function (data, groups, plot=FALSE, groupCol=NULL) {
   

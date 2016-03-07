@@ -12,7 +12,7 @@ output:
 ---
 
 ```{r, echo=FALSE}
-dat <- shinyInput$data
+dat <- getShinyInput()$data
 eval_cell_1 = (report_option_vector[1]=="1")
 ```
 `r if (eval_cell_1) 'Data Summary'`
@@ -71,7 +71,9 @@ eval_cell_5 = (report_option_vector[5]=="1")
 `r if (eval_cell_5) 'This is a plot of the top two principal components and showing the variation with respect to batch effects and different conditions.'`
 ```{r, eval=eval_cell_5, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
 pca <- batchqc_pca(dat, batch=batch, mod=mod)
-shinyInput <<- c(shinyInput, list("pc"=data.frame(pca$x), "vars"=data.frame(pca$sdev^2)))
+shinyInput <- getShinyInput()
+shinyInput <- c(shinyInput, list("pc"=data.frame(pca$x), "vars"=data.frame(pca$sdev^2)))
+setShinyInput(shinyInput)
 ```
 
 ```{r, echo=FALSE}
