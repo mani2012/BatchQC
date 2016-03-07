@@ -9,16 +9,10 @@ Description: Provides Quality Control of sequencing samples by deducing if there
     is batch effect and adjusts for it.
 License: GPL (>= 2)
 Depends:
-    MCMCpack,
-    sva,
-    limma,
-    corpcor,
     rmarkdown,
     knitr,
     pander,
-    gplots,
-    matrixStats,
-    moments
+    gplots
 Collate:
     'simulate_data.R'
     'heatmap.R'
@@ -32,5 +26,11 @@ Collate:
     'shapeAnalysis.R'
 Suggests:
     testthat
+Imports:
+    MCMCpack,
+    shiny,
+    sva,
+    corpcor,
+    matrixStats
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1

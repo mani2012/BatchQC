@@ -6,6 +6,7 @@ require(moments)
 #' @param groups a character vector indicating sample group membership
 #' @param plot Indicate whether to generate plot
 #' @param groupCol group color
+#' @import gplots
 #' @export
 batchQC_shapeVariation = function (data, groups, plot=FALSE, groupCol=NULL) {
   

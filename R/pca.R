@@ -90,6 +90,7 @@ batchqc_pca_svd <- function(data.matrix, batch, mod=NULL)  {
 #'
 #' @param x matrix of genes by sample (ie. the usual data matrix)
 #' @return returns a list of svd components v and d
+#' @import corpcor
 makeSVD <- function(x){
   x <- as.matrix(x)
   s <- fast.svd(x-rowMeans(x))

@@ -12,6 +12,7 @@ require("MCMCpack")
 #' @param bvarstep Batch to Batch variance step variation
 #' @param seed Random seed for reproducibility
 #' @return RNA Seq count data matrix
+#' @import MCMCpack
 #' @export
 #' @examples
 #' rnaseq_sim()

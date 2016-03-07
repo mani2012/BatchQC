@@ -9,6 +9,7 @@ require(sva)
 #' 
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param modmatrix Model matrix for outcome of interest and other covariates besides batch
+#' @import sva
 #' @export
 #' @examples
 #' nbatch <- 3
@@ -40,6 +41,7 @@ batchQC_psva=function(data.matrix,batch){
 #' 
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param modmatrix Model matrix for outcome of interest and other covariates besides batch
+#' @import sva
 #' @export
 #' @examples
 #' nbatch <- 3
@@ -67,6 +69,7 @@ batchQC_sva=function(data.matrix, modmatrix){
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param modmatrix Model matrix for outcome of interest and other covariates besides batch
 #' @param sva.object SVA object
+#' @import sva
 #' @export
 #' @examples
 #' nbatch <- 3
