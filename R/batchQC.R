@@ -91,12 +91,11 @@ batchQC <- function(dat, batch, condition=NULL,
   mod = model.matrix(~as.factor(condition), data=pdata)
   if (report_dir==".") { report_dir=getwd() }
   dat <- as.matrix(dat)
-  shinyInput <- list("data"=dat, "batch"=batch, "condition"=condition, 
-                      "report_dir"=report_dir)
-  setShinyInput(shinyInput)
-  options("batchqc.shinyInput"=shinyInput)
-  rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
   report_option_vector <- unlist(strsplit(as.character(report_option_binary), ""))
+  shinyInput <- list("data"=dat, "batch"=batch, "condition"=condition, 
+                      "report_dir"=report_dir, "report_option_vector"=report_option_vector)
+  setShinyInput(shinyInput)
+  rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
   #rmarkdown::draft("batchqc_report.Rmd", template = "batchqc", package = "BatchQC")
   static_lib_dir <- system.file("reports/libs", package = "BatchQC")
   file.copy(static_lib_dir, report_dir, recursive=TRUE)

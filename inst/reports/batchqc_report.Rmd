@@ -12,7 +12,9 @@ output:
 ---
 
 ```{r, echo=FALSE}
-dat <- getShinyInput()$data
+shinyInput <- getShinyInput()
+dat <- shinyInput$data
+report_option_vector <- shinyInput$report_option_vector
 eval_cell_1 = (report_option_vector[1]=="1")
 ```
 `r if (eval_cell_1) 'Data Summary'`

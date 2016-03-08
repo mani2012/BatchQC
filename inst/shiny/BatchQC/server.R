@@ -21,14 +21,6 @@ plotPC <- function(v, d, x, y, ...){
 shinyServer(function(input, output, session) {
   #needed information from BatchQC
   shinyInput <- getShinyInput()
-  pc <- shinyInput$pc
-  cormat <- shinyInput$cormat
-  delta.hat <- shinyInput$delta.hat
-  gamma.hat <- shinyInput$gamma.hat
-  gamma.bar <- shinyInput$gamma.bar
-  lcounts <- shinyInput$lcounts
-  a.prior <- shinyInput$a.prior
-  b.prior <- shinyInput$b.prior
   batch <- shinyInput$batch
   condition <- shinyInput$condition
   
@@ -40,17 +32,6 @@ shinyServer(function(input, output, session) {
     } else {
       setShinyInput(getShinyInputOrig())
     }
-    shinyInput <<- getShinyInput()
-    pc <<- shinyInput$pc
-    cormat <<- shinyInput$cormat
-    delta.hat <<- shinyInput$delta.hat
-    gamma.hat <<- shinyInput$gamma.hat
-    gamma.bar <<- shinyInput$gamma.bar
-    lcounts <<- shinyInput$lcounts
-    a.prior <<- shinyInput$a.prior
-    b.prior <<- shinyInput$b.prior
-    batch <<- shinyInput$batch
-    condition <<- shinyInput$condition
   }
   
   #Summary Table
@@ -103,6 +84,7 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
     batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     batchqc_ev$explained_variation
   })
@@ -121,6 +103,7 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
     batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     apply(batchqc_ev$explained_variation,2,summary)
     boxplot(batchqc_ev$explained_variation,ylab="Percent Explained Variation",
@@ -150,6 +133,7 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
     batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     cond_ps <- batchqc_ev$cond_test$p
     batch_ps <- batchqc_ev$batch_test$p
@@ -172,6 +156,7 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
     batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     cond_ps <- batchqc_ev$cond_test$p
     batch_ps <- batchqc_ev$batch_test$p
@@ -196,6 +181,7 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
     batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, batch)
     cond_ps <- batchqc_ev$cond_test$p
     nf <- layout(mat = matrix(c(1,2),2,1, byrow=TRUE),  height = c(1,3))
@@ -209,6 +195,29 @@ shinyServer(function(input, output, session) {
   
   #interactive PCA
   PCA <- reactive({
+    if (input$batchPCA==1)  {
+      if (is.null(getShinyInputCombat()))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateRadioButtons(session, "batchPCA", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(1)
+      }
+    } else if (input$batchPCA==2) {
+      if (is.null(getShinyInputSVA()))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run SVA from the SVA tab')
+        updateRadioButtons(session, "batchPCA", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(2)
+      }
+    } else  {
+      setInputs(0)
+    }
+    shinyInput <- getShinyInput()
+    pc <- shinyInput$pc
     data.frame(pc[, c(input$xcol,input$ycol)])
   })
   
@@ -235,7 +244,9 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
-
+    shinyInput <- getShinyInput()
+    pc <- shinyInput$pc
+    
     pc$id <- 1:nrow(pc)  
       
       all_values <- function(x) {
@@ -274,6 +285,9 @@ shinyServer(function(input, output, session) {
   })
 
   output$PCAExplainedVariation <- renderTable({
+    PCA()
+    shinyInput <- getShinyInput()
+    pc <- shinyInput$pc
     pcs <- t(pc) 
     explained_variation <- batchqc_pc_explained_variation(pcs, shinyInput$vars, condition, batch)
     explained_variation
@@ -292,6 +306,8 @@ shinyServer(function(input, output, session) {
                            selected=0)
       }
     }
+    shinyInput <- getShinyInput()
+    lcounts <- shinyInput$lcounts
     dat <- lcounts
     batch1 <- as.factor(batch)
     batch2 <- split(which(batch == batch1), batch1)
@@ -313,6 +329,8 @@ shinyServer(function(input, output, session) {
                            selected=0)
       }
     }
+    shinyInput <- getShinyInput()
+    lcounts <- shinyInput$lcounts
     dat <- lcounts
     cond1 <- as.factor(condition)
     cond2 <- split(which(condition == cond1), cond1)
@@ -381,6 +399,27 @@ shinyServer(function(input, output, session) {
   })
   diffex_bp %>% bind_shiny("DiffExPlot")
   output$DEsummary <- renderPrint({
+    if (input$batchDE==1)  {
+      if (is.null(getShinyInputCombat()))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(1)
+      }
+    } else if (input$batchDE==2) {
+      if (is.null(getShinyInputSVA()))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run SVA from the SVA tab')
+        updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(2)
+      }
+    } else  {
+      setInputs(0)
+    }
     if (input$sortbybatch)  {
       summary(BP())
     } else  {
@@ -389,6 +428,27 @@ shinyServer(function(input, output, session) {
   })
   
   output$DEtable <- renderTable({
+    if (input$batchDE==1)  {
+      if (is.null(getShinyInputCombat()))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run ComBat from the ComBat tab')
+        updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(1)
+      }
+    } else if (input$batchDE==2) {
+      if (is.null(getShinyInputSVA()))  {
+        session$sendCustomMessage(type = 'testmessage',
+                                  message = 'First run SVA from the SVA tab')
+        updateRadioButtons(session, "batchDE", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+                           selected=0)
+      } else  {
+        setInputs(2)
+      }
+    } else  {
+      setInputs(0)
+    }
     if (input$sortbybatch)  {
       BP()
     } else  {
@@ -418,6 +478,7 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
     pdata <- data.frame(batch, condition)
     mod <- model.matrix(~as.factor(condition), data=pdata)
     fit <- lmFit(shinyInput$data, mod)
@@ -447,6 +508,7 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
     pdata <- data.frame(batch, condition)
     mod <- model.matrix(~as.factor(condition), data=pdata)
     fit <- lmFit(shinyInput$data, mod)
@@ -500,6 +562,7 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
     pdata <- data.frame(batch, condition)
     mod <- model.matrix(~as.factor(condition), data=pdata)
     pvalues <- NULL
@@ -527,6 +590,7 @@ shinyServer(function(input, output, session) {
   
   #interactive scatter plot
   output$outliers <- renderPlot({
+    shinyInput <- getShinyInput()
     BatchQC::batchqc_corscatter(shinyInput$data, shinyInput$batch, mod = shinyInput$mod)
   })
 
@@ -553,6 +617,8 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
+    lcounts <- shinyInput$lcounts
     d3heatmap(
       lcounts,
       colors = "RdBu",
@@ -582,6 +648,8 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
+    cormat <- shinyInput$cormat
     nsample <- dim(shinyInput$data)[2]
     sample <- 1:nsample
     d3heatmap(
@@ -615,6 +683,8 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
+    lcounts <- shinyInput$lcounts
     lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
     res <- HTShape::fitShape(lcounts_adj, nLmom = 4)
     #t3 <- res$lrats[, "t3"] # Grab L-skew estimates.
@@ -645,6 +715,8 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
+    lcounts <- shinyInput$lcounts
     lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
     bf <- as.factor(shinyInput$batch)
     HTShape::shapeManova(lcounts_adj, batch, lrats=TRUE, plot = TRUE,
@@ -672,6 +744,8 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
+    lcounts <- shinyInput$lcounts
     lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
     bf <- as.factor(shinyInput$batch)
     batchQC_shapeVariation(lcounts_adj, batch, plot = TRUE, groupCol=rainbow(nlevels(bf))[bf] )
@@ -679,6 +753,12 @@ shinyServer(function(input, output, session) {
 
   #interactive density plots
   output$densityQQPlots <- renderPlot({
+    shinyInput <- getShinyInput()
+    delta.hat <- shinyInput$delta.hat
+    gamma.hat <- shinyInput$gamma.hat
+    gamma.bar <- shinyInput$gamma.bar
+    a.prior <- shinyInput$a.prior
+    b.prior <- shinyInput$b.prior
     layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
     tmp <- density(gamma.hat[input$batches,])
     plot(tmp,  type='l', main="Density Plot",lwd=2)
@@ -696,6 +776,12 @@ shinyServer(function(input, output, session) {
     title('Q-Q Plot')
   })
   output$kstest <- renderPrint({  
+    shinyInput <- getShinyInput()
+    delta.hat <- shinyInput$delta.hat
+    gamma.hat <- shinyInput$gamma.hat
+    gamma.bar <- shinyInput$gamma.bar
+    a.prior <- shinyInput$a.prior
+    b.prior <- shinyInput$b.prior
     ksout <- ks.test(gamma.hat[input$batches,], "pnorm", gamma.bar[input$batches], 
                      sqrt(shinyInput$t2[input$batches])) # two-sided, exact
     summarytext <- "Batch mean distribution across genes: Normal vs Empirical distribution"
@@ -746,16 +832,17 @@ shinyServer(function(input, output, session) {
     mod <- model.matrix(~as.factor(shinyInput$condition), data=pdata)
     combat_data <- ComBat(dat=shinyInput$data, batch=shinyInput$batch, mod=mod, 
                           par.prior=par.prior, mean.only=mean.only)
-    shinyInput <<- list("data"=combat_data, "batch"=batch, "condition"=condition,
-                        "report_dir"=shinyInput$report_dir)
+    report_option_binary="111111111"
+    report_option_vector <- unlist(strsplit(as.character(report_option_binary), ""))
+    shinyInput <- list("data"=combat_data, "batch"=batch, "condition"=condition,
+                       "report_dir"=shinyInput$report_dir, 
+                       "report_option_vector"=report_option_vector)
     setShinyInput(shinyInput)
     rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
-    report_option_binary="111111111"
-    report_option_vector <<- unlist(strsplit(as.character(report_option_binary), ""))
     #dat <- as.matrix(combat_data)
     outputfile <- rmarkdown::render(rmdfile, output_file="combat_batchqc_report.html", 
                                     output_dir=shinyInput$report_dir)
-    shinyInput <<- getShinyInput()
+    shinyInput <- getShinyInput()
     setShinyInputCombat(shinyInput)
     outText
   })
@@ -763,6 +850,7 @@ shinyServer(function(input, output, session) {
     combatOutText()
   })
   output$svasummary <- renderText({
+    shinyInput <- getShinyInput()
     nsample <- dim(shinyInput$data)[2]
     sample <- 1:nsample
     pdata <- data.frame(sample, batch, condition)
@@ -776,22 +864,24 @@ shinyServer(function(input, output, session) {
     }
   })
   SVAOutText <- eventReactive(input$runSVA, {
+    shinyInput <- getShinyInput()
     if (input$fsvaOption)  {
       if (is.null(getShinyInputSVAf()))  {
         pdata <- data.frame(batch, condition)
         mod <- model.matrix(~as.factor(shinyInput$condition), data=pdata)
         sva.object <- batchQC_sva(shinyInput$data, mod)
         svaf_data <- batchQC_fsva_adjusted(shinyInput$data, mod, sva.object)
-        shinyInput <<- list("data"=svaf_data, "batch"=batch, "condition"=condition,
-                            "report_dir"=shinyInput$report_dir)
+        report_option_binary="111111111"
+        report_option_vector <- unlist(strsplit(as.character(report_option_binary), ""))
+        shinyInput <- list("data"=svaf_data, "batch"=batch, "condition"=condition,
+                           "report_dir"=shinyInput$report_dir, 
+                           "report_option_vector"=report_option_vector)
         setShinyInput(shinyInput)
         rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
-        report_option_binary="111111111"
-        report_option_vector <<- unlist(strsplit(as.character(report_option_binary), ""))
         #dat <- as.matrix(svaf_data)
         outputfile <- rmarkdown::render(rmdfile, output_file="svaf_batchqc_report.html", 
                                         output_dir=shinyInput$report_dir)
-        shinyInput <<- getShinyInput()
+        shinyInput <- getShinyInput()
         setShinyInput(shinyInput)
         setShinyInputSVAf(shinyInput)
         setShinyInputSVA(shinyInput)
@@ -806,16 +896,17 @@ shinyServer(function(input, output, session) {
         mod <- model.matrix(~as.factor(shinyInput$condition), data=pdata)
         sva.object <- batchQC_sva(shinyInput$data, mod)
         svar_data <- batchQC_svregress_adjusted(shinyInput$data, mod, sva.object)
-        shinyInput <<- list("data"=svar_data, "batch"=batch, "condition"=condition,
-                            "report_dir"=shinyInput$report_dir)
+        report_option_binary="111111111"
+        report_option_vector <- unlist(strsplit(as.character(report_option_binary), ""))
+        shinyInput <- list("data"=svar_data, "batch"=batch, "condition"=condition,
+                           "report_dir"=shinyInput$report_dir,
+                           "report_option_vector"=report_option_vector)
         setShinyInput(shinyInput)
         rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
-        report_option_binary="111111111"
-        report_option_vector <<- unlist(strsplit(as.character(report_option_binary), ""))
         #dat <- as.matrix(svar_data)
         outputfile <- rmarkdown::render(rmdfile, output_file="svar_batchqc_report.html", 
                                         output_dir=shinyInput$report_dir)
-        shinyInput <<- getShinyInput()
+        shinyInput <- getShinyInput()
         setShinyInput(shinyInput)
         setShinyInputSVAr(shinyInput)
         setShinyInputSVA(shinyInput)
@@ -867,7 +958,7 @@ shinyServer(function(input, output, session) {
         setInputs(1)
       }
     } else if (input$batchCD==2) {
-      if (is.null(shinyInputSVA))  {
+      if (is.null(getShinyInputSVA()))  {
         session$sendCustomMessage(type = 'testmessage',
                                   message = 'First run SVA from the SVA tab')
         updateRadioButtons(session, "batchCD", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
@@ -878,6 +969,7 @@ shinyServer(function(input, output, session) {
     } else  {
       setInputs(0)
     }
+    shinyInput <- getShinyInput()
     batchqc_circosplot(shinyInput$data, 
             if (input$colbybatchCD) shinyInput$batch else shinyInput$condition, 
             input$AggMethod)
