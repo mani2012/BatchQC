@@ -25,6 +25,11 @@ Collate:
     'Circos.R'
     'shapeAnalysis.R'
 Suggests:
+    ggvis,
+    d3heatmap,
+    reshape2,
+    limma,
+    HTShape,
     testthat
 Imports:
     MCMCpack,
