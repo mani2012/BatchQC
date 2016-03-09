@@ -20,7 +20,8 @@ batchQC(dat, batch, condition = NULL, report_file = "batchqc_report.html",
 
 \item{report_dir}{Output report directory path}
 
-\item{report_option_binary}{9 bits Binary String representing the plots to display and hide in the report}
+\item{report_option_binary}{9 bits Binary String representing 
+the plots to display and hide in the report}
 
 \item{view_report}{when TRUE, opens the report in a browser}
 
