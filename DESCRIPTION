@@ -8,7 +8,7 @@ Maintainer: Solaiappan Manimaran <mani2012@bu.edu>, W. Evan Johnson <wej@bu.edu>
 Description: Provides Quality Control of sequencing samples by deducing if there
     is batch effect and adjusts for it.
 License: GPL (>= 2)
-Depends:
+Depends: R (>= 3.1.0)
 Collate:
     'simulate_data.R'
     'heatmap.R'
