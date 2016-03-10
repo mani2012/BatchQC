@@ -21,10 +21,6 @@ Collate:
     'Circos.R'
     'shapeAnalysis.R'
 Suggests:
-    ggvis,
-    d3heatmap,
-    reshape2,
-    limma,
     testthat
 Imports:
     rmarkdown,
@@ -36,6 +32,10 @@ Imports:
     sva,
     corpcor,
     moments,
-    matrixStats
+    matrixStats,
+    ggvis,
+    d3heatmap,
+    reshape2,
+    limma
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
