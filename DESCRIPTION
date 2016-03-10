@@ -9,10 +9,6 @@ Description: Provides Quality Control of sequencing samples by deducing if there
     is batch effect and adjusts for it.
 License: GPL (>= 2)
 Depends:
-    rmarkdown,
-    knitr,
-    pander,
-    gplots
 Collate:
     'simulate_data.R'
     'heatmap.R'
@@ -29,9 +25,12 @@ Suggests:
     d3heatmap,
     reshape2,
     limma,
-    HTShape,
     testthat
 Imports:
+    rmarkdown,
+    knitr,
+    pander,
+    gplots,
     MCMCpack,
     shiny,
     sva,

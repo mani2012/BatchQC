@@ -4,7 +4,7 @@ library(d3heatmap)
 library(reshape2)
 library(limma)
 library(sva)
-library(HTShape)
+#library(HTShape)
 library(BatchQC)
 
 plotPC <- function(v, d, x, y, ...){
@@ -557,67 +557,67 @@ shinyServer(function(input, output, session) {
     ) })
 
   #Shape plots
-  output$SOplot <- renderPlot({
-    if (input$batchShape==1)  {
-      if (is.null(getShinyInputCombat()))  {
-        session$sendCustomMessage(type = 'testmessage',
-                                  message = 'First run ComBat from the ComBat tab')
-        updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
-                           selected=0)
-      } else  {
-        setInputs(1)
-      }
-    } else if (input$batchShape==2) {
-      if (is.null(getShinyInputSVA()))  {
-        session$sendCustomMessage(type = 'testmessage',
-                                  message = 'First run SVA from the SVA tab')
-        updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
-                           selected=0)
-      } else  {
-        setInputs(2)
-      }
-    } else  {
-      setInputs(0)
-    }
-    shinyInput <- getShinyInput()
-    lcounts <- shinyInput$lcounts
-    lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
-    res <- HTShape::fitShape(lcounts_adj, nLmom = 4)
-    #t3 <- res$lrats[, "t3"] # Grab L-skew estimates.
-    #t4 <- res$lrats[, "t4"] # Grab L-kurt estimates.
-    t3 <- res$lrats["LR3", ] # Grab L-skew estimates.
-    t4 <- res$lrats["LR4", ] # Grab L-kurt estimates.
-    HTShape::plotSO(t3, t4, verbose = FALSE)
-  })
-  output$Manova <- renderPlot({
-    if (input$batchShape==1)  {
-      if (is.null(getShinyInputCombat()))  {
-        session$sendCustomMessage(type = 'testmessage',
-                                  message = 'First run ComBat from the ComBat tab')
-        updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
-                           selected=0)
-      } else  {
-        setInputs(1)
-      }
-    } else if (input$batchShape==2) {
-      if (is.null(getShinyInputSVA()))  {
-        session$sendCustomMessage(type = 'testmessage',
-                                  message = 'First run SVA from the SVA tab')
-        updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
-                           selected=0)
-      } else  {
-        setInputs(2)
-      }
-    } else  {
-      setInputs(0)
-    }
-    shinyInput <- getShinyInput()
-    lcounts <- shinyInput$lcounts
-    lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
-    bf <- as.factor(shinyInput$batch)
-    HTShape::shapeManova(lcounts_adj, batch, lrats=TRUE, plot = TRUE,
-                         groupCol=rainbow(nlevels(bf))[bf] )
-  })
+  # output$SOplot <- renderPlot({
+  #   if (input$batchShape==1)  {
+  #     if (is.null(getShinyInputCombat()))  {
+  #       session$sendCustomMessage(type = 'testmessage',
+  #                                 message = 'First run ComBat from the ComBat tab')
+  #       updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+  #                          selected=0)
+  #     } else  {
+  #       setInputs(1)
+  #     }
+  #   } else if (input$batchShape==2) {
+  #     if (is.null(getShinyInputSVA()))  {
+  #       session$sendCustomMessage(type = 'testmessage',
+  #                                 message = 'First run SVA from the SVA tab')
+  #       updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+  #                          selected=0)
+  #     } else  {
+  #       setInputs(2)
+  #     }
+  #   } else  {
+  #     setInputs(0)
+  #   }
+  #   shinyInput <- getShinyInput()
+  #   lcounts <- shinyInput$lcounts
+  #   lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
+  #   res <- HTShape::fitShape(lcounts_adj, nLmom = 4)
+  #   #t3 <- res$lrats[, "t3"] # Grab L-skew estimates.
+  #   #t4 <- res$lrats[, "t4"] # Grab L-kurt estimates.
+  #   t3 <- res$lrats["LR3", ] # Grab L-skew estimates.
+  #   t4 <- res$lrats["LR4", ] # Grab L-kurt estimates.
+  #   HTShape::plotSO(t3, t4, verbose = FALSE)
+  # })
+  # output$Manova <- renderPlot({
+  #   if (input$batchShape==1)  {
+  #     if (is.null(getShinyInputCombat()))  {
+  #       session$sendCustomMessage(type = 'testmessage',
+  #                                 message = 'First run ComBat from the ComBat tab')
+  #       updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+  #                          selected=0)
+  #     } else  {
+  #       setInputs(1)
+  #     }
+  #   } else if (input$batchShape==2) {
+  #     if (is.null(getShinyInputSVA()))  {
+  #       session$sendCustomMessage(type = 'testmessage',
+  #                                 message = 'First run SVA from the SVA tab')
+  #       updateRadioButtons(session, "batchShape", choices=list('None'=0, 'Combat'=1,'SVA'=2), 
+  #                          selected=0)
+  #     } else  {
+  #       setInputs(2)
+  #     }
+  #   } else  {
+  #     setInputs(0)
+  #   }
+  #   shinyInput <- getShinyInput()
+  #   lcounts <- shinyInput$lcounts
+  #   lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
+  #   bf <- as.factor(shinyInput$batch)
+  #   HTShape::shapeManova(lcounts_adj, batch, lrats=TRUE, plot = TRUE,
+  #                        groupCol=rainbow(nlevels(bf))[bf] )
+  # })
   output$BatchMeanVar <- renderPlot({
     if (input$batchShape==1)  {
       if (is.null(getShinyInputCombat()))  {
