@@ -1,3 +1,4 @@
+library(pander)
 library(shiny)
 library(ggvis)
 library(d3heatmap)

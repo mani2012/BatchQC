@@ -12,10 +12,16 @@ The purpose of this package is to provide Quality Control of sequencing samples 
 
 The package includes:
 
-1. principal component analysis and plots to check batch effects
-2. heatmap plot of gene expressions
-3. statistical tests to assess batch effects
-4. functions to generate simulated RNA-Seq data
+1. Summary and Sample Diagnostics
+2. Differential Expression Plots and Analysis using LIMMA
+3. Principal Component Analysis and plots to check batch effects
+4. Heatmap plot of gene expressions
+5. Median Correlation Plot
+6. Circular Dendrogram clustered and colored by batch and condition
+7. Shape Analysis for the distribution curve based on HTShape package
+8. Batch Adjustment using ComBat
+9. Surrogate Variable Analysis using sva package
+10. Function to generate simulated RNA-Seq data
 
 `batchQC` is the pipeline function that generates the BatchQC report. It combines all the functions into one step.
 
@@ -26,7 +32,7 @@ few dependencies that BatchQC uses:
 
 ```r
 source("http://bioconductor.org/biocLite.R")
-biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'nlme', 'lme4', 'moments'))
+biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'moments'))
 ```
 
 Install 'pandoc' package by following the instructions at the following URL:
@@ -52,7 +58,6 @@ Next, use [devtools](https://github.com/hadley/devtools) to install the latest
 version of HTShape and BatchQC from Github:
 ```r
 require(devtools)
-install_github("kokrah/HTShape")
 install_github("mani2012/BatchQC", build_vignettes=TRUE)
 ```
 
