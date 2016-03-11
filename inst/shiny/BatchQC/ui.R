@@ -1,4 +1,5 @@
 library(shiny)
+library(pander)
 library(ggvis)
 library(d3heatmap)
 
@@ -176,7 +177,7 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                                              c('Parametric'=0, 'Non-Parametric'=1), 0),
                                 br(),
                                 actionButton("runCombat", "Run ComBat"),
-                                p("Click the button to run ComBat and see the results in the other tabs.")
+                                shiny::p("Click the button to run ComBat and see the results in the other tabs.")
                               ),
                               mainPanel(
                                 tabsetPanel(
@@ -193,7 +194,7 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                               sidebarPanel(
                                 checkboxInput("fsvaOption", "Frozen SVA (Default: Regression Adjusted)", FALSE),
                                 actionButton("runSVA", "Run SVA"),
-                                p("Click the button to run SVA and see the results in the other tabs.")
+                                shiny::p("Click the button to run SVA and see the results in the other tabs.")
                               ),
                               mainPanel(
                                 tabsetPanel(

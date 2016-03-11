@@ -4,6 +4,7 @@
 #' @param batch Batch covariate 
 #' @param AggMethod Aggregation Method
 #' @export
+#' @return Generates Circular Dendrogram plot for the given data
 batchqc_circosplot <- function(dat, batch, AggMethod) {
   batch1 <- as.factor(batch)
   my.colors58 <- rainbow(length(levels(batch1)))
@@ -30,7 +31,8 @@ batchqc_circosplot <- function(dat, batch, AggMethod) {
   radius <- max(h$height)*1.1
   
   par(mar=c(1,1,1,1))
-  plot(h$r*sin(h$alpha), h$r*cos(h$alpha), xlim=c(-radius, radius), ylim=c(-radius, radius), type='n', ann=F, axes=F)
+  plot(h$r*sin(h$alpha), h$r*cos(h$alpha), xlim=c(-radius, radius), 
+       ylim=c(-radius, radius), type='n', ann=FALSE, axes=FALSE)
   points(0, 0, pch=20)
   for (i in 1:n) {
     i <- h$order[i]

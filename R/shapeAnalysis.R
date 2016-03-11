@@ -65,9 +65,9 @@ batchQC_shapeVariation = function (data, groups, plot=FALSE, groupCol=NULL) {
                   spvaltext, ", Pairwise = ", spvaltext2, "\n Kurtosis p-value: Overall = ",
                   kpvaltext, ", Pairwise = ", kpvaltext2)
     
-    gplots::heatmap.2(t(Y), trace="none", Rowv=F, Colv=F, dendrogram="none", col=pal,
-                      ColSideColors=groupCol, density.info="none", scale="row",
-                      cexRow=1.15, 
+    gplots::heatmap.2(t(Y), trace="none", Rowv=FALSE, Colv=FALSE, 
+                      dendrogram="none", col=pal, ColSideColors=groupCol, 
+                      density.info="none", scale="row", cexRow=1.15, 
                       colsep=cumsum(table(groups)), main=main)
     
     legend("bottomleft", legend=unique(groups), pch=19, col=unique(groupCol), 

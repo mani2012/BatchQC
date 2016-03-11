@@ -28,7 +28,7 @@ batchqc_pca <- function(data.matrix, batch, mod=NULL)  {
     #print ("Need to implement this part")
     # do something here
   }
-  pca <- prcomp(t(data.matrix), retx=T, center=T, scale=T)
+  pca <- prcomp(t(data.matrix), retx=TRUE, center=TRUE, scale=TRUE)
   pc <- pca$x 
   xlab <- "Principal Component PC1"
   ylab <- "Principal Component PC2"

@@ -1,5 +1,5 @@
-library(pander)
 library(shiny)
+library(pander)
 library(ggvis)
 library(d3heatmap)
 library(reshape2)

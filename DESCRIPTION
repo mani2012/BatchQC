@@ -3,10 +3,17 @@ Type: Package
 Title: Batch Effects Quality Control Software
 Version: 0.99.0
 Date: 2016-03-05
-Author: Solaiappan Manimaran
-Maintainer: Solaiappan Manimaran <mani2012@bu.edu>, W. Evan Johnson <wej@bu.edu>
+Maintainer: Solaiappan Manimaran <manimaran_1975@hotmail.com>
 Description: Provides Quality Control of sequencing samples by deducing if there
-    is batch effect and adjusts for it.
+    is batch effect and adjusts for it in the best possible way.
+Author: Solaiappan Manimaran <manimaran_1975@hotmail.com>, 
+    W. Evan Johnson <wej@bu.edu>, 
+    Heather Selby <selbyh@bu.edu>, 
+    Claire Ruberman <claireruberman@gmail.com>, 
+    Kwame Okrah <kwame.okrah@gmail.com>,
+    Hector Corrada Bravo <hcorrada@gmail.com>
+URL: https://github.com/mani2012/BatchQC
+BugReports: https://github.com/mani2012/BatchQC/issues
 License: GPL (>= 2)
 Depends: R (>= 3.2.0)
 Collate:
@@ -23,6 +30,7 @@ Collate:
 Suggests:
     testthat
 Imports:
+    utils,
     rmarkdown,
     knitr,
     pander,
@@ -36,6 +44,13 @@ Imports:
     ggvis,
     d3heatmap,
     reshape2,
-    limma
+    limma,
+    grDevices, 
+    graphics, 
+    stats
+biocViews: BatchEffect, GraphAndNetwork, Microarray, PrincipalComponent, 
+    Sequencing, Software, Visualization, QualityControl, RNASeq
+SystemRequirements: pandoc (http://pandoc.org/installing.html) for generating
+    reports from markdown files.
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1

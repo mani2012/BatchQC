@@ -1,7 +1,7 @@
 BatchQC: Batch Effects Quality Control
 ======================================
 
-The purpose of this package is to provide Quality Control of sequencing samples by deducing if there is batch effect and adjusts for it.
+The purpose of this package is to provide Quality Control of sequencing samples by deducing whether there is batch effect and adjust for it in the best possible way.
 
 The package includes:
 
@@ -25,12 +25,12 @@ few dependencies that BatchQC uses:
 
 ```r
 source("http://bioconductor.org/biocLite.R")
-biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'moments'))
+biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'moments', 'rmarkdown', 'pander', 'gplots'))
 ```
 Install 'pandoc' package by following the instructions at the following URL:
 http://johnmacfarlane.net/pandoc/installing.html
 
-Rstudio provide pandoc binaries at the following location for (windows, linux and mac):
+Rstudio also provides pandoc binaries at the following location for (windows, linux and mac):
 https://s3.amazonaws.com/rstudio-buildtools/pandoc-1.13.1.zip 
 
 Install 'pander' package by following the instructions at the following URL:
@@ -62,10 +62,22 @@ vignette('BatchQC_examples', package='BatchQC')
 
 ## Troubleshooting with Installation
 
-If you are having issues with the installation, you may have to setup local directory, if you do not have permissions to install in the default location for R. You may also want to load a version of R 3.1 or higher.
+Please make sure you have installed pandoc by following the instructions from http://pandoc.org/installing.html. Otherwise, you may get an error such as the following:
+
+```r
+* creating vignettes ... ERROR
+Warning in engine$weave(file, quiet = quiet, encoding = enc) :
+  Pandoc (>= 1.12.3) and/or pandoc-citeproc is not available. Please install both.
+Error: processing vignette 'BatchQCIntro.Rmd' failed with diagnostics:
+It seems you should call rmarkdown::render() instead of knitr::knit2html() because BatchQCIntro.Rmd appears to be an R Markdown v2 document.
+Execution halted
+Error: Command failed (1)
+```
+
+If you do not have permissions to install in the default location for R, you may have to setup local directory. You may also want to load a version of R 3.2.0 or higher.
 ```r
 export R_LIBS="/my_own_local_directory/R_libs"
-module load R/R-3.1.1
+module load R/R-3.2.0
 ```
 
 And do something like the following

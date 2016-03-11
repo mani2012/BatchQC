@@ -8,7 +8,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
-The purpose of this package is to provide Quality Control of sequencing samples by deducing if there is batch effect and adjusts for it.
+The purpose of this package is to provide Quality Control of sequencing samples by deducing whether there is batch effect and adjust for it in the best possible way.
 
 The package includes:
 
@@ -32,7 +32,7 @@ few dependencies that BatchQC uses:
 
 ```r
 source("http://bioconductor.org/biocLite.R")
-biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'moments'))
+biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'moments', 'rmarkdown', 'pander', 'gplots'))
 ```
 
 Install 'pandoc' package by following the instructions at the following URL:
