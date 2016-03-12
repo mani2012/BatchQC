@@ -2,71 +2,15 @@
 title: "BatchQC Examples"
 author: "Claire Ruberman"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{BatchQC_examples}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+output: pdf_document
 ---
-```r
-source("http://bioconductor.org/biocLite.R")
-biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 'matrixStats'))
-
-require(devtools)
-install_github("mani2012/BatchQC", build_vignettes=TRUE)
-
-
-require(devtools)
-install_github('Rapporter/pander')
-
-require(BatchQC)
-vignette('BatchQCIntro', package='BatchQC')
-vignette('BatchQC_examples', package='BatchQC')
-
-```
-
-```r
-# Determine the number of surrogate variables to estimate in the model
-    ## By default uses the permutation based procedure (method="be")
-# Estimate the surrogate variables using the 2 step approach proposed by Leek and Storey 2007 
-	## psva: output data with batch effect removed but biological heterogeneity preserved 
-	## sva: estiamte surrogatae variables to remove artifacts
-
-require(sva)
-
-
-batchQC_num.sv=function(data.matrix, modmatrix){
-	data.matrix=as.matrix(data.matrix)
-	modmatrix=as.matrix(modmatrix)
-    num.sv.be=sva::num.sv(dat=data.matrix,mod=modmatrix, method = "be" , vfilter = NULL, B = 20,seed = 47)
-	return(num.sv.be)
-}
-
-
-batchQC_psva=function(data.matrix,batch){
-	data.matrix=as.matrix(data.matrix)
-	batch=as.factor(batch)
-	psva.output=psva(dat=data.matrix, batch=batch)
-	return(psva.output)
-
-}
-
-batchQC_sva=function(data.matrix, modmatrix){
-    
-    n.sv=batchQC_num.sv(data.matrix,modmatrix)
-    modmatrix0=model.matrix(~1,data=data.frame(t(data.matrix)))
-    sva.object=sva::sva(dat=data.matrix, mod=modmatrix, mod0=modmatrix0, n.sv=n.sv)
-    return(sva.object)
-
-}
-
-```
-
-
 ## Simulated Example
 ###### (a) Use the data simulating mechanism from the batchQC package
 
-```r
+```{r, echo=TRUE, cache=TRUE,message=FALSE}
+library(BatchQC)
+library(MCMCpack)
+library(sva)
 # Simulate Count Data
 ## output is ngenes by (nbatch x ncond x npercond) matrix
 ## ggstep: Gene to Gene step variation
@@ -183,7 +127,7 @@ hist(pValuesSv,main="Adjusted p-Values for SVs")
 
 ###### (b) Use the data simulating mechanism from the batchQC package, adding additional expression heterogeneity from a dichotomous unmodeled factor, independent of both batch and condition
 
-```r
+```{r, echo=TRUE, cache=TRUE,message=FALSE}
 # Use simulated data as before, except genes 10 to 25 affected by an independent unobserved factor
 unmodeled.factor.indicator=rbinom(60,1,.5)
 
@@ -291,10 +235,10 @@ hist(pValuesSv.eh,main="Adjusted p-Values for SVs (Added EH)")
 
 
 ## Bladder Batch Example
-```r
+```{r, echo=TRUE, cache=TRUE, eval=TRUE}
 ## Bladder batch data
-source("http://bioconductor.org/biocLite.R")
-biocLite("bladderbatch")
+#source("http://bioconductor.org/biocLite.R")
+#biocLite("bladderbatch")
 library(bladderbatch)
 data(bladderdata)
 
@@ -358,6 +302,7 @@ pValuesSv.bladder = f.pvalue(edata,modSv.bladder,mod0Sv.bladder) ## pvalues incl
 qValuesSv.bladder = p.adjust(pValuesSv.bladder,method="BH")
 
 par(mfrow=c(1,2))
+
 ## Original Simulated Data
 hist(pValues.bladder,main="Raw Count Data")
 hist(pValuesSv.bladder,main="Count Data after Combat")
@@ -367,7 +312,3 @@ hist(pValuesSv.bladder,main="Adjusted p-Values for SVs")
 
 
 ```
-
-
-
-
