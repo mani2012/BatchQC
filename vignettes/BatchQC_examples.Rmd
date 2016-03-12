@@ -1,314 +1,63 @@
 ---
 title: "BatchQC Examples"
-author: "Claire Ruberman"
+author: "Solaiappan Manimaran"
 date: "`r Sys.Date()`"
-output: pdf_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{BatchQC_examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
-## Simulated Example
-###### (a) Use the data simulating mechanism from the batchQC package
-
-```{r, echo=TRUE, cache=TRUE,message=FALSE}
+### Example 1: Simulated dataset
+The simulated data consists of three batches and two conditions, 
+and expression measurements for 50 genes
+```r
 library(BatchQC)
-library(MCMCpack)
-library(sva)
-# Simulate Count Data
-## output is ngenes by (nbatch x ncond x npercond) matrix
-## ggstep: Gene to Gene step variation
-## bbstep: Batch to Batch step variation
-## ccstep: Condition to Condition step variation
-## bbvarstep: Batch to Batch variance step variation
-
-set.seed(47)
-
 nbatch <- 3
 ncond <- 2
 npercond <- 10
-ngenes <- 50
-ggstep=5
-bbstep=15000
-ccstep=10000
-
-bvarstep<-2
-data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
-
-# genes 10 to 25 affected by an independent unobserved factor
-unmodeled.factor.indicator=rbinom(60,1,.5)
-
-nsamples=nbatch*ncond*npercond
-eh.matrix <- matrix(0, nrow=ngenes, ncol=nsamples)
-for(j in 1:nsamples){
-    bsize <- seq(bvarstep, length.out=nbatch, by=bvarstep)
-    size<-rinvgamma(1, shape=mean(bsize), scale=1)
-    bmu <- seq(bbstep, length.out=nbatch, by=bbstep)
-    cmu <- seq(ccstep, length.out=ncond, by=ccstep)
-    eh.mu=rnorm(1, mean=mean(bmu), sd=1)
-    mu=eh.mu*unmodeled.factor.indicator[j]
-    eh.matrix[10:25,j]=rnbinom(16,size=size,mu=mu)
-  
-}  
-
-data.matrix.eh=data.matrix+eh.matrix
-
-
-# Apply BatchQC
+data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, 
+                          npercond=npercond, ggstep=5, bbstep=15000, 
+                          ccstep=10000, bvarstep=2, seed=1234)
 batch <- rep(1:nbatch, each=ncond*npercond)
 condition <- rep(rep(1:ncond, each=npercond), nbatch)
-nsample <- nbatch*ncond*npercond
-sample <- 1:nsample
-pdata <- data.frame(sample, batch, condition)
-modmatrix = model.matrix(~as.factor(condition), data=pdata)
-modmatrix.null = model.matrix(~1,data=pdata) ## null model matrix (just intercept)
-
-
-par(mfrow=c(1,1))
-heatmap=batchqc_heatmap(data.matrix, batch, mod=modmatrix)
-#heatmap.eh=batchqc_heatmap(data.matrix.eh, batch, mod=modmatrix)
-
-n.sv=batchQC_num.sv(data.matrix,modmatrix)
-#n.sv.eh=batchQC_num.sv(data.matrix.eh,modmatrix)
-
-combat_data.matrix = ComBat(dat=data.matrix, batch=batch, mod=modmatrix)
-#combat_data.matrix.eh = ComBat(dat=data.matrix.eh, batch=batch, mod=modmatrix)
-
-sva.object=batchQC_sva(data.matrix, modmatrix)
-#sva.object.eh=batchQC_sva(data.matrix.eh, modmatrix)
-
-## Plot the surrogate variables by batch and the unmodeled factor
-
-par(mfrow=c(1,2))
-for(i in 1:sva.object$n.sv){
-  boxplot(sva.object$sv[,i]~unmodeled.factor.indicator,xlab="Unmodeled Factor ",ylab=paste("Surrogate Variable",i,sep=" "),main="Simulated Data ")
-  boxplot(sva.object$sv[,i]~batch,xlab="Batch",ylab=paste("Surrogate Variable",i,sep=" "),main="Simulated Data")
-  
-}
-
-
-pprob.gam=sva.object$pprob.gam ##prob each gene is affected by EH
-index.p.batch.8=which(pprob.gam>=.8)
-
-par(mfrow=c(1,1))
-### Look at heatmap for genes just affected by EH
-heatmap=batchqc_heatmap(data.matrix[index.p.batch.8,], batch, mod=modmatrix)
-
-
-### Histogram of the p values
-
-#### (a) Raw data
-pValues=f.pvalue(data.matrix,modmatrix,modmatrix.null)
-qValues = p.adjust(pValues,method="BH")
-
-#### (b) Apply Combat
-pValuesComBat=f.pvalue(combat_data.matrix,modmatrix,modmatrix.null)
-qValuesComBat = p.adjust(pValuesComBat,method="BH")
-
-#### (c) Include Batch
-modBatch = model.matrix(~as.factor(condition) + as.factor(batch),data=pdata)
-mod0Batch = model.matrix(~as.factor(batch),data=pdata)
-
-pValuesBatch = f.pvalue(data.matrix,modBatch,mod0Batch)
-qValuesBatch = p.adjust(pValuesBatch,method="BH")
-
-#### (d) Include SV's
-modSv = cbind(modmatrix,sva.object$sv) ## include surrogate variables in model matrix with condition (cancer status)
-mod0Sv = cbind(modmatrix.null,sva.object$sv) ## include surrogate variables in null model matrix
-
-pValuesSv = f.pvalue(data.matrix,modSv,mod0Sv) ## pvalues including sv's in model matrix
-qValuesSv = p.adjust(pValuesSv,method="BH")
-
-par(mfrow=c(1,2))
-## Original Simulated Data
-hist(pValues,main="Raw Count Data")
-hist(pValuesSv,main="Count Data after Combat")
-hist(pValuesBatch,main="Adjusted p-Values for Batch")
-hist(pValuesSv,main="Adjusted p-Values for SVs")
+batchQC(data.matrix, batch=batch, condition=condition, 
+        report_file="batchqc_report.html", report_dir=".", 
+        report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
 
 ```
 
-
-###### (b) Use the data simulating mechanism from the batchQC package, adding additional expression heterogeneity from a dichotomous unmodeled factor, independent of both batch and condition
-
-```{r, echo=TRUE, cache=TRUE,message=FALSE}
-# Use simulated data as before, except genes 10 to 25 affected by an independent unobserved factor
-unmodeled.factor.indicator=rbinom(60,1,.5)
-
-nsamples=nbatch*ncond*npercond
-eh.matrix <- matrix(0, nrow=ngenes, ncol=nsamples)
-for(j in 1:nsamples){
-    bsize <- seq(bvarstep, length.out=nbatch, by=bvarstep)
-    size<-rinvgamma(1, shape=mean(bsize), scale=1)
-    bmu <- seq(bbstep, length.out=nbatch, by=bbstep)
-    cmu <- seq(ccstep, length.out=ncond, by=ccstep)
-    eh.mu=rnorm(1, mean=mean(bmu), sd=1)
-    mu=eh.mu*unmodeled.factor.indicator[j]
-    eh.matrix[10:25,j]=rnbinom(16,size=size,mu=mu)
-  
-}  
-
-data.matrix.eh=data.matrix+eh.matrix
-
-
-# Apply BatchQC
-batch <- rep(1:nbatch, each=ncond*npercond)
-condition <- rep(rep(1:ncond, each=npercond), nbatch)
-nsample <- nbatch*ncond*npercond
-sample <- 1:nsample
-pdata <- data.frame(sample, batch, condition)
-modmatrix = model.matrix(~as.factor(condition), data=pdata)
-modmatrix.null = model.matrix(~1,data=pdata) ## null model matrix (just intercept)
-
-
-par(mfrow=c(1,1))
-heatmap.eh=batchqc_heatmap(data.matrix.eh, batch, mod=modmatrix)
-
-n.sv.eh=batchQC_num.sv(data.matrix.eh,modmatrix)
-
-combat_data.matrix.eh = ComBat(dat=data.matrix.eh, batch=batch, mod=modmatrix)
-
-sva.object.eh=batchQC_sva(data.matrix.eh, modmatrix)
-
-
-
-par(mfrow=c(1,2))
-for(i in 1:sva.object.eh$n.sv){
-  boxplot(sva.object.eh$sv[,i]~unmodeled.factor.indicator,xlab="Unmodeled Factor ",ylab=paste("Surrogate Variable",i,sep=" "),main="Simulated Data with EH")
-
-  boxplot(sva.object.eh$sv[,i]~batch,xlab="Batch",ylab=paste("Surrogate Variable",i,sep=" "),main="Simulated Data with EH")
-}
-
-pprob.gam.eh=sva.object.eh$pprob.gam ##prob each gene is affected by EH
-index.p.batch.8.eh=which(pprob.gam.eh>=.8)
-
-### Look at heatmap for genes just affected by EH
-par(mfrow=c(1,1))
-heatmap.eh=batchqc_heatmap(data.matrix.eh[index.p.batch.8.eh,], batch, mod=modmatrix)
-
-
-### Histogram of the p values
-
-#### (a) Raw data
-pValues=f.pvalue(data.matrix,modmatrix,modmatrix.null)
-pValues.eh=f.pvalue(data.matrix.eh,modmatrix,modmatrix.null)
-
-qValues = p.adjust(pValues,method="BH")
-qValues.eh = p.adjust(pValues.eh,method="BH")
-
-#### (b) Apply Combat
-pValuesComBat=f.pvalue(combat_data.matrix,modmatrix,modmatrix.null)
-pValuesComBat.eh=f.pvalue(combat_data.matrix.eh,modmatrix,modmatrix.null)
-
-qValuesComBat = p.adjust(pValuesComBat,method="BH")
-qValuesComBat.eh = p.adjust(pValuesComBat.eh,method="BH")
-
-#### (c) Include Batch
-modBatch = model.matrix(~as.factor(condition) + as.factor(batch),data=pdata)
-mod0Batch = model.matrix(~as.factor(batch),data=pdata)
-
-pValuesBatch = f.pvalue(data.matrix,modBatch,mod0Batch)
-qValuesBatch = p.adjust(pValuesBatch,method="BH")
-
-pValuesBatch.eh = f.pvalue(data.matrix.eh,modBatch,mod0Batch)
-qValuesBatch.eh = p.adjust(pValuesBatch.eh,method="BH")
-
-#### (d) Include SV's
-modSv = cbind(modmatrix,sva.object$sv) ## include surrogate variables in model matrix with condition (cancer status)
-mod0Sv = cbind(modmatrix.null,sva.object$sv) ## include surrogate variables in null model matrix
-
-modSv.eh = cbind(modmatrix,sva.object.eh$sv) ## include surrogate variables in model matrix with condition (cancer status)
-mod0Sv.eh = cbind(modmatrix.null,sva.object.eh$sv) ## include surrogate variables in null model matrix
-
-pValuesSv = f.pvalue(data.matrix,modSv,mod0Sv) ## pvalues including sv's in model matrix
-qValuesSv = p.adjust(pValuesSv,method="BH")
-
-pValuesSv.eh = f.pvalue(data.matrix.eh,modSv.eh,mod0Sv.eh) ## pvalues including sv's in model matrix
-qValuesSv.eh = p.adjust(pValuesSv.eh,method="BH")
-
-
-par(mfrow=c(2,2))
-## Additional source of EH Added
-hist(pValues.eh,main="Raw Count Data (Added EH)")
-hist(pValuesSv.eh,main="Count Data after Combat (Added EH)")
-hist(pValuesBatch.eh,main="Adjusted p-Values for Batch (Added EH)")
-hist(pValuesSv.eh,main="Adjusted p-Values for SVs (Added EH)")
-
-
+### Example 2: Real signature dataset
+This dataset is from signature data captured when activating different growth 
+pathway genes in human mammary epithelial cells (GEO accession: GSE73628). 
+This data consists of three batches and ten different conditions corresponding 
+to control and nine different pathways
+```r
+library(BatchQC)
+data(example_batchqc_data)
+batch <- batch_indicator$V1
+condition <- batch_indicator$V2
+batchQC(signature_data, batch=batch, condition=condition, 
+        report_file="batchqc_signature_data_report.html", report_dir=".", 
+        report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
 ```
 
-
-## Bladder Batch Example
-```{r, echo=TRUE, cache=TRUE, eval=TRUE}
-## Bladder batch data
-#source("http://bioconductor.org/biocLite.R")
-#biocLite("bladderbatch")
+### Example 3: Real bladderbatch dataset
+This dataset has 5 batches, 3 covariate levels. Batch 1 contains 
+only cancer, 2 and 3 have cancer and controls, 4 contains only biopsy, and 
+5 contains cancer and biopsy
+```r
+library(BatchQC)
 library(bladderbatch)
 data(bladderdata)
-
-pheno = pData(bladderEset)
-edata = exprs(bladderEset)
-mod = model.matrix(~as.factor(cancer), data=pheno) ## model matrix with conditions
-mod0 = model.matrix(~1,data=pheno) ## null model matrix (just intercept)
-
-n.sv.bladder = batchQC_num.sv(edata,mod) ## estimate number of sv's using permutation based approach
-
-sva.object.bladder = batchQC_sva(edata,mod) ## apply surrogate variable analysis
-combat_data.matrix.bladder = ComBat(edata, batch=pheno$batch, mod=mod)
-
-# Heatmap of the expression data
-par(mfrow=c(1,1))
-heatmap.bladder=batchqc_heatmap(edata, batch = pheno$batch, mod=mod)
-
-
-## Plot the surrogate variables by batch 
-
-par(mfrow=c(1,2))
-for(i in 1:sva.object.bladder$n.sv){
-  boxplot(sva.object.bladder$sv[,i]~pheno$batch,xlab="Batch",ylab=paste("Surrogate Variable",i,sep=" "),main="Simulated Data")
-  
-}
-
-
-### Look at heatmap for genes with p>0.8 of being affected by EH
-
-pprob.gam.bladder=sva.object.bladder$pprob.gam ##probability that each gene is affected by expression heterogeneity
-index.p.batch.8.bladder=which(pprob.gam.bladder>=.8)
-
-edata.batch.8=edata[index.p.batch.8.bladder,]
-
-par(mfrow=c(1,1))
-
-batchqc_heatmap(edata[index.p.batch.8.bladder,], batch = pheno$batch, mod=mod) ## heatmap for genes with probability above 0.8 of being affected by a batch
-
-
-#Histogram of the p.values
-#### (a) Raw data
-pValues.bladder=f.pvalue(edata,mod,mod0)
-qValues.bladder = p.adjust(pValues.bladder,method="BH")
-
-#### (b) Apply Combat
-pValuesComBat.bladder=f.pvalue(combat_data.matrix.bladder,mod,mod0)
-qValuesComBat.bladder = p.adjust(pValuesComBat.bladder,method="BH")
-
-#### (c) Include Batch
-modBatch.bladder = model.matrix(~as.factor(cancer) + as.factor(batch),data=pheno)
-mod0Batch.bladder = model.matrix(~as.factor(batch),data=pheno)
-
-pValuesBatch.bladder = f.pvalue(edata,modBatch.bladder,mod0Batch.bladder)
-qValuesBatch.bladder = p.adjust(pValuesBatch.bladder,method="BH")
-
-#### (d) Include SV's
-modSv.bladder = cbind(mod,sva.object.bladder$sv) ## include surrogate variables in model matrix with condition (cancer status)
-mod0Sv.bladder = cbind(mod0,sva.object.bladder$sv) ## include surrogate variables in null model matrix
-
-pValuesSv.bladder = f.pvalue(edata,modSv.bladder,mod0Sv.bladder) ## pvalues including sv's in model matrix
-qValuesSv.bladder = p.adjust(pValuesSv.bladder,method="BH")
-
-par(mfrow=c(1,2))
-
-## Original Simulated Data
-hist(pValues.bladder,main="Raw Count Data")
-hist(pValuesSv.bladder,main="Count Data after Combat")
-hist(pValuesBatch.bladder,main="Adjusted p-Values for Batch")
-hist(pValuesSv.bladder,main="Adjusted p-Values for SVs")
-
-
-
+pheno <- pData(bladderEset)
+edata <- exprs(bladderEset)
+batch <- pheno$batch  
+condition <- pheno$cancer
+batchQC(edata, batch=batch, condition=condition, 
+        report_file="batchqc_report.html", report_dir=".", 
+        report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
 ```
