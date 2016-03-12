@@ -8,6 +8,15 @@ BinToDec <- function(x) sum(2^(which(rev(unlist(strsplit(as.character(x),
 #' @param lib.size default is colsums(qcounts)
 #' @return list containing log2(quantile counts per mil reads) and library sizes
 #' @export
+#' @examples
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, 
+#'     npercond=npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, 
+#'     seed=1234)
+#' data.matrix <- as.matrix(data.matrix)
+#' log2CPM(data.matrix)
 log2CPM <- function(qcounts, lib.size = NULL) {
     if (is.null(lib.size)) 
         lib.size <- colSums(qcounts)
@@ -447,6 +456,7 @@ batchqc_f.pvalue <- function(dat, mod, mod0) {
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param condition Condition covariate of interest
 #' @param batch Batch covariate 
+#' @return List of explained variation by batch and condition
 #' @export
 #' @examples
 #' nbatch <- 3
@@ -488,6 +498,7 @@ batchqc_explained_variation <- function(data.matrix, condition,
 #' @param vars Variance of the Principal components in the given data
 #' @param condition Condition covariate of interest
 #' @param batch Batch covariate 
+#' @return Explained variation table for each principal components
 #' @export
 #' @examples
 #' nbatch <- 3
@@ -533,6 +544,7 @@ batchqc_pc_explained_variation <- function(pcs, vars, condition,
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param batch Batch covariate 
 #' @param condition Condition covariate of interest
+#' @return Adjusted data after remove the variation across conditions
 #' @export
 #' @examples
 #' nbatch <- 3

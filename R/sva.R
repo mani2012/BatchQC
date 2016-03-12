@@ -11,7 +11,8 @@ require(sva)
 #' 
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param modmatrix Model matrix for outcome of interest and other covariates 
-#' besides batch
+#'     besides batch
+#' @return Number of Surrogate variables found
 #' @import sva
 #' @export
 #' @examples
@@ -47,7 +48,8 @@ batchQC_psva = function(data.matrix, batch) {
 #' 
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param modmatrix Model matrix for outcome of interest and other covariates 
-#' besides batch
+#'     besides batch
+#' @return Surrogate variables analysis object
 #' @import sva
 #' @export
 #' @examples
@@ -77,8 +79,9 @@ batchQC_sva = function(data.matrix, modmatrix) {
 #' 
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param modmatrix Model matrix for outcome of interest and other covariates 
-#' besides batch
+#'     besides batch
 #' @param sva.object SVA object
+#' @return Frozen Surrogate variables adjusted data
 #' @import sva
 #' @export
 #' @examples
@@ -104,8 +107,9 @@ batchQC_fsva_adjusted = function(data.matrix, modmatrix, sva.object) {
 #' 
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param modmatrix Model matrix for outcome of interest and other covariates 
-#' besides batch
+#'     besides batch
 #' @param sva.object SVA object
+#' @return Surrogate variables regress adjusted data
 #' @export
 #' @examples
 #' nbatch <- 3

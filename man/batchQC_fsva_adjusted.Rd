@@ -15,6 +15,9 @@ besides batch}
 
 \item{sva.object}{SVA object}
 }
+\value{
+Frozen Surrogate variables adjusted data
+}
 \description{
 Use frozen surrogate variable analysis to remove the surrogate variables 
 inferred from sva

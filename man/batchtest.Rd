@@ -14,6 +14,9 @@ batchtest(pca, batch, mod = NULL)
 \item{mod}{Model matrix for outcome of interest and other covariates 
 besides batch}
 }
+\value{
+Summary of linear regression of first five principal components
+}
 \description{
 Performs test to check whether batch needs to be adjusted
 }

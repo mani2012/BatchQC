@@ -13,6 +13,9 @@ batchQC_num.sv(data.matrix, modmatrix)
 \item{modmatrix}{Model matrix for outcome of interest and other covariates 
 besides batch}
 }
+\value{
+Number of Surrogate variables found
+}
 \description{
 Returns the number of surrogate variables to estimate in the model using 
 a permutation based procedure

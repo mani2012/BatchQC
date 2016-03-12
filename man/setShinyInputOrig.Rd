@@ -9,7 +9,13 @@ setShinyInputOrig(x)
 \arguments{
 \item{x}{shinyInputOrig option}
 }
+\value{
+shinyInputOrig option
+}
 \description{
 Setter function to set the shinyInputOrig option
+}
+\examples{
+setShinyInputOrig(NULL)
 }
 

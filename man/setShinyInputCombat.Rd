@@ -9,7 +9,13 @@ setShinyInputCombat(x)
 \arguments{
 \item{x}{shinyInputCombat option}
 }
+\value{
+shinyInputCombat option
+}
 \description{
 Setter function to set the shinyInputCombat option
+}
+\examples{
+setShinyInputCombat(NULL)
 }
 

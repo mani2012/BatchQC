@@ -14,6 +14,9 @@ batchqc_corscatter(data.matrix, batch, mod = NULL)
 \item{mod}{Model matrix for outcome of interest and other covariates 
 besides batch}
 }
+\value{
+Median Correlation plot
+}
 \description{
 Produce Median Correlation plot
 }

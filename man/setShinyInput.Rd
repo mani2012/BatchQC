@@ -9,7 +9,13 @@ setShinyInput(x)
 \arguments{
 \item{x}{shinyInput option}
 }
+\value{
+shinyInput option
+}
 \description{
 Setter function to set the shinyInput option
+}
+\examples{
+setShinyInput(NULL)
 }
 

@@ -17,6 +17,7 @@ require(graphics)
 #'     \item{V2}{Condition (Pathway) Indicator}
 #' }
 #' @source GEO accession: GSE73628
+#' @return Batch indicator object
 "batch_indicator"
 
 #' Signature data captured when activating different growth pathway genes in 
@@ -32,6 +33,7 @@ require(graphics)
 #'     \item{rows1-18052}{Genes 1-18052}
 #' }
 #' @source GEO accession: GSE73628
+#' @return Signature data 
 "signature_data"
 
 #' Checks for presence of batch effect and reports whether the batch 
@@ -159,7 +161,18 @@ batchQC <- function(dat, batch, condition = NULL,
 #' @return data A probe x sample genomic measure matrix, adjusted for 
 #' batch effects.
 #' @export
-#' 
+#' @examples
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, 
+#'     npercond=npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, 
+#'     seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' pdata <- data.frame(batch, condition)
+#' mod = model.matrix(~as.factor(condition), data = pdata)
+#' combatPlot(data.matrix, batch, mod=mod)
 combatPlot <- function(dat, batch, mod = NULL, par.prior = TRUE, 
     prior.plots = TRUE) {
     # make batch a factor and make a set of indicators for batch
@@ -333,13 +346,18 @@ Beta.NA = function(y, X) {
 #' Getter function to get the shinyInput option
 #' @return shinyInput option
 #' @export
+#' @examples
+#' getShinyInput()
 getShinyInput <- function() {
     shinyInput <- getOption("batchqc.shinyInput")
     return(shinyInput)
 }
 #' Setter function to set the shinyInput option
 #' @param x shinyInput option
+#' @return shinyInput option
 #' @export
+#' @examples
+#' setShinyInput(NULL)
 setShinyInput <- function(x) {
     options(batchqc.shinyInput = x)
 }
@@ -347,13 +365,18 @@ setShinyInput <- function(x) {
 #' Getter function to get the shinyInputOrig option
 #' @return shinyInputOrig option
 #' @export
+#' @examples
+#' getShinyInputOrig()
 getShinyInputOrig <- function() {
     shinyInputOrig <- getOption("batchqc.shinyInputOrig")
     return(shinyInputOrig)
 }
 #' Setter function to set the shinyInputOrig option
 #' @param x shinyInputOrig option
+#' @return shinyInputOrig option
 #' @export
+#' @examples
+#' setShinyInputOrig(NULL)
 setShinyInputOrig <- function(x) {
     options(batchqc.shinyInputOrig = x)
 }
@@ -361,52 +384,72 @@ setShinyInputOrig <- function(x) {
 #' Getter function to get the shinyInputCombat option
 #' @return shinyInputCombat option
 #' @export
+#' @examples
+#' getShinyInputCombat()
 getShinyInputCombat <- function() {
     shinyInputCombat <- getOption("batchqc.shinyInputCombat")
     return(shinyInputCombat)
 }
 #' Setter function to set the shinyInputCombat option
 #' @param x shinyInputCombat option
+#' @return shinyInputCombat option
 #' @export
+#' @examples
+#' setShinyInputCombat(NULL)
 setShinyInputCombat <- function(x) {
     options(batchqc.shinyInputCombat = x)
 }
 #' Getter function to get the shinyInputSVA option
 #' @return shinyInputSVA option
 #' @export
+#' @examples
+#' getShinyInputSVA()
 getShinyInputSVA <- function() {
     shinyInputSVA <- getOption("batchqc.shinyInputSVA")
     return(shinyInputSVA)
 }
 #' Setter function to set the shinyInputSVA option
 #' @param x shinyInputSVA option
+#' @return shinyInputSVA option
 #' @export
+#' @examples
+#' setShinyInputSVA(NULL)
 setShinyInputSVA <- function(x) {
     options(batchqc.shinyInputSVA = x)
 }
 #' Getter function to get the shinyInputSVAf option
 #' @return shinyInputSVAf option
 #' @export
+#' @examples
+#' getShinyInputSVAf()
 getShinyInputSVAf <- function() {
     shinyInputSVAf <- getOption("batchqc.shinyInputSVAf")
     return(shinyInputSVAf)
 }
 #' Setter function to set the shinyInputSVAf option
 #' @param x shinyInputSVAf option
+#' @return shinyInputSVAf option
 #' @export
+#' @examples
+#' setShinyInputSVAf(NULL)
 setShinyInputSVAf <- function(x) {
     options(batchqc.shinyInputSVAf = x)
 }
 #' Getter function to get the shinyInputSVAr option
 #' @return shinyInputSVAr option
 #' @export
+#' @examples
+#' getShinyInputSVAr()
 getShinyInputSVAr <- function() {
     shinyInputSVAr <- getOption("batchqc.shinyInputSVAr")
     return(shinyInputSVAr)
 }
 #' Setter function to set the shinyInputSVAr option
 #' @param x shinyInputSVAr option
+#' @return shinyInputSVAr option
 #' @export
+#' @examples
+#' setShinyInputSVAr(NULL)
 setShinyInputSVAr <- function(x) {
     options(batchqc.shinyInputSVAr = x)
 } 

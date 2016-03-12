@@ -15,7 +15,20 @@ batchQC_shapeVariation(data, groups, plot = FALSE, groupCol = NULL)
 
 \item{groupCol}{group color}
 }
+\value{
+Mean and Variance batch variation Overall and Pairwise p-values
+}
 \description{
 Perform Mean and Variance batch variation analysis
+}
+\examples{
+nbatch <- 3
+ncond <- 2
+npercond <- 10
+data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, 
+    npercond=npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, 
+    seed=1234)
+batch <- rep(1:nbatch, each=ncond*npercond)
+batchQC_shapeVariation(data.matrix, groups=batch)
 }
 

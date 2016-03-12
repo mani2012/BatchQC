@@ -3,7 +3,8 @@
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param batch Batch covariate 
 #' @param mod Model matrix for outcome of interest and other covariates 
-#' besides batch
+#'     besides batch
+#' @return Correlation heatmap plot
 #' @export
 #' @examples
 #' nbatch <- 3
@@ -47,7 +48,8 @@ batchqc_correlation <- function(data.matrix, batch, mod = NULL) {
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param batch Batch covariate 
 #' @param mod Model matrix for outcome of interest and other covariates 
-#' besides batch
+#'     besides batch
+#' @return Median Correlation plot
 #' @import matrixStats
 #' @export
 #' @examples

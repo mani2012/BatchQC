@@ -9,7 +9,13 @@ setShinyInputSVA(x)
 \arguments{
 \item{x}{shinyInputSVA option}
 }
+\value{
+shinyInputSVA option
+}
 \description{
 Setter function to set the shinyInputSVA option
+}
+\examples{
+setShinyInputSVA(NULL)
 }
 

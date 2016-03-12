@@ -16,6 +16,9 @@ besides batch}
 
 \item{max_display}{Maximum number of rows to display in heat map}
 }
+\value{
+Heatmap plots for the given data
+}
 \description{
 Produce heatmap plots for the given data
 }

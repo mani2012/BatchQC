@@ -22,6 +22,11 @@ batch_indicator
 
 signature_data
 }
+\value{
+Batch indicator object
+
+Signature data
+}
 \description{
 This data consists of three batches and ten different conditions 
 corresponding to control and nine different pathways

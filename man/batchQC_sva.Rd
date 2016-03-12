@@ -13,6 +13,9 @@ batchQC_sva(data.matrix, modmatrix)
 \item{modmatrix}{Model matrix for outcome of interest and other covariates 
 besides batch}
 }
+\value{
+Surrogate variables analysis object
+}
 \description{
 Estimate the surrogate variables using the 2 step approach proposed by 
 Leek and Storey 2007

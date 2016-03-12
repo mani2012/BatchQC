@@ -14,6 +14,9 @@ batchqc_explained_variation(data.matrix, condition, batch)
 
 \item{batch}{Batch covariate}
 }
+\value{
+List of explained variation by batch and condition
+}
 \description{
 Returns a list of explained variation by batch and condition 
 combinations

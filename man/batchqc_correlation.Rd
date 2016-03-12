@@ -14,6 +14,9 @@ batchqc_correlation(data.matrix, batch, mod = NULL)
 \item{mod}{Model matrix for outcome of interest and other covariates 
 besides batch}
 }
+\value{
+Correlation heatmap plot
+}
 \description{
 Produce correlation heatmap plot
 }

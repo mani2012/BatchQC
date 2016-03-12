@@ -12,4 +12,7 @@ shinyInputSVAr option
 \description{
 Getter function to get the shinyInputSVAr option
 }
+\examples{
+getShinyInputSVAr()
+}
 

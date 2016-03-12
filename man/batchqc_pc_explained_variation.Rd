@@ -15,6 +15,9 @@ batchqc_pc_explained_variation(pcs, vars, condition, batch)
 
 \item{batch}{Batch covariate}
 }
+\value{
+Explained variation table for each principal components
+}
 \description{
 Returns explained variation for each principal components
 }

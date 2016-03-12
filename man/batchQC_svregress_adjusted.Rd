@@ -14,6 +14,9 @@ besides batch}
 
 \item{sva.object}{SVA object}
 }
+\value{
+Surrogate variables regress adjusted data
+}
 \description{
 Regress the surrogate variables out of the expression data
 }

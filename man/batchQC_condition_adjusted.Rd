@@ -13,6 +13,9 @@ batchQC_condition_adjusted(data.matrix, batch, condition)
 
 \item{condition}{Condition covariate of interest}
 }
+\value{
+Adjusted data after remove the variation across conditions
+}
 \description{
 Returns adjusted data after remove the variation across conditions
 }

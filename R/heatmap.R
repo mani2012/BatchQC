@@ -3,8 +3,9 @@
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param batch Batch covariate 
 #' @param mod Model matrix for outcome of interest and other covariates 
-#' besides batch
+#'     besides batch
 #' @param max_display Maximum number of rows to display in heat map 
+#' @return Heatmap plots for the given data 
 #' @export
 #' @examples
 #' nbatch <- 3

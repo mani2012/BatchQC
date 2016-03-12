@@ -3,7 +3,8 @@
 #' @param pca PCA object from principal component analysis
 #' @param batch Batch covariate 
 #' @param mod Model matrix for outcome of interest and other covariates 
-#' besides batch
+#'     besides batch
+#' @return Summary of linear regression of first five principal components 
 #' @export
 #' @examples
 #' nbatch <- 3
