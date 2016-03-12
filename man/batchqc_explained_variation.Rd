@@ -2,7 +2,8 @@
 % Please edit documentation in R/utils.R
 \name{batchqc_explained_variation}
 \alias{batchqc_explained_variation}
-\title{Returns a list of explained variation by batch and condition combinations}
+\title{Returns a list of explained variation by batch and condition 
+combinations}
 \usage{
 batchqc_explained_variation(data.matrix, condition, batch)
 }
@@ -14,14 +15,15 @@ batchqc_explained_variation(data.matrix, condition, batch)
 \item{batch}{Batch covariate}
 }
 \description{
-Returns a list of explained variation by batch and condition combinations
+Returns a list of explained variation by batch and condition 
+combinations
 }
 \examples{
 nbatch <- 3
 ncond <- 2
 npercond <- 10
-data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
-                          ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+    npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
 batch <- rep(1:nbatch, each=ncond*npercond)
 condition <- rep(rep(1:ncond, each=npercond), nbatch)
 batchqc_explained_variation(data.matrix, condition, batch)

@@ -4,11 +4,13 @@ author: "Solaiappan Manimaran"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{BatchQCIntro}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+    %\VignetteIndexEntry{BatchQCIntro}
+    %\VignetteEngine{knitr::rmarkdown}
+    \usepackage[utf8]{inputenc}
 ---
-The purpose of this package is to provide Quality Control of sequencing samples by deducing whether there is batch effect and adjust for it in the best possible way.
+The purpose of this package is to provide Quality Control of sequencing samples 
+by deducing whether there is batch effect and adjust for it in the best 
+possible way.
 
 The package includes:
 
@@ -23,7 +25,8 @@ The package includes:
 9. Surrogate Variable Analysis using sva package
 10. Function to generate simulated RNA-Seq data
 
-`batchQC` is the pipeline function that generates the BatchQC report. It combines all the functions into one step.
+`batchQC` is the pipeline function that generates the BatchQC report. It 
+combines all the functions into one step.
 
 ## Installation
 
@@ -32,13 +35,16 @@ few dependencies that BatchQC uses:
 
 ```r
 source("http://bioconductor.org/biocLite.R")
-biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'moments', 'rmarkdown', 'pander', 'gplots'))
+biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 
+'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'moments', 
+'rmarkdown', 'pander', 'gplots'))
 ```
 
 Install 'pandoc' package by following the instructions at the following URL:
-http://johnmacfarlane.net/pandoc/installing.html
+http://pandoc.org/installing.html
 
-Rstudio provide pandoc binaries at the following location for (windows, linux and mac):
+Rstudio also provide pandoc binaries at the following location for windows, 
+linux and mac:
 https://s3.amazonaws.com/rstudio-buildtools/pandoc-1.13.1.zip 
 
 Install 'pander' package by following the instructions at the following URL:
@@ -46,7 +52,7 @@ http://rapporter.github.io/pander/
 
 ```r
 require(devtools)
-install_github('Rapporter/pander')
+Sinstall_github('Rapporter/pander')
 ```
 Install the latest development version of sva:
 ```r
@@ -61,7 +67,8 @@ require(devtools)
 install_github("mani2012/BatchQC", build_vignettes=TRUE)
 ```
 
-If all went well you should now be able to load BatchQC. Here is an example use of the pipeline.
+If all went well you should now be able to load BatchQC. Here is an example 
+usage of the pipeline.
 
 ### Simulate data and Apply BatchQC
 ```r
@@ -69,8 +76,8 @@ library(BatchQC)
 nbatch <- 3
 ncond <- 2
 npercond <- 10
-data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
-                          ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+    npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
 batch <- rep(1:nbatch, each=ncond*npercond)
 condition <- rep(rep(1:ncond, each=npercond), nbatch)
 batchQC(data.matrix, batch=batch, condition=condition, 
@@ -110,9 +117,12 @@ library(bladderbatch)
 data(bladderdata)
 pheno <- pData(bladderEset)
 edata <- exprs(bladderEset)
-batch <- pheno$batch  ### note 5 batches, 3 covariate levels. Batch 1 contains only cancer, 2 and 3 have cancer and controls, 4 contains only biopsy, and 5 contains cancer and biopsy
+batch <- pheno$batch  ### note 5 batches, 3 covariate levels. Batch 1 contains 
+### only cancer, 2 and 3 have cancer and controls, 4 contains only biopsy, and 
+### 5 contains cancer and biopsy
 condition <- pheno$cancer
 batchQC(edata, batch=batch, condition=condition, 
-        report_file="batchqc_report.html", report_dir=".", report_option_binary="111111111",
+        report_file="batchqc_report.html", report_dir=".", 
+        report_option_binary="111111111",
         view_report=FALSE, interactive=TRUE)
 ```

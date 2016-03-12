@@ -2,26 +2,29 @@
 % Please edit documentation in R/sva.R
 \name{batchQC_fsva_adjusted}
 \alias{batchQC_fsva_adjusted}
-\title{Use frozen surrogate variable analysis to remove the surrogate variables inferred from sva}
+\title{Use frozen surrogate variable analysis to remove the surrogate variables 
+inferred from sva}
 \usage{
 batchQC_fsva_adjusted(data.matrix, modmatrix, sva.object)
 }
 \arguments{
 \item{data.matrix}{Given data or simulated data from rnaseq_sim()}
 
-\item{modmatrix}{Model matrix for outcome of interest and other covariates besides batch}
+\item{modmatrix}{Model matrix for outcome of interest and other covariates 
+besides batch}
 
 \item{sva.object}{SVA object}
 }
 \description{
-Use frozen surrogate variable analysis to remove the surrogate variables inferred from sva
+Use frozen surrogate variable analysis to remove the surrogate variables 
+inferred from sva
 }
 \examples{
 nbatch <- 3
 ncond <- 2
 npercond <- 10
-data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
-                          ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+    npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
 batch <- rep(1:nbatch, each=ncond*npercond)
 condition <- rep(rep(1:ncond, each=npercond), nbatch)
 pdata <- data.frame(batch, condition)

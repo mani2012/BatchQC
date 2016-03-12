@@ -11,7 +11,8 @@ batchtest(pca, batch, mod = NULL)
 
 \item{batch}{Batch covariate}
 
-\item{mod}{Model matrix for outcome of interest and other covariates besides batch}
+\item{mod}{Model matrix for outcome of interest and other covariates 
+besides batch}
 }
 \description{
 Performs test to check whether batch needs to be adjusted
@@ -20,8 +21,8 @@ Performs test to check whether batch needs to be adjusted
 nbatch <- 3
 ncond <- 2
 npercond <- 10
-data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
-                          ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+    npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
 batch <- rep(1:nbatch, each=ncond*npercond)
 condition <- rep(rep(1:ncond, each=npercond), nbatch)
 pdata <- data.frame(batch, condition)

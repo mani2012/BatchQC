@@ -4,8 +4,8 @@ require(pander)
 require(stats)
 require(graphics)
 
-#' Batch and Condition indicator for signature data captured when activating 
-#' different growth pathway genes in human mammary epithelial cells. 
+#' Batch and Condition indicator for signature data captured when 
+#' activating different growth pathway genes in human mammary epithelial cells. 
 #'
 #' This data consists of three batches and ten different conditions 
 #' corresponding to control and nine different pathways
@@ -13,8 +13,8 @@ require(graphics)
 #' @name example_batchqc_data
 #' @format A data frame with 89 rows and 2 variables:
 #' \describe{
-#'   \item{V1}{Batch Indicator}
-#'   \item{V2}{Condition (Pathway) Indicator}
+#'     \item{V1}{Batch Indicator}
+#'     \item{V2}{Condition (Pathway) Indicator}
 #' }
 #' @source GEO accession: GSE73628
 "batch_indicator"
@@ -28,35 +28,38 @@ require(graphics)
 #' @name example_batchqc_data
 #' @format A data frame with 18052 rows and 89 variables:
 #' \describe{
-#'   \item{Columns1-89}{Control and Pathway activated samples}
-#'   \item{rows1-18052}{Genes 1-18052}
+#'     \item{Columns1-89}{Control and Pathway activated samples}
+#'     \item{rows1-18052}{Genes 1-18052}
 #' }
 #' @source GEO accession: GSE73628
 "signature_data"
 
-#' Checks for presence of batch effect and reports whether the batch needs to be adjusted
+#' Checks for presence of batch effect and reports whether the batch 
+#' needs to be adjusted
 #' 
 #' @param data.matrix Given data or simulated data from rnaseq_sim()
 #' @param batch Batch covariate 
-#' @param mod Model matrix for outcome of interest and other covariates besides batch
+#' @param mod Model matrix for outcome of interest and other covariates 
+#' besides batch
 #' @return pca Principal Components Analysis object of the data
 #' @export
 #' @examples
 #' nbatch <- 3
 #' ncond <- 2
 #' npercond <- 10
-#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
-#'                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, 
+#'     npercond=npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, 
+#'     seed=1234)
 #' batch <- rep(1:nbatch, each=ncond*npercond)
 #' condition <- rep(rep(1:ncond, each=npercond), nbatch)
 #' pdata <- data.frame(batch, condition)
 #' modmatrix = model.matrix(~as.factor(condition), data=pdata)
 #' batchQC_analyze(data.matrix, batch, mod=modmatrix)
-batchQC_analyze <- function(data.matrix, batch, mod=NULL)  {
-  batchqc_heatmap(data.matrix, batch=batch, mod=mod)
-  pca <- batchqc_pca(data.matrix, batch=batch, mod=mod)
-  batchtest(pca, batch=batch, mod=mod)
-  return(pca)
+batchQC_analyze <- function(data.matrix, batch, mod = NULL) {
+    batchqc_heatmap(data.matrix, batch = batch, mod = mod)
+    pca <- batchqc_pca(data.matrix, batch = batch, mod = mod)
+    batchtest(pca, batch = batch, mod = mod)
+    return(pca)
 }
 
 #' Checks for presence of batch effect and creates a html report 
@@ -87,262 +90,323 @@ batchQC_analyze <- function(data.matrix, batch, mod=NULL)  {
 #' nbatch <- 3
 #' ncond <- 2
 #' npercond <- 10
-#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
-#'                           ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, 
+#'     npercond=npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, 
+#'     seed=1234)
 #' batch <- rep(1:nbatch, each=ncond*npercond)
 #' condition <- rep(rep(1:ncond, each=npercond), nbatch)
-#' batchQC(data.matrix, batch=batch, condition=condition, view_report=FALSE, interactive=FALSE)
-batchQC <- function(dat, batch, condition=NULL, 
-                    report_file="batchqc_report.html", 
-                    report_dir=".", report_option_binary="111111111",
-                    view_report=TRUE, interactive=TRUE)  {
-  pdata <- data.frame(batch, condition)
-  mod = model.matrix(~as.factor(condition), data=pdata)
-  if (report_dir==".") { report_dir=getwd() }
-  dat <- as.matrix(dat)
-  report_option_vector <- unlist(strsplit(as.character(report_option_binary), ""))
-  shinyInput <- list("data"=dat, "batch"=batch, "condition"=condition, 
-                      "report_dir"=report_dir, "report_option_vector"=report_option_vector)
-  setShinyInput(shinyInput)
-  rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
-  #rmarkdown::draft("batchqc_report.Rmd", template = "batchqc", package = "BatchQC")
-  static_lib_dir <- system.file("reports/libs", package = "BatchQC")
-  file.copy(static_lib_dir, report_dir, recursive=TRUE)
-  outputfile <- rmarkdown::render(rmdfile, output_file=report_file, output_dir=report_dir)
-  shinyInput <- getShinyInput()
-  setShinyInputOrig(shinyInput)
-  setShinyInputCombat(NULL)
-  setShinyInputSVAf(NULL)
-  setShinyInputSVAr(NULL)
-  setShinyInputSVA(NULL)
-  if (view_report)  {
-    browseURL(outputfile)
-  }
-  if (interactive)  {
-    appDir <- system.file("shiny", "BatchQC", package = "BatchQC")
-    if (appDir == "") {
-      stop("Could not find shiny directory. Try re-installing BatchQC.", call. = FALSE)
+#' batchQC(data.matrix, batch=batch, condition=condition, view_report=FALSE, 
+#'     interactive=FALSE)
+batchQC <- function(dat, batch, condition = NULL, 
+                    report_file = "batchqc_report.html", report_dir = ".", 
+                    report_option_binary = "111111111", view_report = TRUE, 
+                    interactive = TRUE) {
+    pdata <- data.frame(batch, condition)
+    mod = model.matrix(~as.factor(condition), data = pdata)
+    if (report_dir == ".") {
+        report_dir = getwd()
     }
-    shiny::runApp(appDir, display.mode = "normal")
-  }
-  return(outputfile)
+    dat <- as.matrix(dat)
+    report_option_vector <- unlist(strsplit(as.character(report_option_binary), 
+        ""))
+    shinyInput <- list(data = dat, batch = batch, condition = condition, 
+        report_dir = report_dir, report_option_vector = report_option_vector)
+    setShinyInput(shinyInput)
+    rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
+    # rmarkdown::draft('batchqc_report.Rmd', template =
+    # 'batchqc', package = 'BatchQC')
+    static_lib_dir <- system.file("reports/libs", package = "BatchQC")
+    file.copy(static_lib_dir, report_dir, recursive = TRUE)
+    outputfile <- rmarkdown::render(rmdfile, output_file = report_file, 
+        output_dir = report_dir)
+    shinyInput <- getShinyInput()
+    setShinyInputOrig(shinyInput)
+    setShinyInputCombat(NULL)
+    setShinyInputSVAf(NULL)
+    setShinyInputSVAr(NULL)
+    setShinyInputSVA(NULL)
+    if (view_report) {
+        browseURL(outputfile)
+    }
+    if (interactive) {
+        appDir <- system.file("shiny", "BatchQC", package = "BatchQC")
+        if (appDir == "") {
+            stop("Could not find shiny directory. Try re-installing BatchQC.", 
+                call. = FALSE)
+        }
+        shiny::runApp(appDir, display.mode = "normal")
+    }
+    return(outputfile)
 }
 
 #' Adjust for batch effects using an empirical Bayes framework
-#' 
-#' ComBat allows users to adjust for batch effects in datasets where the batch covariate is known, using methodology 
-#' described in Johnson et al. 2007. It uses either parametric or non-parametric empirical Bayes frameworks for adjusting data for 
-#' batch effects.  Users are returned an expression matrix that has been corrected for batch effects. The input
+#' ComBat allows users to adjust for batch effects in datasets where the 
+#' batch covariate is known, using methodology described in Johnson et al. 2007.
+#' It uses either parametric or non-parametric empirical Bayes frameworks for 
+#' adjusting data for batch effects. Users are returned an expression matrix 
+#' that has been corrected for batch effects. The input
 #' data are assumed to be cleaned and normalized before batch effect removal. 
 #' 
-#' @param dat Genomic measure matrix (dimensions probe x sample) - for example, expression matrix
+#' @param dat Genomic measure matrix (dimensions probe x sample) - for example,
+#' expression matrix
 #' @param batch {Batch covariate (only one batch allowed)}
-#' @param mod Model matrix for outcome of interest and other covariates besides batch
-#' @param par.prior (Optional) TRUE indicates parametric adjustments will be used, FALSE indicates non-parametric adjustments will be used
-#' @param prior.plots (Optional)TRUE give prior plots with black as a kernel estimate of the empirical batch effect density and red as the parametric
-#'
-#' @return data A probe x sample genomic measure matrix, adjusted for batch effects.
-#' 
+#' @param mod Model matrix for outcome of interest and other covariates 
+#' besides batch
+#' @param par.prior (Optional) TRUE indicates parametric adjustments will be 
+#' used, FALSE indicates non-parametric adjustments will be used
+#' @param prior.plots (Optional)TRUE give prior plots with black as a kernel 
+#' estimate of the empirical batch effect density and red as the parametric
+#' @return data A probe x sample genomic measure matrix, adjusted for 
+#' batch effects.
 #' @export
 #' 
-combatPlot <- function(dat, batch, mod=NULL, par.prior=TRUE, prior.plots=TRUE) {
-  # make batch a factor and make a set of indicators for batch
-  if(length(dim(batch))>1){stop("This version of ComBat only allows one batch variable")}  ## to be updated soon!
-  batch <- as.factor(batch)
-  batchmod <- model.matrix(~-1+batch)  
-  cat("Found",nlevels(batch),'batches\n')
-  
-  # A few other characteristics on the batches
-  n.batch <- nlevels(batch)
-  batches <- list()
-  for (i in 1:n.batch){batches[[i]] <- which(batch == levels(batch)[i])} # list of samples in each batch  
-  n.batches <- sapply(batches, length)
-  n.array <- sum(n.batches)
-  
-  #combine batch variable and covariates
-  design <- cbind(batchmod,mod)
-  
-  # check for intercept in covariates, and drop if present
-  check <- apply(design, 2, function(x) all(x == 1))
-  design <- as.matrix(design[,!check])
-  
-  # Number of covariates or covariate levels
-  cat("Adjusting for",ncol(design)-ncol(batchmod),'covariate(s) or covariate level(s)\n')
-  
-  # Check if the design is confounded
-  if(qr(design)$rank<ncol(design)){
-    #if(ncol(design)<=(n.batch)){stop("Batch variables are redundant! Remove one or more of the batch variables so they are no longer confounded")}
-    if(ncol(design)==(n.batch+1)){stop("The covariate is confounded with batch! Remove the covariate and rerun ComBat")}
-    if(ncol(design)>(n.batch+1)){
-      if((qr(design[,-c(1:n.batch)])$rank<ncol(design[,-c(1:n.batch)]))){stop('The covariates are confounded! Please remove one or more of the covariates so the design is not confounded')
-      }else{stop("At least one covariate is confounded with batch! Please remove confounded covariates and rerun ComBat")}}
-  }
-  
-  ## Check for missing values
-  NAs = any(is.na(dat))
-  if(NAs){cat(c('Found',sum(is.na(dat)),'Missing Data Values\n'),sep=' ')}
-  #print(dat[1:2,])
-  ##Standardize Data across genes
-  cat('Standardizing Data across genes\n')
-  if (!NAs){B.hat <- solve(t(design)%*%design)%*%t(design)%*%t(as.matrix(dat))}else{B.hat=apply(dat,1,Beta.NA,design)} #Standarization Model
-  grand.mean <- t(n.batches/n.array)%*%B.hat[1:n.batch,]
-  if (!NAs) {
-    var.pooled <- ((dat-t(design%*%B.hat))^2)%*%rep(1/n.array,n.array)
-  } else { 
-    var.pooled <- apply(dat-t(design%*%B.hat),1,var,na.rm=TRUE)
-  }
-  
-  stand.mean <- t(grand.mean)%*%t(rep(1,n.array))
-  if(!is.null(design)){tmp <- design;tmp[,c(1:n.batch)] <- 0;stand.mean <- stand.mean+t(tmp%*%B.hat)}  
-  s.data <- (dat-stand.mean)/(sqrt(var.pooled)%*%t(rep(1,n.array)))
-  
-  ##Get regression batch effect parameters
-  cat("Fitting L/S model and finding priors\n")
-  batch.design <- design[,1:n.batch]
-  if (!NAs){
-    gamma.hat <- solve(t(batch.design)%*%batch.design)%*%t(batch.design)%*%t(as.matrix(s.data))
-  } else{
-    gamma.hat <- apply(s.data,1,Beta.NA,batch.design)
-  }
-  
-  shinyInput <- getShinyInput()
-  if (is.null(shinyInput))  {
-    shinyInput <- list("data"=dat, "batch"=batch)
-  }
-  shinyInput <- c(shinyInput, list("gamma.hat"=gamma.hat))
-  delta.hat <- NULL
-  for (i in batches){
-    delta.hat <- rbind(delta.hat,apply(s.data[,i], 1, var,na.rm=TRUE))
-  }
-  shinyInput <- c(shinyInput, list("delta.hat"=delta.hat))
-  
-  ##Find Priors
-  gamma.bar <- apply(gamma.hat, 1, mean)
-  shinyInput <- c(shinyInput, list("gamma.bar"=gamma.bar))
-  t2 <- apply(gamma.hat, 1, var)
-  shinyInput <- c(shinyInput, list("t2"=t2))
-  a.prior <- apply(delta.hat, 1, aprior)
-  shinyInput <- c(shinyInput, list("a.prior"=a.prior))
-  b.prior <- apply(delta.hat, 1, bprior)
-  shinyInput <- c(shinyInput, list("b.prior"=b.prior))
-  setShinyInput(shinyInput)
-
-  
-  ##Plot empirical and parametric priors
-  
-  if (prior.plots & par.prior){
-    #par(mfrow=c(2,2))
-    tmp <- density(gamma.hat[1,])
-    plot(tmp,  type='l', main="Density Plot")
-    xx <- seq(min(tmp$x), max(tmp$x), length=100)
-    lines(xx,dnorm(xx,gamma.bar[1],sqrt(t2[1])), col=2)
-    qqnorm(gamma.hat[1,])	
-    qqline(gamma.hat[1,], col=2)	
+combatPlot <- function(dat, batch, mod = NULL, par.prior = TRUE, 
+    prior.plots = TRUE) {
+    # make batch a factor and make a set of indicators for batch
+    if (length(dim(batch)) > 1) 
+        {
+            stop("This version of ComBat only allows one batch variable")
+        }  ## to be updated soon!
+    batch <- as.factor(batch)
+    batchmod <- model.matrix(~-1 + batch)
+    cat("Found", nlevels(batch), "batches\n")
     
-    tmp <- density(delta.hat[1,])
-    invgam <- 1/rgamma(ncol(delta.hat),a.prior[1],b.prior[1])
-    tmp1 <- density(invgam)
-    plot(tmp,  typ='l', main="Density Plot", ylim=c(0,max(tmp$y,tmp1$y)))
-    lines(tmp1, col=2)
-    qqplot(delta.hat[1,], invgam, xlab="Sample Quantiles", ylab='Theoretical Quantiles')	
-    lines(c(0,max(invgam)),c(0,max(invgam)),col=2)	
-    title('Q-Q Plot')
-  }
-  
-  kstest <- ks.test(gamma.hat[1,], "pnorm", gamma.bar[1], sqrt(t2[1])) # two-sided, exact
-  
-  return(kstest)
-  
+    # A few other characteristics on the batches
+    n.batch <- nlevels(batch)
+    batches <- list()
+    for (i in 1:n.batch) {
+        batches[[i]] <- which(batch == levels(batch)[i])
+    }  # list of samples in each batch  
+    n.batches <- sapply(batches, length)
+    n.array <- sum(n.batches)
+    
+    # combine batch variable and covariates
+    design <- cbind(batchmod, mod)
+    
+    # check for intercept in covariates, and drop if present
+    check <- apply(design, 2, function(x) all(x == 1))
+    design <- as.matrix(design[, !check])
+    
+    # Number of covariates or covariate levels
+    cat("Adjusting for", ncol(design) - ncol(batchmod), 
+        "covariate(s) or covariate level(s)\n")
+    
+    # Check if the design is confounded
+    if (qr(design)$rank < ncol(design)) {
+        # if(ncol(design)<=(n.batch)){stop('Batch variables are
+        # redundant!  Remove one or more of the batch variables so
+        # they are no longer confounded')}
+        if (ncol(design) == (n.batch + 1)) {
+            stop(paste("The covariate is confounded with batch! Remove the ", 
+                "covariate and rerun ComBat", sep = ""))
+        }
+        if (ncol(design) > (n.batch + 1)) {
+            if ((qr(design[, -c(1:n.batch)])$rank < ncol(design[, 
+                -c(1:n.batch)]))) {
+                stop(paste("The covariates are confounded! Please remove one ", 
+                    "or more of the covariates so the design is not confounded",
+                    sep = ""))
+            } else {
+                stop(paste("At least one covariate is confounded with batch! ", 
+                    "Please remove confounded covariates and rerun ComBat", 
+                    sep = ""))
+            }
+        }
+    }
+    
+    ## Check for missing values
+    NAs = any(is.na(dat))
+    if (NAs) {
+        cat(c("Found", sum(is.na(dat)), "Missing Data Values\n"), 
+            sep = " ")
+    }
+    # print(dat[1:2,]) Standardize Data across genes
+    cat("Standardizing Data across genes\n")
+    if (!NAs) {
+        B.hat <- solve(t(design) %*% design) %*% t(design) %*% 
+            t(as.matrix(dat))
+    } else {
+        B.hat = apply(dat, 1, Beta.NA, design)
+    }  #Standarization Model
+    grand.mean <- t(n.batches/n.array) %*% B.hat[1:n.batch, ]
+    if (!NAs) {
+        var.pooled <- ((dat - t(design %*% B.hat))^2) %*% rep(1/n.array, 
+            n.array)
+    } else {
+        var.pooled <- apply(dat - t(design %*% B.hat), 1, var, 
+            na.rm = TRUE)
+    }
+    
+    stand.mean <- t(grand.mean) %*% t(rep(1, n.array))
+    if (!is.null(design)) {
+        tmp <- design
+        tmp[, c(1:n.batch)] <- 0
+        stand.mean <- stand.mean + t(tmp %*% B.hat)
+    }
+    s.data <- (dat - stand.mean)/(sqrt(var.pooled) %*% t(rep(1, 
+        n.array)))
+    
+    ## Get regression batch effect parameters
+    cat("Fitting L/S model and finding priors\n")
+    batch.design <- design[, 1:n.batch]
+    if (!NAs) {
+        gamma.hat <- solve(t(batch.design) %*% batch.design) %*% 
+            t(batch.design) %*% t(as.matrix(s.data))
+    } else {
+        gamma.hat <- apply(s.data, 1, Beta.NA, batch.design)
+    }
+    
+    shinyInput <- getShinyInput()
+    if (is.null(shinyInput)) {
+        shinyInput <- list(data = dat, batch = batch)
+    }
+    shinyInput <- c(shinyInput, list(gamma.hat = gamma.hat))
+    delta.hat <- NULL
+    for (i in batches) {
+        delta.hat <- rbind(delta.hat, apply(s.data[, i], 1, var, 
+            na.rm = TRUE))
+    }
+    shinyInput <- c(shinyInput, list(delta.hat = delta.hat))
+    
+    ## Find Priors
+    gamma.bar <- apply(gamma.hat, 1, mean)
+    shinyInput <- c(shinyInput, list(gamma.bar = gamma.bar))
+    t2 <- apply(gamma.hat, 1, var)
+    shinyInput <- c(shinyInput, list(t2 = t2))
+    a.prior <- apply(delta.hat, 1, aprior)
+    shinyInput <- c(shinyInput, list(a.prior = a.prior))
+    b.prior <- apply(delta.hat, 1, bprior)
+    shinyInput <- c(shinyInput, list(b.prior = b.prior))
+    setShinyInput(shinyInput)
+    
+    
+    ## Plot empirical and parametric priors
+    
+    if (prior.plots & par.prior) {
+        # par(mfrow=c(2,2))
+        tmp <- density(gamma.hat[1, ])
+        plot(tmp, type = "l", main = "Density Plot")
+        xx <- seq(min(tmp$x), max(tmp$x), length = 100)
+        lines(xx, dnorm(xx, gamma.bar[1], sqrt(t2[1])), col = 2)
+        qqnorm(gamma.hat[1, ])
+        qqline(gamma.hat[1, ], col = 2)
+        
+        tmp <- density(delta.hat[1, ])
+        invgam <- 1/rgamma(ncol(delta.hat), a.prior[1], b.prior[1])
+        tmp1 <- density(invgam)
+        plot(tmp, typ = "l", main = "Density Plot", ylim = c(0, 
+            max(tmp$y, tmp1$y)))
+        lines(tmp1, col = 2)
+        qqplot(delta.hat[1, ], invgam, xlab = "Sample Quantiles", 
+            ylab = "Theoretical Quantiles")
+        lines(c(0, max(invgam)), c(0, max(invgam)), col = 2)
+        title("Q-Q Plot")
+    }
+    
+    kstest <- ks.test(gamma.hat[1, ], "pnorm", gamma.bar[1], 
+        sqrt(t2[1]))
+    # two-sided, exact
+    
+    return(kstest)
+    
 }
 
 # Following four find empirical hyper-prior values
-aprior <- function(gamma.hat){m=mean(gamma.hat); s2=var(gamma.hat); (2*s2+m^2)/s2}
-bprior <- function(gamma.hat){m=mean(gamma.hat); s2=var(gamma.hat); (m*s2+m^3)/s2}
-Beta.NA = function(y,X){
-  des=X[!is.na(y),]
-  y1=y[!is.na(y)]
-  B <- solve(t(des)%*%des)%*%t(des)%*%y1
-  B
+aprior <- function(gamma.hat) {
+    m = mean(gamma.hat)
+    s2 = var(gamma.hat)
+    (2 * s2 + m^2)/s2
+}
+bprior <- function(gamma.hat) {
+    m = mean(gamma.hat)
+    s2 = var(gamma.hat)
+    (m * s2 + m^3)/s2
+}
+Beta.NA = function(y, X) {
+    des = X[!is.na(y), ]
+    y1 = y[!is.na(y)]
+    B <- solve(t(des) %*% des) %*% t(des) %*% y1
+    B
 }
 
 
 #' Getter function to get the shinyInput option
 #' @return shinyInput option
 #' @export
-getShinyInput <- function()  {
-  shinyInput <- getOption("batchqc.shinyInput")
-  return(shinyInput)
+getShinyInput <- function() {
+    shinyInput <- getOption("batchqc.shinyInput")
+    return(shinyInput)
 }
 #' Setter function to set the shinyInput option
 #' @param x shinyInput option
 #' @export
-setShinyInput <- function(x)  {
-  options("batchqc.shinyInput"=x)
+setShinyInput <- function(x) {
+    options(batchqc.shinyInput = x)
 }
 
 #' Getter function to get the shinyInputOrig option
 #' @return shinyInputOrig option
 #' @export
-getShinyInputOrig <- function()  {
-  shinyInputOrig <- getOption("batchqc.shinyInputOrig")
-  return(shinyInputOrig)
+getShinyInputOrig <- function() {
+    shinyInputOrig <- getOption("batchqc.shinyInputOrig")
+    return(shinyInputOrig)
 }
 #' Setter function to set the shinyInputOrig option
 #' @param x shinyInputOrig option
 #' @export
-setShinyInputOrig <- function(x)  {
-  options("batchqc.shinyInputOrig"=x)
+setShinyInputOrig <- function(x) {
+    options(batchqc.shinyInputOrig = x)
 }
 
 #' Getter function to get the shinyInputCombat option
 #' @return shinyInputCombat option
 #' @export
-getShinyInputCombat <- function()  {
-  shinyInputCombat <- getOption("batchqc.shinyInputCombat")
-  return(shinyInputCombat)
+getShinyInputCombat <- function() {
+    shinyInputCombat <- getOption("batchqc.shinyInputCombat")
+    return(shinyInputCombat)
 }
 #' Setter function to set the shinyInputCombat option
 #' @param x shinyInputCombat option
 #' @export
-setShinyInputCombat <- function(x)  {
-  options("batchqc.shinyInputCombat"=x)
+setShinyInputCombat <- function(x) {
+    options(batchqc.shinyInputCombat = x)
 }
 #' Getter function to get the shinyInputSVA option
 #' @return shinyInputSVA option
 #' @export
-getShinyInputSVA <- function()  {
-  shinyInputSVA <- getOption("batchqc.shinyInputSVA")
-  return(shinyInputSVA)
+getShinyInputSVA <- function() {
+    shinyInputSVA <- getOption("batchqc.shinyInputSVA")
+    return(shinyInputSVA)
 }
 #' Setter function to set the shinyInputSVA option
 #' @param x shinyInputSVA option
 #' @export
-setShinyInputSVA <- function(x)  {
-  options("batchqc.shinyInputSVA"=x)
+setShinyInputSVA <- function(x) {
+    options(batchqc.shinyInputSVA = x)
 }
 #' Getter function to get the shinyInputSVAf option
 #' @return shinyInputSVAf option
 #' @export
-getShinyInputSVAf <- function()  {
-  shinyInputSVAf <- getOption("batchqc.shinyInputSVAf")
-  return(shinyInputSVAf)
+getShinyInputSVAf <- function() {
+    shinyInputSVAf <- getOption("batchqc.shinyInputSVAf")
+    return(shinyInputSVAf)
 }
 #' Setter function to set the shinyInputSVAf option
 #' @param x shinyInputSVAf option
 #' @export
-setShinyInputSVAf <- function(x)  {
-  options("batchqc.shinyInputSVAf"=x)
+setShinyInputSVAf <- function(x) {
+    options(batchqc.shinyInputSVAf = x)
 }
 #' Getter function to get the shinyInputSVAr option
 #' @return shinyInputSVAr option
 #' @export
-getShinyInputSVAr <- function()  {
-  shinyInputSVAr <- getOption("batchqc.shinyInputSVAr")
-  return(shinyInputSVAr)
+getShinyInputSVAr <- function() {
+    shinyInputSVAr <- getOption("batchqc.shinyInputSVAr")
+    return(shinyInputSVAr)
 }
 #' Setter function to set the shinyInputSVAr option
 #' @param x shinyInputSVAr option
 #' @export
-setShinyInputSVAr <- function(x)  {
-  options("batchqc.shinyInputSVAr"=x)
-}
+setShinyInputSVAr <- function(x) {
+    options(batchqc.shinyInputSVAr = x)
+} 

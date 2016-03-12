@@ -2,10 +2,10 @@ Package: BatchQC
 Type: Package
 Title: Batch Effects Quality Control Software
 Version: 0.99.0
-Date: 2016-03-05
+Date: 2016-03-12
 Maintainer: Solaiappan Manimaran <manimaran_1975@hotmail.com>
-Description: Provides Quality Control of sequencing samples by deducing if there
-    is batch effect and adjusts for it in the best possible way.
+Description: Provides Quality Control of sequencing samples by deducing 
+    whether there is batch effect and adjusts for it in the best possible way.
 Author: Solaiappan Manimaran <manimaran_1975@hotmail.com>, 
     W. Evan Johnson <wej@bu.edu>, 
     Heather Selby <selbyh@bu.edu>, 

@@ -2,24 +2,27 @@
 % Please edit documentation in R/sva.R
 \name{batchQC_sva}
 \alias{batchQC_sva}
-\title{Estimate the surrogate variables using the 2 step approach proposed by Leek and Storey 2007}
+\title{Estimate the surrogate variables using the 2 step approach proposed by 
+Leek and Storey 2007}
 \usage{
 batchQC_sva(data.matrix, modmatrix)
 }
 \arguments{
 \item{data.matrix}{Given data or simulated data from rnaseq_sim()}
 
-\item{modmatrix}{Model matrix for outcome of interest and other covariates besides batch}
+\item{modmatrix}{Model matrix for outcome of interest and other covariates 
+besides batch}
 }
 \description{
-Estimate the surrogate variables using the 2 step approach proposed by Leek and Storey 2007
+Estimate the surrogate variables using the 2 step approach proposed by 
+Leek and Storey 2007
 }
 \examples{
 nbatch <- 3
 ncond <- 2
 npercond <- 10
-data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=npercond, 
-                          ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+    npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
 batch <- rep(1:nbatch, each=ncond*npercond)
 condition <- rep(rep(1:ncond, each=npercond), nbatch)
 pdata <- data.frame(batch, condition)
