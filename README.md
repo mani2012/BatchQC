@@ -74,6 +74,12 @@ It seems you should call rmarkdown::render() instead of knitr::knit2html() becau
 Execution halted
 Error: Command failed (1)
 ```
+For generating pdf vignettes in Linux, you need to install texlive and lmodern as follows:
+
+```r
+sudo apt-get install texlive
+sudo apt-get install lmodern
+```
 
 If you do not have permissions to install in the default location for R, you may have to setup local directory. You may also want to load a version of R 3.2.0 or higher.
 ```r
