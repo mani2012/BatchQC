@@ -56,6 +56,7 @@ install_github("mani2012/BatchQC", build_vignettes=TRUE)
 If all went well you should now be able to load BatchQC:
 ```r
 require(BatchQC)
+browseVignettes("BatchQC")
 vignette('BatchQCIntro', package='BatchQC')
 vignette('BatchQC_examples', package='BatchQC')
 ```
