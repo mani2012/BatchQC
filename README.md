@@ -1,7 +1,9 @@
 BatchQC: Batch Effects Quality Control
 ======================================
 
-The purpose of this package is to provide Quality Control of sequencing samples by deducing whether there is batch effect and adjust for it in the best possible way.
+The purpose of this package is to provide Quality Control of sequencing samples 
+by deducing whether there is batch effect and adjust for it in the best 
+possible way.
 
 The package includes:
 
@@ -16,7 +18,8 @@ The package includes:
 9. Surrogate Variable Analysis using sva package
 10. Function to generate simulated RNA-Seq data
 
-`batchQC` is the pipeline function that generates the BatchQC report. It combines all the functions into one step.
+`batchQC` is the pipeline function that generates the BatchQC report. It 
+combines all the functions into one step.
 
 ## Installation
 
@@ -25,12 +28,15 @@ few dependencies that BatchQC uses:
 
 ```r
 source("http://bioconductor.org/biocLite.R")
-biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'moments', 'rmarkdown', 'pander', 'gplots'))
+biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 
+'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'moments', 
+'rmarkdown', 'pander', 'gplots'))
 ```
 Install 'pandoc' package by following the instructions at the following URL:
 http://johnmacfarlane.net/pandoc/installing.html
 
-Rstudio also provides pandoc binaries at the following location for (windows, linux and mac):
+Rstudio also provides pandoc binaries at the following location for Windows, 
+Linux and Mac:
 https://s3.amazonaws.com/rstudio-buildtools/pandoc-1.13.1.zip 
 
 Install 'pander' package by following the instructions at the following URL:
@@ -63,28 +69,34 @@ vignette('BatchQC_examples', package='BatchQC')
 
 ## Troubleshooting with Installation
 
-Please make sure you have installed pandoc by following the instructions from http://pandoc.org/installing.html. Otherwise, you may get an error such as the following:
+Please make sure you have installed pandoc by following the instructions from http://pandoc.org/installing.html. Otherwise, you may get an error such as the 
+following:
 
 ```r
 * creating vignettes ... ERROR
 Warning in engine$weave(file, quiet = quiet, encoding = enc) :
-  Pandoc (>= 1.12.3) and/or pandoc-citeproc is not available. Please install both.
+  Pandoc (>= 1.12.3) and/or pandoc-citeproc is not available. Please install 
+  both.
 Error: processing vignette 'BatchQCIntro.Rmd' failed with diagnostics:
-It seems you should call rmarkdown::render() instead of knitr::knit2html() because BatchQCIntro.Rmd appears to be an R Markdown v2 document.
+It seems you should call rmarkdown::render() instead of knitr::knit2html() 
+because BatchQCIntro.Rmd appears to be an R Markdown v2 document.
 Execution halted
 Error: Command failed (1)
 ```
-For generating pdf vignettes in Linux, you need to install texlive and lmodern as follows:
+For generating pdf vignettes in Linux, you need to install texlive and lmodern 
+as follows:
 
 ```r
 sudo apt-get install texlive
 sudo apt-get install lmodern
 ```
 
-If you do not have permissions to install in the default location for R, you may have to setup local directory. You may also want to load a version of R 3.2.0 or higher.
+If you do not have permissions to install in the default location for R, you 
+may have to setup local directory. You may also want to load a version of 
+R 3.3.0 or higher.
 ```r
 export R_LIBS="/my_own_local_directory/R_libs"
-module load R/R-3.2.0
+module load R/R-3.3.0
 ```
 
 And do something like the following
