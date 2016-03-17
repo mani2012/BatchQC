@@ -479,10 +479,11 @@ shinyServer(function(input, output, session) {
     }
     shinyInput <- getShinyInput()
     pdata <- data.frame(batch, condition)
-    mod <- model.matrix(~as.factor(condition), data=pdata)
+    mod <- model.matrix(~as.factor(condition)+~as.factor(batch), data=pdata)
     fit <- lmFit(shinyInput$data, mod)
     fit2 <- eBayes(fit)
-    topTable(fit2, coef = 2, number=input$noGenes)
+    ncond <- nlevels(as.factor(condition))
+    topTable(fit2, coef = 2:ncond, number=input$noGenes)
   })
   
   #interactive scatter plot
