@@ -239,5 +239,4 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
             )
         )
     )
-                   
 ))
