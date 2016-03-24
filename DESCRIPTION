@@ -1,11 +1,25 @@
 Package: BatchQC
 Type: Package
 Title: Batch Effects Quality Control Software
-Version: 0.99.1
-Date: 2016-03-12
+Version: 0.99.2
+Date: 2016-03-23
 Maintainer: Solaiappan Manimaran <manimaran_1975@hotmail.com>
-Description: Provides Quality Control of sequencing samples by deducing 
-    whether there is batch effect and adjusts for it in the best possible way.
+Description: Sequencing and microarray samples often are collected or processed 
+    in multiple batches or at different times. This often produces technical 
+    biases that can lead to incorrect results in the downstream analysis. 
+    BatchQC is a software tool that streamlines batch preprocessing and 
+    evaluation by providing interactive diagnostics, visualizations, and 
+    statistical analyses to explore the extent to which batch variation impacts 
+    the data. BatchQC diagnostics help determine whether batch adjustment needs 
+    to be done, and how correction should be applied before proceeding with a 
+    downstream analysis. Moreover, BatchQC interactively applies multiple common
+    batch effect approaches to the data, and the user can quickly see the 
+    benefits of each method. BatchQC is developed as a Shiny App. The output is 
+    organized into multiple tabs, and each tab features an important part of the
+    batch effect analysis and visualization of the data. The BatchQC interface 
+    has the following analysis groups: Summary, Differential Expression, 
+    Median Correlations, Heatmaps, Circular Dendrogram, PCA Analysis, Shape, 
+    ComBat and SVA.
 Author: Solaiappan Manimaran <manimaran_1975@hotmail.com>, 
     W. Evan Johnson <wej@bu.edu>, 
     Heather Selby <selbyh@bu.edu>, 
