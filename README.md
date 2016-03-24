@@ -1,9 +1,21 @@
 BatchQC: Batch Effects Quality Control
 ======================================
 
-The purpose of this package is to provide Quality Control of sequencing samples 
-by deducing whether there is batch effect and adjust for it in the best 
-possible way.
+Sequencing and microarray samples often are collected or processed in multiple 
+batches or at different times. This often produces technical biases that can 
+lead to incorrect results in the downstream analysis. BatchQC is a software tool
+that streamlines batch preprocessing and evaluation by providing interactive 
+diagnostics, visualizations, and statistical analyses to explore the extent to 
+which batch variation impacts the data. BatchQC diagnostics help determine 
+whether batch adjustment needs to be done, and how correction should be applied 
+before proceeding with a downstream analysis. Moreover, BatchQCvinteractively 
+applies multiple common batch effect approaches to the data, and the user can 
+quickly see the benefits of each method. BatchQC is developed as a Shiny App. 
+The output is organized into multiple tabs, and each tab features an important 
+part of the batch effect analysis and visualization of the data. The BatchQC 
+interface has the following analysis groups: Summary, Differential Expression, 
+Median Correlations, Heatmaps, Circular Dendrogram, PCA Analysis, Shape, ComBat 
+and SVA. 
 
 The package includes:
 
@@ -18,46 +30,26 @@ The package includes:
 9. Surrogate Variable Analysis using sva package
 10. Function to generate simulated RNA-Seq data
 
-`batchQC` is the pipeline function that generates the BatchQC report. It 
-combines all the functions into one step.
+`batchQC` is the pipeline function that generates the BatchQC report and 
+launches the Shiny App in interactive mode. It combines all the functions into 
+one step.
 
 ## Installation
 
-To begin, install [Bioconductor](http://www.bioconductor.org/) along with a
-few dependencies that BatchQC uses:
+To begin, install [Bioconductor](http://www.bioconductor.org/) and simply
+run the following to automatically install BatchQC and all the dependencies, 
+except pandoc, which you have to manually install as follows.
 
 ```r
 source("http://bioconductor.org/biocLite.R")
-biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 
-'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'moments', 
-'rmarkdown', 'pander', 'gplots'))
+biocLite("BatchQC")
 ```
 Install 'pandoc' package by following the instructions at the following URL:
-http://johnmacfarlane.net/pandoc/installing.html
+http://pandoc.org/installing.html
 
 Rstudio also provides pandoc binaries at the following location for Windows, 
 Linux and Mac:
 https://s3.amazonaws.com/rstudio-buildtools/pandoc-1.13.1.zip 
-
-Install 'pander' package by following the instructions at the following URL:
-http://rapporter.github.io/pander/
-
-```r
-require(devtools)
-install_github('Rapporter/pander')
-```
-Install the latest development version of sva:
-```r
-require(devtools)
-install_github('jtleek/sva-devel')
-```
-
-Next, use [devtools](https://github.com/hadley/devtools) to install the latest
-version of HTShape and BatchQC from Github:
-```r
-require(devtools)
-install_github("mani2012/BatchQC", build_vignettes=TRUE)
-```
 
 If all went well you should now be able to load BatchQC:
 ```r
@@ -65,6 +57,21 @@ require(BatchQC)
 browseVignettes("BatchQC")
 vignette('BatchQCIntro', package='BatchQC')
 vignette('BatchQC_examples', package='BatchQC')
+vignette('BatchQC_usage_advanced', package='BatchQC')
+```
+
+If you want to install the latest development version of BatchQC from Github, 
+Use [devtools](https://github.com/hadley/devtools) to install it as follows:
+```r
+require(devtools)
+install_github("mani2012/BatchQC", build_vignettes=TRUE)
+```
+If you want to manually install the BatchQC dependencies, run the following:
+```r
+source("http://bioconductor.org/biocLite.R")
+biocLite(c('MCMCpack', 'limma', 'preprocessCore', 'sva', 'devtools', 'corpcor', 
+'matrixStats', 'shiny', 'ggvis', 'd3heatmap', 'reshape2', 'moments', 
+'rmarkdown', 'pander', 'gplots'))
 ```
 
 ## Troubleshooting with Installation
