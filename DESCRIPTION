@@ -63,7 +63,7 @@ Imports:
     graphics, 
     stats
 biocViews: BatchEffect, GraphAndNetwork, Microarray, PrincipalComponent, 
-    Sequencing, Software, Visualization, QualityControl, RNASeq
+    Sequencing, Software, Visualization, QualityControl, RNASeq, Preprocessing
 SystemRequirements: pandoc (http://pandoc.org/installing.html) for generating
     reports from markdown files.
 VignetteBuilder: knitr
