@@ -527,8 +527,9 @@ batchqc_pc_explained_variation <- function(pcs, vars, condition,
     batch_r2 <- round(cond_test$r2_reduced * 100, 1)
     overlap_r2 <- round((cond_test$r2_reduced + batch_test$r2_reduced - 
         cond_test$r2_full) * 100, 1)
-    explained_variation <- cbind(`Proportion of Variance` = vars, 
-        `Cumulated Proportion of Variance` = cumsum(vars), 
+    pvars <- vars*100.0/sum(vars)
+    explained_variation <- cbind(`Proportion of Variance (%)` = pvars, 
+        `Cumulative Proportion of Variance (%)` = cumsum(pvars), 
         `Percent Variation Explained by Either Condition or Batch` = r2_full, 
         `Percent Variation Explained by Condition` = cond_r2, 
         `Condition Significance (p-value)` = cond_ps, 
