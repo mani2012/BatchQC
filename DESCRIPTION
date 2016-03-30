@@ -29,7 +29,7 @@ Author: Solaiappan Manimaran <manimaran_1975@hotmail.com>,
 URL: https://github.com/mani2012/BatchQC
 BugReports: https://github.com/mani2012/BatchQC/issues
 License: GPL (>= 2)
-Depends: R (>= 3.3.0)
+Depends: R (>= 3.2.0)
 Collate:
     'simulate_data.R'
     'heatmap.R'
