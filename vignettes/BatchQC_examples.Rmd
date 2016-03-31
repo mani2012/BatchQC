@@ -1,0 +1,62 @@
+---
+title: "BatchQC Examples"
+author: "Solaiappan Manimaran"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+    %\VignetteIndexEntry{BatchQC_examples}
+    %\VignetteEngine{knitr::rmarkdown}
+    \usepackage[utf8]{inputenc}
+---
+### Example 1: Simulated dataset
+The simulated data consists of three batches and two conditions, 
+and expression measurements for 50 genes
+```r
+library(BatchQC)
+nbatch <- 3
+ncond <- 2
+npercond <- 10
+data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+    npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+batch <- rep(1:nbatch, each=ncond*npercond)
+condition <- rep(rep(1:ncond, each=npercond), nbatch)
+batchQC(data.matrix, batch=batch, condition=condition, 
+        report_file="batchqc_report.html", report_dir=".", 
+        report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
+
+```
+
+### Example 2: Real signature dataset
+This dataset is from signature data captured when activating different growth 
+pathway genes in human mammary epithelial cells (GEO accession: GSE73628). 
+This data consists of three batches and ten different conditions corresponding 
+to control and nine different pathways
+```r
+library(BatchQC)
+data(example_batchqc_data)
+batch <- batch_indicator$V1
+condition <- batch_indicator$V2
+batchQC(signature_data, batch=batch, condition=condition, 
+        report_file="batchqc_signature_data_report.html", report_dir=".", 
+        report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
+```
+
+### Example 3: Real bladderbatch dataset
+This dataset has 5 batches, 3 covariate levels. Batch 1 contains 
+only cancer, 2 and 3 have cancer and controls, 4 contains only biopsy, and 
+5 contains cancer and biopsy
+```r
+library(BatchQC)
+library(bladderbatch)
+data(bladderdata)
+pheno <- pData(bladderEset)
+edata <- exprs(bladderEset)
+batch <- pheno$batch  
+condition <- pheno$cancer
+batchQC(edata, batch=batch, condition=condition, 
+        report_file="batchqc_report.html", report_dir=".", 
+        report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
+```

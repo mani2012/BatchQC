@@ -1,0 +1,119 @@
+---
+title: "BatchQC package Introduction"
+author: "Solaiappan Manimaran"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+    %\VignetteIndexEntry{BatchQCIntro}
+    %\VignetteEngine{knitr::rmarkdown}
+    \usepackage[utf8]{inputenc}
+---
+Sequencing and microarray samples often are collected or processed in multiple 
+batches or at different times. This often produces technical biases that can 
+lead to incorrect results in the downstream analysis. BatchQC is a software tool
+that streamlines batch preprocessing and evaluation by providing interactive 
+diagnostics, visualizations, and statistical analyses to explore the extent to 
+which batch variation impacts the data. BatchQC diagnostics help determine 
+whether batch adjustment needs to be done, and how correction should be applied 
+before proceeding with a downstream analysis. Moreover, BatchQCvinteractively 
+applies multiple common batch effect approaches to the data, and the user can 
+quickly see the benefits of each method. BatchQC is developed as a Shiny App. 
+The output is organized into multiple tabs, and each tab features an important 
+part of the batch effect analysis and visualization of the data. The BatchQC 
+interface has the following analysis groups: Summary, Differential Expression, 
+Median Correlations, Heatmaps, Circular Dendrogram, PCA Analysis, Shape, ComBat 
+and SVA. 
+
+The package includes:
+
+1. Summary and Sample Diagnostics
+2. Differential Expression Plots and Analysis using LIMMA
+3. Principal Component Analysis and plots to check batch effects
+4. Heatmap plot of gene expressions
+5. Median Correlation Plot
+6. Circular Dendrogram clustered and colored by batch and condition
+7. Shape Analysis for the distribution curve based on HTShape package
+8. Batch Adjustment using ComBat
+9. Surrogate Variable Analysis using sva package
+10. Function to generate simulated RNA-Seq data
+
+`batchQC` is the pipeline function that generates the BatchQC report and 
+launches the Shiny App in interactive mode. It combines all the functions into 
+one step.
+
+## Installation
+
+To begin, install [Bioconductor](http://www.bioconductor.org/) and simply
+run the following to automatically install BatchQC and all the dependencies, 
+except pandoc, which you have to manually install as follows.
+
+```r
+source("http://bioconductor.org/biocLite.R")
+biocLite("BatchQC")
+```
+Install 'pandoc' package by following the instructions at the following URL:
+http://pandoc.org/installing.html
+
+Rstudio also provides pandoc binaries at the following location for Windows, 
+Linux and Mac:
+https://s3.amazonaws.com/rstudio-buildtools/pandoc-1.13.1.zip 
+
+If all went well you should now be able to load BatchQC. Here is an example 
+usage of the pipeline.
+
+### Simulate data and Apply BatchQC
+```r
+library(BatchQC)
+nbatch <- 3
+ncond <- 2
+npercond <- 10
+data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+    npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+batch <- rep(1:nbatch, each=ncond*npercond)
+condition <- rep(rep(1:ncond, each=npercond), nbatch)
+batchQC(data.matrix, batch=batch, condition=condition, 
+        report_file="batchqc_report.html", report_dir=".", 
+        report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
+
+```
+### Apply combat and rerun the BatchQC pipeline on the batch adjusted data
+```r
+nsample <- nbatch*ncond*npercond
+sample <- 1:nsample
+pdata <- data.frame(sample, batch, condition)
+modmatrix = model.matrix(~as.factor(condition), data=pdata)
+combat_data.matrix = ComBat(dat=data.matrix, batch=batch, mod=modmatrix)
+batchQC(combat_data.matrix, batch=batch, condition=condition, 
+        report_file="batchqc_combat_adj_report.html", report_dir=".", 
+        report_option_binary="110011111",
+        interactive=FALSE)
+```
+
+### Apply BatchQC on a real signature dataset
+```r
+library(BatchQC)
+data(example_batchqc_data)
+batch <- batch_indicator$V1
+condition <- batch_indicator$V2
+batchQC(signature_data, batch=batch, condition=condition, 
+        report_file="batchqc_signature_data_report.html", report_dir=".", 
+        report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
+```
+### Apply BatchQC on a real bladderbatch dataset
+```r
+library(BatchQC)
+library(bladderbatch)
+data(bladderdata)
+pheno <- pData(bladderEset)
+edata <- exprs(bladderEset)
+batch <- pheno$batch  ### note 5 batches, 3 covariate levels. Batch 1 contains 
+### only cancer, 2 and 3 have cancer and controls, 4 contains only biopsy, and 
+### 5 contains cancer and biopsy
+condition <- pheno$cancer
+batchQC(edata, batch=batch, condition=condition, 
+        report_file="batchqc_report.html", report_dir=".", 
+        report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
+```

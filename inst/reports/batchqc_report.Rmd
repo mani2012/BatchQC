@@ -1,0 +1,119 @@
+---
+title: "BatchQC Report"
+author: "Solaiappan Manimaran"
+date: "`r Sys.Date()`"
+output: 
+  html_vignette:
+    toc: true
+    toc_depth: 2
+    template: batchQC.html
+    self_contained: no
+    lib_dir: libs
+---
+
+```{r, echo=FALSE}
+shinyInput <- getShinyInput()
+dat <- shinyInput$data
+report_option_vector <- shinyInput$report_option_vector
+eval_cell_1 = (report_option_vector[1]=="1")
+```
+`r if (eval_cell_1) 'Data Summary'`
+`r if (eval_cell_1) '============'`
+`r if (eval_cell_1) 'This is a summary of the given data matrix for the first 12 genes.'`
+```{r eval=eval_cell_1, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+datasummary <- summary(t(dat))
+panderOptions("table.split.table", 120)  ## table split at 100 (default 80) characters in a line
+pander(datasummary[,1:12])
+```
+
+```{r, echo=FALSE}
+eval_cell_1_1 = (report_option_vector[1]=="1")
+```
+`r if (eval_cell_1_1) 'Sample Boxplots'`
+`r if (eval_cell_1_1) '======='`
+`r if (eval_cell_1_1) 'Boxplots for all values for each of the samples and are colored by batch membership.'`
+
+```{r eval=eval_cell_1_1, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+boxplot(log2CPM(dat)$y,col=as.numeric(as.factor(batch)),main="Sample Boxplots (colored by batch)",xlab="Samples")
+```
+
+```{r, echo=FALSE}
+eval_cell_2 = (report_option_vector[2]=="1")
+```
+`r if (eval_cell_2) 'Heatmap'`
+`r if (eval_cell_2) '======='`
+`r if (eval_cell_2) 'This is a heatmap of the given data matrix showing the batch effects and variations with different conditions.'`
+```{r, eval=eval_cell_2, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+batchqc_heatmap(dat, batch=batch, mod=mod)
+```
+
+```{r, echo=FALSE}
+eval_cell_3 = (report_option_vector[3]=="1")
+```
+`r if (eval_cell_3) 'Sample Correlations'`
+`r if (eval_cell_3) '==================='`
+`r if (eval_cell_3) 'This is a heatmap of the correlation between samples.'`
+```{r, eval=eval_cell_3, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+batchqc_correlation(dat, batch=batch, mod=mod)
+```
+
+```{r, echo=FALSE}
+eval_cell_4 = (report_option_vector[4]=="1")
+```
+`r if (eval_cell_4) 'This plot helps identify outlying samples.'`
+```{r, eval=eval_cell_4, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+batchqc_corscatter(dat, batch=batch, mod=mod)
+```
+
+```{r, echo=FALSE}
+eval_cell_5 = (report_option_vector[5]=="1")
+```
+`r if (eval_cell_5) 'PCA: Principal Component Analysis'`
+`r if (eval_cell_5) '================================='`
+`r if (eval_cell_5) 'This is a plot of the top two principal components and showing the variation with respect to batch effects and different conditions.'`
+```{r, eval=eval_cell_5, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+pca <- batchqc_pca(dat, batch=batch, mod=mod)
+shinyInput <- getShinyInput()
+shinyInput <- c(shinyInput, list("pc"=data.frame(pca$x), "vars"=pca$sdev^2))
+setShinyInput(shinyInput)
+```
+
+```{r, echo=FALSE}
+eval_cell_6 = (report_option_vector[6]=="1")
+```
+`r if (eval_cell_6) 'PCA Proportion Variation and correlation'`
+`r if (eval_cell_6) '========================================'`
+```{r, eval=eval_cell_6, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+res <- batchqc_pca_svd(dat, batch=batch, mod=mod)
+```
+
+```{r, echo=FALSE}
+eval_cell_7 = (report_option_vector[7]=="1")
+```
+`r if (eval_cell_7) 'PCA Proportion Variation and correlation Table'`
+`r if (eval_cell_7) '=============================================='`
+```{r, eval=eval_cell_7, echo=FALSE, message=FALSE}
+panderOptions("table.split.table", Inf)  ## don't split tables
+pander(res)
+```
+
+```{r, echo=FALSE}
+eval_cell_8 = (report_option_vector[8]=="1")
+```
+`r if (eval_cell_8) 'Combat Plots'`
+`r if (eval_cell_8) '============'`
+`r if (eval_cell_8) 'This is a plot showing whether parametric or non-parameteric prior is appropriate for this data. It also shows the Kolmogorov-Smirnov test comparing the parametric and non-parameteric prior distribution.'`
+```{r, eval=eval_cell_8, echo=FALSE, message=FALSE}
+kstest <- combatPlot(dat, batch=batch, mod=mod)
+print(kstest)
+```
+
+```{r, echo=FALSE}
+eval_cell_9 = (report_option_vector[9]=="1")
+```
+`r if (eval_cell_9) 'Batch Effects testing'`
+`r if (eval_cell_9) '====================='`
+`r if (eval_cell_9) 'This is a summary of the statistical test for batch effects.'`
+```{r, eval=eval_cell_9, echo=FALSE, message=FALSE}
+retval <- batchtest(pca, batch=batch, mod=mod)
+```

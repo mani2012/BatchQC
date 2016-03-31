@@ -1,0 +1,126 @@
+#twittermodal{
+	width: 520px;
+	height: 600px;
+}
+
+blockquote{
+	text-align: justify;
+	font-style:italic;
+}
+
+.rotate {
+	height: 5em;
+	padding-top: 60px;
+	margin-left: -30px;
+	margin-right: -25px;
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	transform: rotate(-90deg);
+}
+
+.namecol{
+	min-width: 160px;
+}
+
+#footer {
+	 height: 60px;
+	 background-color: #f5f5f5;
+}
+
+.credit {
+   margin-top: 20px;
+   text-align:center
+}
+
+.thumbnail {
+	float: right;
+	margin: 15px;	
+}
+
+.sidebar {
+    float:right;
+}
+
+.subhead {
+	background-color: black ; /* 	background-image: url('../../images/taipei101web2.jpeg'); */
+	background-repeat: no-repeat;
+	background-position: center;
+	padding: 45px;
+	color: white;
+	text-shadow: 3px 3px 5px black;
+	margin-bottom: 30px;
+	white-space: nowrap;
+}
+
+.subhead h1 {
+	font-size: 60px;
+}
+
+.subhead p {
+	font-size: 24px;
+	font-weight: 300;
+}
+
+
+.nav li a {
+	color: #003399;
+}
+
+.affix {
+	top: 10px;
+}
+
+#emptyness {
+	height: 200px;
+
+}
+
+#regscreenshot{
+	margin-top: 10px;
+	margin-bottom: 15px;
+}
+
+section {
+	padding-top: 10px;
+}
+
+@media all and (max-width:779px){
+	.affix {
+		position: static;
+	}
+	.subhead h1 {
+		font-size: 36px;
+	}
+	
+	.subhead p {
+		font-size: 24px;
+		font-weight: 300;
+	}
+
+	#sponsors li{
+		width: 200px;
+		margin: auto;
+	}
+}
+
+@media all and (max-width:479px){
+	.subhead, .media-object {
+		display: none;
+	}
+
+}
+
+.media-object{
+	width: 64px;
+	margin-right: 25px;
+	margin-top: 15px;
+}
+
+
+.button1 {cursor: pointer; padding: 7px 15px;background: #00cc66;border: 0px solid #222;color:#fff;text-transform: uppercase; width: auto; margin: 0; }
+
+.button2 {cursor: pointer; padding: 7px 15px;background: #c8c8c8;border: 0px solid #222;color:#fff;text-transform: uppercase; width: auto; margin: 0;}
+
+
