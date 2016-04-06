@@ -552,7 +552,7 @@ shinyServer(function(input, output, session) {
         shinyInput <- getShinyInput()
         lcounts <- shinyInput$lcounts
         d3heatmap(lcounts, colors = "RdBu", labCol = make.unique(as.character(
-            batch)), dendrogram = if (input$cluster1) "both" else "none")
+            batch)), dendrogram = if (input$cluster1) "both" else "none",ColSideColors=sinyInput$ColColor)
     })
     
     output$correlation <- renderD3heatmap({
@@ -582,7 +582,7 @@ shinyServer(function(input, output, session) {
         nsample <- dim(shinyInput$data)[2]
         sample <- 1:nsample
         d3heatmap(cormat, colors = "RdBu", labCol = sample, labRow = sample, 
-            dendrogram = if (input$cluster2) "both" else "none")
+            dendrogram = if (input$cluster2) "both" else "none",ColSideColors=sinyInput$ColColor)
     })
     
     # Shape plots
