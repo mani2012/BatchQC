@@ -551,8 +551,14 @@ shinyServer(function(input, output, session) {
         }
         shinyInput <- getShinyInput()
         lcounts <- shinyInput$lcounts
+        batch <- shinyInput$batch
+        bc <- rainbow(max(batch))
+        colorfun <- function(i) {
+            return(bc[i])
+        }
+        cc <- sapply(batch, colorfun, simplify = TRUE)
         d3heatmap(lcounts, colors = "RdBu", labCol = make.unique(as.character(
-            batch)), dendrogram = if (input$cluster1) "both" else "none",ColSideColors=sinyInput$ColColor)
+            batch)), dendrogram = if (input$cluster1) "both" else "none",ColSideColors=cc)
     })
     
     output$correlation <- renderD3heatmap({
