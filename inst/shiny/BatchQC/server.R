@@ -412,7 +412,7 @@ shinyServer(function(input, output, session) {
         }
         dat2 %>% group_by(batch) %>% ggvis(~variable, ~value, fill = 
             if (input$colbybatch) ~batch else ~condition) %>% 
-            layer_boxplots(scale_nominal(vis, "x", padding=1.1, name="xcenter",points=TRUE), width=0.9) %>% 
+            layer_boxplots(scale_nominal("x", padding=1.1, name="xcenter",points=TRUE), width=0.9) %>% 
             add_tooltip(function(dat2) { paste0("Sample: ", dat2$variable, 
             "<br>", if (input$colbybatch) "Batch: " else "Condition: ", 
             if (input$colbybatch) dat2$batch else dat2$condition)
