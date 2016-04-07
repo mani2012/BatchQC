@@ -399,6 +399,8 @@ shinyServer(function(input, output, session) {
                 function(x) rep(batch5[x], nrow(dat1)))))
             dat2$condition <- as.factor(unlist(lapply(as.numeric(colnames(dat1))
                 , function(x) rep(condition[x], nrow(dat1)))))
+            dat2$samples <- unlist(lapply(seq(ncol(dat1)), 
+                                          function(x) rep(seq(ncol(dat1))[x], nrow(dat1))))
         } else {
             cond4 <- split(condition, as.factor(condition))
             cond5 <- unlist(lapply(1:length(cond4), 
@@ -409,9 +411,11 @@ shinyServer(function(input, output, session) {
                 function(x) rep(cond5[x], nrow(dat1)))))
             dat2$batch <- as.factor(unlist(lapply(as.numeric(colnames(dat1)), 
                 function(x) rep(batch[x], nrow(dat1)))))
+            dat2$samples <- unlist(lapply(seq(ncol(dat1)), 
+                function(x) rep(seq(ncol(dat1))[x], nrow(dat1))))
         }
-        dat2 %>% group_by(batch) %>% ggvis(~variable, ~value, fill = 
-            if (input$colbybatch) ~batch else ~condition) %>% 
+        dat2 %>% group_by(batch) %>% ggvis(~samples, ~value, fill = 
+            if (input$colbybatch) ~batch else ~condition) %>%
             layer_boxplots() %>% 
             add_tooltip(function(dat2) { paste0("Sample: ", dat2$variable, 
             "<br>", if (input$colbybatch) "Batch: " else "Condition: ", 
@@ -551,8 +555,14 @@ shinyServer(function(input, output, session) {
         }
         shinyInput <- getShinyInput()
         lcounts <- shinyInput$lcounts
+        batch <- shinyInput$batch
+        bc <- rainbow(max(batch))
+        colorfun <- function(i) {
+            return(bc[i])
+        }
+        cc <- sapply(batch, colorfun, simplify = TRUE)
         d3heatmap(lcounts, colors = "RdBu", labCol = make.unique(as.character(
-            batch)), dendrogram = if (input$cluster1) "both" else "none")
+            batch)), dendrogram = if (input$cluster1) "both" else "none",ColSideColors=cc)
     })
     
     output$correlation <- renderD3heatmap({
@@ -582,7 +592,7 @@ shinyServer(function(input, output, session) {
         nsample <- dim(shinyInput$data)[2]
         sample <- 1:nsample
         d3heatmap(cormat, colors = "RdBu", labCol = sample, labRow = sample, 
-            dendrogram = if (input$cluster2) "both" else "none")
+            dendrogram = if (input$cluster2) "both" else "none",ColSideColors=sinyInput$ColColor)
     })
     
     # Shape plots

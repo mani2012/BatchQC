@@ -42,6 +42,7 @@ batchqc_heatmap <- function(data.matrix, batch, mod = NULL, max_display = 50) {
         return(bc[i])
     }
     cc <- sapply(intbatch, colorfun, simplify = TRUE)
+    sinyInput <- c(shinyInput, list(ColColor = cc))
     if (!is.null(mod)) {
         # print ('Need to implement this part') do something here
     }
