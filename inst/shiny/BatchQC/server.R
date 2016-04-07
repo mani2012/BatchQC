@@ -399,6 +399,8 @@ shinyServer(function(input, output, session) {
                 function(x) rep(batch5[x], nrow(dat1)))))
             dat2$condition <- as.factor(unlist(lapply(as.numeric(colnames(dat1))
                 , function(x) rep(condition[x], nrow(dat1)))))
+            dat2$samples <- unlist(lapply(seq(ncol(dat1)), 
+                                          function(x) rep(seq(ncol(dat1))[x], nrow(dat1))))
         } else {
             cond4 <- split(condition, as.factor(condition))
             cond5 <- unlist(lapply(1:length(cond4), 
@@ -409,10 +411,12 @@ shinyServer(function(input, output, session) {
                 function(x) rep(cond5[x], nrow(dat1)))))
             dat2$batch <- as.factor(unlist(lapply(as.numeric(colnames(dat1)), 
                 function(x) rep(batch[x], nrow(dat1)))))
+            dat2$samples <- unlist(lapply(seq(ncol(dat1)), 
+                function(x) rep(seq(ncol(dat1))[x], nrow(dat1))))
         }
-        dat2 %>% group_by(batch) %>% ggvis(~variable, ~value, fill = 
-            if (input$colbybatch) ~batch else ~condition) %>% 
-            layer_boxplots(scale_nominal("x", padding=1.1, name="xcenter",points=TRUE), width=0.9) %>% 
+        dat2 %>% group_by(batch) %>% ggvis(~samples, ~value, fill = 
+            if (input$colbybatch) ~batch else ~condition) %>%
+            layer_boxplots() %>% 
             add_tooltip(function(dat2) { paste0("Sample: ", dat2$variable, 
             "<br>", if (input$colbybatch) "Batch: " else "Condition: ", 
             if (input$colbybatch) dat2$batch else dat2$condition)
