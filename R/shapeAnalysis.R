@@ -19,6 +19,7 @@
 batchQC_shapeVariation = function(data, groups, plot = FALSE, 
     groupCol = NULL) {
     
+    gnormdata <- gnormalize(data)
     Y = fitMoments(data)
     
     ps <- overallPvalue(Y, groups)
@@ -102,6 +103,26 @@ fitMoments <- function(x) {
     return(sfit)
 }
 
+#' Perform Genewise Normalization of the given data matrix
+#' 
+#' @param dat Given data matrix
+#' @return gnormdata Genewise Normalized data matrix
+#' @examples
+#' dat <- matrix(1:10, 2)
+#' gnormdata <- gnormalize(dat)
+gnormalize <- function(dat) {
+    # Compute Genewise Mean and Standard deviation
+    smean <- apply(dat, 1, mean)
+    ssd <- apply(dat, 1, sd)
+    smeanmat <- apply(row(dat), c(1,2), function(x, smean) smean[x], smean)
+    ssdmat <- apply(row(dat), c(1,2), function(x, ssd) ssd[x], ssd)
+    # Genewise normalize the data
+    gnormdata <- matrix(mapply(
+        function(x, smean, ssd) (x-smean)/ssd, 
+        dat, smeanmat, ssdmat), nrow = nrow(dat))
+    return(gnormdata)
+}
+
 overallPvalue <- function(Y, groups) {
     mod1 = model.matrix(~as.factor(groups), data = data.frame(Y))
     # model with batch
@@ -122,7 +143,8 @@ overallPvalue <- function(Y, groups) {
         t(mod0))  # residuals reduced model
     rss0 <- rowSums(resid0 * resid0)  ## SSE reduced model
     
-    Fstat = ((rss0 - rss1)/(df1 - df0))/(rss1/(n - df1))
+    delta <- apply(t(Y), 1, mean) * 0.03
+    Fstat = ((rss0 - rss1)/(df1 - df0))/(delta + rss1/(n - df1))
     # Compute p-value
     ps = 1 - pf(Fstat, df1 - df0, n - df1)
     return(ps)
@@ -139,18 +161,19 @@ delta_f.pvalue <- function(dat, mod, mod0) {
     p <- rep(0, m)
     Id <- diag(n)
     
-    resid <- dat %*% (Id - mod %*% solve(t(mod) %*% mod) %*% 
-        t(mod))
+    resid <- dat %*% (Id - mod %*% solve(t(mod) %*% mod) %*% t(mod))
     rss1 <- rowSums(resid * resid)
     rm(resid)
     
-    resid0 <- dat %*% (Id - mod0 %*% solve(t(mod0) %*% mod0) %*% 
-        t(mod0))
+    if (df0 > 0)  {
+        resid0 <- dat %*% (Id - mod0 %*% solve(t(mod0) %*% mod0) %*% t(mod0))
+    } else {
+        resid0 <- dat
+    }
     rss0 <- rowSums(resid0 * resid0)
     rm(resid0)
-    # co
-    resid00 <- dat %*% (Id - mod00 %*% solve(t(mod00) %*% mod00) %*% 
-        t(mod00))
+    
+    resid00 <- dat %*% (Id - mod00 %*% solve(t(mod00) %*% mod00) %*% t(mod00))
     rss00 <- rowSums(resid00 * resid00)
     rm(resid00)
     
@@ -158,8 +181,7 @@ delta_f.pvalue <- function(dat, mod, mod0) {
     r2_reduced <- 1 - rss0/rss00
     
     delta <- apply(dat, 1, mean) * 0.03
-    fstats <- ((rss0 - rss1)/(df1 - df0))/(delta + rss1/(n - 
-        df1))
+    fstats <- ((rss0 - rss1)/(df1 - df0))/(delta + rss1/(n - df1))
     p <- 1 - pf(fstats, df1 = (df1 - df0), df2 = (n - df1))
     return(list(p = p, r2_full = r2_full, r2_reduced = r2_reduced))
 }
@@ -179,11 +201,16 @@ batchEffectPvalue <- function(data, batch) {
         kurtbatch)
     numgenes <- dim(data)[1]
     batch3 <- rep(1:length(batch2), each = numgenes)
-    genes <- rep(1:numgenes, length(batch2))
-    genes_mod <- model.matrix(~as.factor(genes))
+    #genes <- rep(1:numgenes, length(batch2))
+    #genes_mod <- model.matrix(~as.factor(genes))
     batch_mod <- model.matrix(~as.factor(batch3))
-    mod <- cbind(genes_mod, batch_mod[, -1])
-    batch_test <- delta_f.pvalue(batcheffectmatrix, mod, genes_mod)
+    #mod <- cbind(genes_mod, batch_mod[, -1])
+    pdata <- data.frame(batch3)
+    #mod00 <- model.matrix(~-1+0, data=pdata) 
+    mod00 <- model.matrix(~1, data=pdata)
+        # reduced model for batch adjusted data
+    #batch_test <- delta_f.pvalue(batcheffectmatrix, mod, genes_mod)
+    batch_test <- delta_f.pvalue(batcheffectmatrix, batch_mod, mod00)
     batch_ps <- batch_test$p
     return(batch_ps)
 } 
