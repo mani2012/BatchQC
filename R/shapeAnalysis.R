@@ -143,7 +143,7 @@ overallPvalue <- function(Y, groups) {
         t(mod0))  # residuals reduced model
     rss0 <- rowSums(resid0 * resid0)  ## SSE reduced model
     
-    delta <- apply(t(Y), 1, mean) * 0.03
+    delta <- apply(t(Y), 1, mean) * 0.01
     Fstat = ((rss0 - rss1)/(df1 - df0))/(delta + rss1/(n - df1))
     # Compute p-value
     ps = 1 - pf(Fstat, df1 - df0, n - df1)
@@ -180,7 +180,7 @@ delta_f.pvalue <- function(dat, mod, mod0) {
     r2_full <- 1 - rss1/rss00
     r2_reduced <- 1 - rss0/rss00
     
-    delta <- apply(dat, 1, mean) * 0.03
+    delta <- apply(dat, 1, mean) * 0.01
     fstats <- ((rss0 - rss1)/(df1 - df0))/(delta + rss1/(n - df1))
     p <- 1 - pf(fstats, df1 = (df1 - df0), df2 = (n - df1))
     return(list(p = p, r2_full = r2_full, r2_reduced = r2_reduced))
