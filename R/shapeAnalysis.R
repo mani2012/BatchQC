@@ -19,11 +19,15 @@
 batchQC_shapeVariation = function(data, groups, plot = FALSE, 
     groupCol = NULL) {
     
-    gnormdata <- gnormalize(data)
-    Y = fitMoments(data)
+    groupsorder <- order(groups)
+    sortdata <- data[,groupsorder]
+    sortgroups <- groups[groupsorder]
+    groupCol <- groupCol[groupsorder]
+    gnormdata <- gnormalize(sortdata)
+    Y = fitMoments(sortdata)
     
-    ps <- overallPvalue(Y, groups)
-    batch_ps <- batchEffectPvalue(data, groups)
+    ps <- overallPvalue(Y, sortgroups)
+    batch_ps <- batchEffectPvalue(sortdata, sortgroups)
     
     mpval = ps[1]
     vpval = ps[2]
@@ -83,9 +87,9 @@ batchQC_shapeVariation = function(data, groups, plot = FALSE,
         gplots::heatmap.2(t(Y), trace = "none", Rowv = FALSE, 
             Colv = FALSE, dendrogram = "none", col = pal, ColSideColors = 
             groupCol, density.info = "none", scale = "row", cexRow = 1.15, 
-            colsep = cumsum(table(groups)), main = main)
+            colsep = cumsum(table(sortgroups)), main = main)
         
-        legend("bottomleft", legend = unique(groups), pch = 19, 
+        legend("bottomleft", legend = unique(sortgroups), pch = 19, 
             col = unique(groupCol), title = "Batch")
     }
     c(ps, batch_ps)
