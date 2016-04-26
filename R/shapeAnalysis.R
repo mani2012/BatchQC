@@ -19,11 +19,15 @@
 batchQC_shapeVariation = function(data, groups, plot = FALSE, 
     groupCol = NULL) {
     
-    gnormdata <- gnormalize(data)
-    Y = fitMoments(data)
+    groupsorder <- order(groups)
+    sortdata <- data[,groupsorder]
+    sortgroups <- groups[groupsorder]
+    groupCol <- groupCol[groupsorder]
+    gnormdata <- gnormalize(sortdata)
+    Y = fitMoments(sortdata)
     
-    ps <- overallPvalue(Y, groups)
-    batch_ps <- batchEffectPvalue(data, groups)
+    ps <- overallPvalue(Y, sortgroups)
+    batch_ps <- batchEffectPvalue(sortdata, sortgroups)
     
     mpval = ps[1]
     vpval = ps[2]
@@ -83,9 +87,9 @@ batchQC_shapeVariation = function(data, groups, plot = FALSE,
         gplots::heatmap.2(t(Y), trace = "none", Rowv = FALSE, 
             Colv = FALSE, dendrogram = "none", col = pal, ColSideColors = 
             groupCol, density.info = "none", scale = "row", cexRow = 1.15, 
-            colsep = cumsum(table(groups)), main = main)
+            colsep = cumsum(table(sortgroups)), main = main)
         
-        legend("bottomleft", legend = unique(groups), pch = 19, 
+        legend("bottomleft", legend = unique(sortgroups), pch = 19, 
             col = unique(groupCol), title = "Batch")
     }
     c(ps, batch_ps)
@@ -143,7 +147,8 @@ overallPvalue <- function(Y, groups) {
         t(mod0))  # residuals reduced model
     rss0 <- rowSums(resid0 * resid0)  ## SSE reduced model
     
-    delta <- apply(t(Y), 1, mean) * 0.01
+    delta <- (apply(t(Y), 1, mean) * 0.01)^2
+    #delta <- 0
     Fstat = ((rss0 - rss1)/(df1 - df0))/(delta + rss1/(n - df1))
     # Compute p-value
     ps = 1 - pf(Fstat, df1 - df0, n - df1)
@@ -180,7 +185,8 @@ delta_f.pvalue <- function(dat, mod, mod0) {
     r2_full <- 1 - rss1/rss00
     r2_reduced <- 1 - rss0/rss00
     
-    delta <- apply(dat, 1, mean) * 0.01
+    delta <- (apply(dat, 1, mean) * 0.01)^2
+    #delta <- 0
     fstats <- ((rss0 - rss1)/(df1 - df0))/(delta + rss1/(n - df1))
     p <- 1 - pf(fstats, df1 = (df1 - df0), df2 = (n - df1))
     return(list(p = p, r2_full = r2_full, r2_reduced = r2_reduced))
