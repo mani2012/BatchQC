@@ -417,20 +417,21 @@ shinyServer(function(input, output, session) {
         dat2 %>% group_by(batch) %>% ggvis(~samples, ~value, fill = 
             if (input$colbybatch) ~batch else ~condition) %>%
             layer_boxplots() %>% 
-            add_tooltip(function(dat2) { paste0("Sample: ", dat2$variable, 
-            "<br>", if (input$colbybatch) "Batch: " else "Condition: ", 
-            if (input$colbybatch) dat2$batch else dat2$condition)
-            }, "hover") %>% 
+            add_tooltip(function(dat2) { paste0("Sample: ", 
+                colnames(shinyInput$lcounts)[dat2$samples],
+                "<br>", if (input$colbybatch) "Batch: " else "Condition: ", 
+                if (input$colbybatch) dat2$batch else dat2$condition)
+                }, "hover") %>% 
             add_axis("x", title = if (input$sortbybatch) 
-            paste(input$noSamples, "Sample(s) Per Batch", sep = " ") 
-            else paste(input$ncSamples, "Sample(s) Per Condition", sep = " "), 
-            properties = axis_props(title = list(fontSize = 15), 
-            labels = list(fontSize = 5, angle = 90))) %>% 
+                paste(input$noSamples, "Sample(s) Per Batch", sep = " ") 
+                else paste(input$ncSamples, "Sample(s) Per Condition", sep=" "), 
+                properties = axis_props(title = list(fontSize = 15), 
+                labels = list(fontSize = 5, angle = 90))) %>% 
             add_axis("y", title = "Expression", properties = axis_props(title = 
-            list(fontSize = 15),labels = list(fontSize = 10))) %>% 
+                list(fontSize = 15),labels = list(fontSize = 10))) %>% 
             add_legend("fill", title = if (input$colbybatch) 
-            "Batches" else "Conditions", properties = legend_props(title = 
-            list(fontSize = 15), labels = list(fontSize = 10)))
+                "Batches" else "Conditions", properties = legend_props(title = 
+                list(fontSize = 15), labels = list(fontSize = 10)))
     })
     diffex_bp %>% bind_shiny("DiffExPlot")
     output$DEsummary <- renderPrint({
@@ -520,7 +521,12 @@ shinyServer(function(input, output, session) {
         fit <- lmFit(shinyInput$data, mod)
         fit2 <- eBayes(fit)
         ncond <- nlevels(as.factor(condition))
-        topTable(fit2, coef = 2:ncond, number = input$noGenes)
+        limmaTable <- topTable(fit2, coef = 2:ncond, number = input$noGenes)
+        for (j in 2:ncond)  {
+            colnames(limmaTable)[j-1] <- paste("Condition: ", 
+            levels(as.factor(condition))[j], " (logFC)", sep='')
+        }
+        limmaTable
     })
     
     # interactive scatter plot
