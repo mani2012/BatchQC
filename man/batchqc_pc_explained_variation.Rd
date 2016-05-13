@@ -33,6 +33,6 @@ pdata <- data.frame(batch, condition)
 modmatrix = model.matrix(~as.factor(condition), data=pdata)
 pca <- batchqc_pca(data.matrix, batch, mod=modmatrix)
 pcs <- t(data.frame(pca$x))
-batchqc_pc_explained_variation(pcs, data.frame(pca$sdev^2), condition, batch)
+batchqc_pc_explained_variation(pcs, pca$sdev^2, condition, batch)
 }
 
