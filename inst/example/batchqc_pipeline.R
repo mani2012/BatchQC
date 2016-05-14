@@ -80,7 +80,7 @@ batchQC(edata, batch=batch, condition=condition,
 data <- read.delim("arielGeneric.txt")
 sampleinfo <- read.delim("arielGenericSampleInfo.txt")
 batch <- sampleinfo$Batch
-condition <- as.factor(sampleinfo$Treatment)
+condition <- paste(sampleinfo$Treatment, sampleinfo$Time, sep='')
 batchQC(data, batch=batch, condition=condition, 
         report_file="batchqc_report.html", report_dir=".", 
         report_option_binary="111111111",
