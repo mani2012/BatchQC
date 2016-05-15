@@ -27,13 +27,6 @@ batchqc_heatmap <- function(data.matrix, batch, mod = NULL, max_display = 50) {
     lcpm <- log2CPM(reduced.data.matrix)
     lcounts <- lcpm$y
     
-    shinyInput <- getShinyInput()
-    if (is.null(shinyInput)) {
-        shinyInput <- list(data = data.matrix, batch = batch)
-    }
-    shinyInput <- c(shinyInput, list(lcounts = lcounts))
-    setShinyInput(shinyInput)
-    
     fbatch <- as.factor(batch)
     nbatch <- nlevels(fbatch)
     bc <- rainbow(nbatch)
@@ -42,7 +35,6 @@ batchqc_heatmap <- function(data.matrix, batch, mod = NULL, max_display = 50) {
         return(bc[i])
     }
     cc <- sapply(intbatch, colorfun, simplify = TRUE)
-    sinyInput <- c(shinyInput, list(ColColor = cc))
     if (!is.null(mod)) {
         # print ('Need to implement this part') do something here
     }

@@ -167,21 +167,24 @@ delta_f.pvalue <- function(dat, mod, mod0) {
     df1 <- dim(mod)[2]
     df0 <- dim(mod0)[2]
     p <- rep(0, m)
-    Id <- diag(n)
+    #Id <- diag(n)
     
-    resid <- dat %*% (Id - mod %*% solve(t(mod) %*% mod) %*% t(mod))
+    #resid <- dat %*% (Id - mod %*% solve(t(mod) %*% mod) %*% t(mod))
+    resid <- dat - dat %*% mod %*% solve(t(mod) %*% mod) %*% t(mod)
     rss1 <- rowSums(resid * resid)
     rm(resid)
     
     if (df0 > 0)  {
-        resid0 <- dat %*% (Id - mod0 %*% solve(t(mod0) %*% mod0) %*% t(mod0))
+        #resid0 <- dat %*% (Id - mod0 %*% solve(t(mod0) %*% mod0) %*% t(mod0))
+        resid0 <- dat - dat %*% mod0 %*% solve(t(mod0) %*% mod0) %*% t(mod0)
     } else {
         resid0 <- dat
     }
     rss0 <- rowSums(resid0 * resid0)
     rm(resid0)
     
-    resid00 <- dat %*% (Id - mod00 %*% solve(t(mod00) %*% mod00) %*% t(mod00))
+    #resid00 <- dat %*% (Id - mod00 %*% solve(t(mod00) %*% mod00) %*% t(mod00))
+    resid00 <- dat - dat %*% mod00 %*% solve(t(mod00) %*% mod00) %*% t(mod00)
     rss00 <- rowSums(resid00 * resid00)
     rm(resid00)
     

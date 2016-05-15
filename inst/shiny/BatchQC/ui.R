@@ -14,7 +14,8 @@ shinyInput <- getShinyInput()
 maxbatchElems <- minbatch(shinyInput$batch)
 maxcondElems <- minbatch(shinyInput$condition)
 defaultDisp <- 30
-defaultGenesDisp <- 10
+defaultTopGenesDisp <- 10
+defaultGenesDisp <- 50
 maxGenes <- dim(shinyInput$data)[1]
 nbatch <- nlevels(as.factor(shinyInput$batch))
 shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE, 
@@ -34,6 +35,10 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                 h3("Variation explained by Batch and Condition"),
                 plotOutput("VariationPlot"),
                 br(),
+                sliderInput('noGenesVA', 
+                    'No. of Genes to include in the table below', value =
+                    if (maxGenes>defaultGenesDisp) defaultGenesDisp 
+                    else maxGenes, min = 1, max = maxGenes, step=1),
                 tableOutput("VariationTable")
             ),
             tabPanel("P-value Analysis", 
@@ -51,12 +56,12 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
     tabPanel("Differential Expression",
         sidebarLayout(
             sidebarPanel(
-                numericInput('ncSamples', 'No. of Sample(s) Per Condition', 
-                    if (maxcondElems>defaultDisp) defaultDisp 
-                    else maxcondElems, min = 1, max = maxcondElems),
-                numericInput('noSamples', 'No. of Sample(s) Per Batch', 
-                    if (maxbatchElems>defaultDisp) defaultDisp 
-                    else maxbatchElems, min = 1, max = maxbatchElems),
+                sliderInput('ncSamples', 'No. of Sample(s) Per Condition', 
+                    value=if (maxcondElems>defaultDisp) defaultDisp 
+                    else maxcondElems, min = 1, max = maxcondElems,step=1),
+                sliderInput('noSamples', 'No. of Sample(s) Per Batch', 
+                    value=if (maxbatchElems>defaultDisp) defaultDisp 
+                    else maxbatchElems, min = 1, max = maxbatchElems,step=1),
                 checkboxInput("sortbybatch", 
                     "Sort By Batch First (Default: Sort By Condition First)", 
                     FALSE),
@@ -64,10 +69,10 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                     "Color By Batch (Default: Color By Condition)", FALSE),
                 radioButtons('batchDE', 'Batch Adjustment',
                     c('None'=0, 'Combat'=1,'SVA'=2), 0),
-                numericInput('noGenes', 
+                sliderInput('noGenes', 
                     'No. of top Differentially Expressed Genes to display', 
-                    if (maxGenes>defaultGenesDisp) defaultGenesDisp 
-                    else maxGenes, min = 1, max = maxGenes),
+                    value=if (maxGenes>defaultTopGenesDisp) defaultTopGenesDisp 
+                    else maxGenes, min = 1, max = maxGenes, step=1),
                 # This makes web page load the JS file in the HTML head.
                 #singleton(
                 #  tags$head(tags$script(src = "message-handler.js"))
@@ -86,7 +91,7 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                 tabsetPanel(
                     tabPanel("Expression Plots",ggvisOutput("DiffExPlot")), 
                     tabPanel("Summary", verbatimTextOutput("DEsummary")),
-                    tabPanel("Table", tableOutput("DEtable")), 
+                    #tabPanel("Table", tableOutput("DEtable")), 
                     tabPanel("LIMMA",tableOutput("LimmaTable"))
                     #tabPanel("GLS",tableOutput("GlsTable")), 
                     #tabPanel("Mixed Effects",tableOutput("MixEffTable")) 
@@ -102,6 +107,10 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                 radioButtons('batchHM1', 'Batch Adjustment',
                     c('None'=0, 'Combat'=1,'SVA'=2), 0),
                 checkboxInput("cluster1", "Apply clustering"),
+                sliderInput('noGenesHM', 
+                    'No. of Genes to include in heatmap display', value =
+                    if (maxGenes>defaultGenesDisp) defaultGenesDisp 
+                    else maxGenes, min = 1, max = maxGenes, step=1),
                 d3heatmapOutput("heatmap")
             ),
             tabPanel("Sample Correlations",
@@ -129,17 +138,17 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                     c('None'=0, 'Combat'=1,'SVA'=2), 0)
             ),
             mainPanel(
-                plotOutput("circos", width = "100%")
+                plotOutput("circos", height = "550px", width = "100%")
             )
         )
     ),
     tabPanel("PCA Analysis",
         sidebarLayout(
             sidebarPanel(
-                numericInput('xcol', 'Principal Component (x-axis)', 1,
-                    min = 1, max = 50),
-                numericInput('ycol', 'Principal Component (y-axis)', 2,
-                    min = 1, max = 50),
+                sliderInput('xcol', 'Principal Component (x-axis)', value=1,
+                    min = 1, max = ncol(shinyInput$pc), step=1),
+                sliderInput('ycol', 'Principal Component (y-axis)', value=2,
+                    min = 1, max = ncol(shinyInput$pc), step=1),
                 checkboxInput("colbybatchPCA", 
                     "Color By Batch (Default: Color By Condition)", FALSE),
                 radioButtons('batchPCA', 'Batch Adjustment',
@@ -159,7 +168,6 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
     tabPanel("Shape",
         sidebarLayout(
             sidebarPanel(
-                numericInput('batchnum', 'Batch', 1, min = 1, max = nbatch),
                 radioButtons('batchShape', 'Batch Adjustment',
                     c('None'=0, 'Combat'=1,'SVA'=2), 0)
             ),
@@ -186,8 +194,8 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
     tabPanel("ComBat",
         sidebarLayout(
             sidebarPanel(
-                numericInput('batches', 'Batch', 1,
-                    min = 1, max = nrow(shinyInput$delta.hat)),
+                sliderInput('batches', 'Batch', value=1,
+                    min = 1, max = nrow(shinyInput$delta.hat), step=1),
                 br(),
                 radioButtons('optionMeanOnly', 'Batch Adjustment Option',
                     c('Mean and Variance'=0, 'Mean only'=1), 0),
@@ -202,7 +210,8 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
             mainPanel(
                 tabsetPanel(
                     id="CombatMain",
-                    tabPanel("ComBat Plots", plotOutput("densityQQPlots")),
+                    tabPanel("ComBat Plots", plotOutput("densityQQPlots", 
+                        height = "550px")),
                     tabPanel("Summary", verbatimTextOutput("kstest"), 
                         br(),
                         h4(paste("Note: The non-parametric version of ComBat",
