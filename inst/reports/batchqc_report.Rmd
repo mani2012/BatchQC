@@ -1,6 +1,5 @@
 ---
 title: "BatchQC Report"
-author: "Solaiappan Manimaran"
 date: "`r Sys.Date()`"
 output: 
   html_vignette:
@@ -14,88 +13,229 @@ output:
 ```{r, echo=FALSE}
 shinyInput <- getShinyInput()
 dat <- shinyInput$data
+if (is.null(colnames(dat)))  {
+    colnames(dat) <- 1:dim(dat)[2]
+}
 lcounts <- log2CPM(dat)$y
+if (is.null(shinyInput)) {
+    shinyInput <- list(data = data.matrix, batch = batch)
+}
+shinyInput <- c(shinyInput, list(lcounts = lcounts))
+setShinyInput(shinyInput)
 report_option_vector <- shinyInput$report_option_vector
 eval_cell_1 = (report_option_vector[1]=="1")
 ```
-`r if (eval_cell_1) 'Data Summary'`
-`r if (eval_cell_1) '============'`
-`r if (eval_cell_1) 'This is a summary of the given data matrix for the first 12 genes.'`
-```{r eval=eval_cell_1, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
-datasummary <- summary(t(dat))
+`r if (eval_cell_1) 'Summary'`
+`r if (eval_cell_1) '======='`
+`r if (eval_cell_1) '## Confounding'`
+`r if (eval_cell_1) '### Number of samples in each Batch and Condition'`
+```{r eval=eval_cell_1, echo=FALSE, message=FALSE}
+catbatch <- function(x) {
+    paste("Batch", x)
+}
+catcondition <- function(x) {
+    paste("Condition", x)
+}
+counts <- table(shinyInput$condition, shinyInput$batch)
+countsmatrix <- as.matrix(counts)
+colnames(countsmatrix) <- sapply(colnames(countsmatrix), catbatch, 
+    simplify = TRUE)
+rownames(countsmatrix) <- sapply(rownames(countsmatrix), catcondition, 
+    simplify = TRUE)
 panderOptions("table.split.table", 120)  ## table split at 100 (default 80) characters in a line
-pander(datasummary[,1:12])
+pander(countsmatrix)
 ```
 
-```{r, echo=FALSE}
-eval_cell_1_1 = (report_option_vector[1]=="1")
+`r if (eval_cell_1) '### Measures of confounding between Batch and Condition'`
+```{r eval=eval_cell_1, echo=FALSE, message=FALSE}
+counts <- table(shinyInput$condition, shinyInput$batch)
+rowsums <- apply(counts, 1, sum)
+colsums <- apply(counts, 2, sum)
+tablesum <- sum(rowsums)
+expected <- matrix(0, nrow(counts), ncol(counts))
+for (i in 1:nrow(counts)) {
+    for (j in 1:ncol(counts)) {
+        expected[i, j] = rowsums[i] * colsums[j]/tablesum
+    }
+}
+chi <- sum((counts - expected)^2/expected)
+mmin <- min(nrow(counts), ncol(counts))
+confound1 <- sqrt(chi * mmin/((chi + tablesum) * (mmin - 1)))  
+## Standardized Pearson Correlation Coefficient
+confound2 <- sqrt(chi/(tablesum * (mmin - 1)))  ## Cramer's V
+confound <- matrix(c(confound1, confound2), nrow = 1)
+colnames(confound) <- c("Standardized Pearson Correlation Coefficient", 
+    "Cramer's V")
+rownames(confound) <- c(
+"Confounding Coefficients (0=no confounding, 1=complete confounding)")
+panderOptions("table.split.table", 120)  ## table split at 100 (default 80) characters in a line
+pander(confound)
 ```
-`r if (eval_cell_1_1) 'Sample Boxplots'`
-`r if (eval_cell_1_1) '======='`
-`r if (eval_cell_1_1) 'Boxplots for all values for each of the samples and are colored by batch membership.'`
 
-```{r eval=eval_cell_1_1, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
-boxplot(lcounts,col=as.numeric(as.factor(batch)),main="Sample Boxplots (colored by batch)",xlab="Samples")
+`r if (eval_cell_1) '## Variation Analysis'`
+`r if (eval_cell_1) '### Variation explained by Batch and Condition'`
+```{r eval=eval_cell_1, echo=FALSE, message=FALSE, fig.width=8, fig.height=5}
+batchqc_ev <- batchqc_explained_variation(shinyInput$data, 
+    shinyInput$condition, shinyInput$batch)
+boxplot(batchqc_ev$explained_variation, ylab = 
+    "Percent Explained Variation", main = 
+    "Percent of Variation Explained by Source")
+```
+
+```{r eval=eval_cell_1, echo=FALSE, message=FALSE}
+panderOptions("table.split.table", 120)  ## table split at 100 (default 80) characters in a line
+pander(apply(batchqc_ev$explained_variation, 2, summary))
+```
+
+`r if (eval_cell_1) '## P-value Analysis'`
+`r if (eval_cell_1) '### Distribution of Batch and Condition Effect p-values Across Genes'`
+```{r eval=eval_cell_1, echo=FALSE, message=FALSE}
+cond_ps <- batchqc_ev$cond_test$p
+batch_ps <- batchqc_ev$batch_test$p
+pvalue_table <- rbind(
+    `Batch P-values` = c(summary(batch_ps), 
+    `Ps<0.05` = mean(batch_ps <= 0.05)),
+    `Condition P-values` = c(summary(cond_ps), 
+    `Ps<0.05` = mean(cond_ps <= 0.05)))
+pander(pvalue_table)
+```
+
+```{r eval=eval_cell_1, echo=FALSE, message=FALSE, fig.width=8, fig.height=5}
+cond_ps <- batchqc_ev$cond_test$p
+batch_ps <- batchqc_ev$batch_test$p
+nf <- layout(mat = matrix(c(1, 2), 2, 1, byrow = TRUE), 
+    height = c(1, 3))
+# par(mar=c(3.1, 3.1, 1.1, 2.1))
+par(mar = c(3, 3, 1, 2))
+boxplot(batch_ps, horizontal = TRUE, outline = TRUE, ylim = c(0, 1), 
+    frame = F, col = "green1")
+hist(batch_ps, xlim = c(0, 1), col = "pink", main = "")
+title("Distribution of Batch Effect p-values Across Genes")
+```
+
+```{r eval=eval_cell_1, echo=FALSE, message=FALSE, fig.width=8, fig.height=5}
+cond_ps <- batchqc_ev$cond_test$p
+nf <- layout(mat = matrix(c(1, 2), 2, 1, byrow = TRUE), 
+    height = c(1, 3))
+# par(mar=c(3.1, 3.1, 1.1, 2.1))
+par(mar = c(3, 3, 1, 2))
+boxplot(cond_ps, horizontal = TRUE, outline = TRUE, ylim = c(0, 1), 
+    frame = F, col = "green1")
+hist(cond_ps, xlim = c(0, 1), col = "pink", main = "")
+title("Distribution of Condition Effect p-values Across Genes")
 ```
 
 ```{r, echo=FALSE}
 eval_cell_2 = (report_option_vector[2]=="1")
 ```
-`r if (eval_cell_2) 'Heatmap'`
-`r if (eval_cell_2) '======='`
-`r if (eval_cell_2) 'This is a heatmap of the given data matrix showing the batch effects and variations with different conditions.'`
-```{r, eval=eval_cell_2, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
-batchqc_heatmap(dat, batch=batch, mod=mod)
+`r if (eval_cell_2) 'Differential Expression'`
+`r if (eval_cell_2) '======================='`
+`r if (eval_cell_2) '## Expression Plot'`
+`r if (eval_cell_2) 'Boxplots for all values for each of the samples and are colored by batch membership.'`
+
+```{r eval=eval_cell_2, echo=FALSE, message=FALSE, fig.width=8, fig.height=5}
+boxplot(lcounts,col=as.numeric(as.factor(batch)),main="Sample Boxplots (colored by batch)",xlab="Samples")
+```
+
+`r if (eval_cell_2) '## LIMMA'`
+```{r eval=eval_cell_2, echo=FALSE, message=FALSE}
+pdata <- data.frame(shinyInput$batch, shinyInput$condition)
+mod_full <- model.matrix(~as.factor(shinyInput$condition) + 
+    ~as.factor(shinyInput$batch), data = pdata)
+fit <- lmFit(shinyInput$data, mod_full)
+fit2 <- eBayes(fit)
+ncond <- nlevels(as.factor(shinyInput$condition))
+limmaTable <- topTable(fit2, coef = 2:ncond, number=10)
+for (j in 2:ncond)  {
+    colnames(limmaTable)[j-1] <- paste("Condition: ", 
+    levels(as.factor(shinyInput$condition))[j], " (logFC)", sep='')
+}
+panderOptions("table.split.table", 120)  ## table split at 100 (default 80) characters in a line
+pander(limmaTable)
 ```
 
 ```{r, echo=FALSE}
 eval_cell_3 = (report_option_vector[3]=="1")
 ```
-`r if (eval_cell_3) 'Sample Correlations'`
+`r if (eval_cell_3) 'Median Correlations'`
 `r if (eval_cell_3) '==================='`
-`r if (eval_cell_3) 'This is a heatmap of the correlation between samples.'`
-```{r, eval=eval_cell_3, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
-batchqc_correlation(dat, batch=batch, mod=mod)
+`r if (eval_cell_3) 'This plot helps identify outlying samples.'`
+```{r, eval=eval_cell_3, echo=FALSE, message=FALSE, fig.width=8, fig.height=4}
+batchqc_corscatter(dat, batch=batch, mod=mod)
 ```
 
 ```{r, echo=FALSE}
 eval_cell_4 = (report_option_vector[4]=="1")
 ```
-`r if (eval_cell_4) 'This plot helps identify outlying samples.'`
+`r if (eval_cell_4) 'Heatmaps'`
+`r if (eval_cell_4) '========'`
+`r if (eval_cell_4) '## Heatmap'`
+`r if (eval_cell_4) 'This is a heatmap of the given data matrix showing the batch effects and variations with different conditions.'`
 ```{r, eval=eval_cell_4, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
-batchqc_corscatter(dat, batch=batch, mod=mod)
+batchqc_heatmap(dat, batch=batch, mod=mod)
+```
+
+`r if (eval_cell_4) '## Sample Correlations'`
+`r if (eval_cell_4) 'This is a heatmap of the correlation between samples.'`
+```{r, eval=eval_cell_4, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+batchqc_correlation(dat, batch=batch, mod=mod)
 ```
 
 ```{r, echo=FALSE}
 eval_cell_5 = (report_option_vector[5]=="1")
 ```
-`r if (eval_cell_5) 'PCA: Principal Component Analysis'`
-`r if (eval_cell_5) '================================='`
-`r if (eval_cell_5) 'This is a plot of the top two principal components and showing the variation with respect to batch effects and different conditions.'`
-```{r, eval=eval_cell_5, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
+`r if (eval_cell_5) 'Circular Dendrogram'`
+`r if (eval_cell_5) '==================='`
+`r if (eval_cell_5) 'This is a Circular Dendrogram of the given data matrix colored by batch to show the batch effects.'`
+```{r, eval=eval_cell_5, echo=FALSE, message=FALSE, fig.width=5, fig.height=5}
+batchqc_circosplot(shinyInput$data, shinyInput$batch, "complete")
+```
+
+```{r, echo=FALSE}
+eval_cell_6 = (report_option_vector[6]=="1")
+```
+`r if (eval_cell_6) 'PCA: Principal Component Analysis'`
+`r if (eval_cell_6) '================================='`
+`r if (eval_cell_6) '## PCA'`
+`r if (eval_cell_6) 'This is a plot of the top two principal components colored by batch to show the batch effects.'`
+```{r, eval=eval_cell_6, echo=FALSE, message=FALSE, fig.width=6, fig.height=6}
 pca <- batchqc_pca(lcounts, batch=batch, mod=mod)
 shinyInput <- getShinyInput()
 shinyInput <- c(shinyInput, list("pc"=data.frame(pca$x), "vars"=pca$sdev^2))
 setShinyInput(shinyInput)
 ```
 
-```{r, echo=FALSE}
-eval_cell_6 = (report_option_vector[6]=="1")
-```
-`r if (eval_cell_6) 'PCA Proportion Variation and correlation'`
-`r if (eval_cell_6) '========================================'`
-```{r, eval=eval_cell_6, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
-res <- batchqc_pca_svd(lcounts, batch=batch, mod=mod)
+`r if (eval_cell_6) '## Explained Variation'`
+```{r, eval=eval_cell_6, echo=FALSE, message=FALSE}
+pc <- shinyInput$pc
+pcs <- t(pc)
+explained_variation <- batchqc_pc_explained_variation(pcs, 
+    shinyInput$vars, condition, batch)
+panderOptions("table.split.table", 240)  ## table split at 240 (default 80) characters in a line
+pander(explained_variation)
 ```
 
 ```{r, echo=FALSE}
 eval_cell_7 = (report_option_vector[7]=="1")
 ```
-`r if (eval_cell_7) 'PCA Proportion Variation and correlation Table'`
-`r if (eval_cell_7) '=============================================='`
-```{r, eval=eval_cell_7, echo=FALSE, message=FALSE}
-panderOptions("table.split.table", Inf)  ## don't split tables
-pander(res)
+`r if (eval_cell_7) 'Shape'`
+`r if (eval_cell_7) '====='`
+`r if (eval_cell_7) 'This is a heatmap plot showing the variation of gene expression mean, variance, skewness and kurtosis between samples grouped by batch to see the batch effects variation'`
+```{r, eval=eval_cell_7, echo=FALSE, message=FALSE, fig.width=9, fig.height=5}
+lcounts <- shinyInput$lcounts
+lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
+bf <- as.factor(shinyInput$batch)
+pval <- batchQC_shapeVariation(lcounts_adj, batch, plot = TRUE, groupCol = 
+    rainbow(nlevels(bf))[bf])
+cat(paste("Note: Overall p-value is calculated for the",
+    "variation across samples on the overall measure",
+    "across genes. Pairwise p-value is calculated for the",
+    "pairwise variation of each gene between batches",
+    "on the measure across each batch. If the data is", 
+    "quantum normalized, then the overall measure across",
+    "genes is same for all samples and pairwise p-value",
+    "is a good measure, which also discounts very small", 
+    "variations.", sep=" "))
 ```
 
 ```{r, echo=FALSE}
@@ -105,16 +245,67 @@ eval_cell_8 = (report_option_vector[8]=="1")
 `r if (eval_cell_8) '============'`
 `r if (eval_cell_8) 'This is a plot showing whether parametric or non-parameteric prior is appropriate for this data. It also shows the Kolmogorov-Smirnov test comparing the parametric and non-parameteric prior distribution.'`
 ```{r, eval=eval_cell_8, echo=FALSE, message=FALSE}
-kstest <- combatPlot(lcounts, batch=batch, mod=mod)
-print(kstest)
+kstest <- combatPlot(lcounts, batch=shinyInput$batch, mod=mod)
+shinyInput <- getShinyInput()
+delta.hat <- shinyInput$delta.hat
+gamma.hat <- shinyInput$gamma.hat
+gamma.bar <- shinyInput$gamma.bar
+a.prior <- shinyInput$a.prior
+b.prior <- shinyInput$b.prior
+ksout <- ks.test(gamma.hat[1, ], "pnorm", 
+    gamma.bar[1], sqrt(shinyInput$t2[1]))  
+    # two-sided, exact
+summarytext <- 
+"Batch mean distribution across genes: Normal vs Empirical distribution"
+summarytext <- paste(summarytext, "Two-sided Kolmogorov-Smirnov test", 
+    sep = "\n")
+summarytext <- paste(summarytext, "Selected Batch: ", sep = "\n")
+summarytext <- paste(summarytext, 1, sep = "")
+summarytext <- paste(summarytext, "Statistic D = ", sep = "\n")
+summarytext <- paste(summarytext, signif(ksout$statistic, 4), sep = "")
+summarytext <- paste(summarytext, "p-value = ", sep = "\n")
+summarytext <- paste(summarytext, signif(ksout$p.value, 4), sep = "")
+
+invgam <- 1/rgamma(ncol(delta.hat), a.prior[1], 
+    b.prior[1])
+ksvarout <- ks.test(delta.hat[1, ], invgam)  
+    # two-sided, exact
+summarytext <- paste(summarytext, 
+    "\n\n\nBatch Variance distribution across genes: ",
+    "Inverse Gamma vs Empirical distribution", 
+    sep = "")
+summarytext <- paste(summarytext, "Two-sided Kolmogorov-Smirnov test", 
+    sep = "\n")
+summarytext <- paste(summarytext, "Selected Batch: ", sep = "\n")
+summarytext <- paste(summarytext, 1, sep = "")
+summarytext <- paste(summarytext, "Statistic D = ", sep = "\n")
+summarytext <- paste(summarytext, signif(ksvarout$statistic, 4), 
+    sep = "")
+summarytext <- paste(summarytext, "p-value = ", sep = "\n")
+summarytext <- paste(summarytext, signif(ksvarout$p.value, 4), sep = "")
+
+cat(summarytext)
+cat(paste("Note: The non-parametric version of ComBat",
+    "takes much longer time to run and we recommend it",
+    "only when the shape of the non-parametric curve",
+    "widely differs such as a bimodal or highly skewed",
+    "distribution. Otherwise, the difference in batch", 
+    "adjustment is very negligible and parametric version",
+    "is recommended even if p-value of KS test above is",
+    "significant.", sep=" "))
 ```
 
 ```{r, echo=FALSE}
 eval_cell_9 = (report_option_vector[9]=="1")
 ```
-`r if (eval_cell_9) 'Batch Effects testing'`
-`r if (eval_cell_9) '====================='`
-`r if (eval_cell_9) 'This is a summary of the statistical test for batch effects.'`
+`r if (eval_cell_9) 'SVA'`
+`r if (eval_cell_9) '==='`
+`r if (eval_cell_6) '## Summary'`
 ```{r, eval=eval_cell_9, echo=FALSE, message=FALSE}
-retval <- batchtest(pca, batch=batch, mod=mod)
+nsample <- dim(shinyInput$data)[2]
+sample <- 1:nsample
+pdata <- data.frame(sample, batch, condition)
+modmatrix = model.matrix(~as.factor(condition), data = pdata)
+n.sv <- batchQC_num.sv(shinyInput$data, modmatrix)
+cat(paste("Number of Surrogate Variables found in the given data:", n.sv))
 ```

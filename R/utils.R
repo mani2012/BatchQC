@@ -483,8 +483,7 @@ batchqc_explained_variation <- function(data.matrix, condition,
     cond_r2 <- batch_test$r2_reduced
     batch_r2 <- cond_test$r2_reduced
     explained_variation <- round(cbind(`Full (Condition+Batch)` = r2_full, 
-        Condition = cond_r2, Batch = batch_r2, `Condition/Batch Overlap` = 
-        cond_r2 + batch_r2 - r2_full), 5) * 100
+        Condition = cond_r2, Batch = batch_r2), 5) * 100
     rownames(explained_variation) <- rownames(data.matrix)
     batchqc_ev <- list(explained_variation = explained_variation, 
         cond_test = cond_test, batch_test = batch_test)
@@ -534,8 +533,7 @@ batchqc_pc_explained_variation <- function(pcs, vars, condition,
         `Percent Variation Explained by Condition` = cond_r2, 
         `Condition Significance (p-value)` = cond_ps, 
         `Percent Variation Explained by Batch` = batch_r2, 
-        `Batch Significance (p-value)` = batch_ps, 
-        `Percent Variation Explained by both Condition and Batch` = overlap_r2)
+        `Batch Significance (p-value)` = batch_ps)
     rownames(explained_variation) <- rownames(pcs)
     return(explained_variation)
 }

@@ -99,7 +99,7 @@ shinyServer(function(input, output, session) {
         shinyInput <- getShinyInput()
         batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, 
             batch)
-        batchqc_ev$explained_variation
+        batchqc_ev$explained_variation[1:input$noGenesVA,]
     })
     # Variation plots
     output$VariationPlot <- renderPlot({
@@ -153,10 +153,11 @@ shinyServer(function(input, output, session) {
             batch)
         cond_ps <- batchqc_ev$cond_test$p
         batch_ps <- batchqc_ev$batch_test$p
-        pvalue_table <- rbind(`Condition P-values` = c(summary(cond_ps), 
-            `Ps<0.05` = mean(cond_ps <= 0.05)), 
+        pvalue_table <- rbind(
             `Batch P-values` = c(summary(batch_ps), 
-            `Ps<0.05` = mean(batch_ps <= 0.05)))
+            `Ps<0.05` = mean(batch_ps <= 0.05)),
+            `Condition P-values` = c(summary(cond_ps), 
+            `Ps<0.05` = mean(cond_ps <= 0.05)))
         pvalue_table
     })
     # P-Value plots
@@ -461,36 +462,36 @@ shinyServer(function(input, output, session) {
         } else {
             summary(DE())
         }
-    })
+    }, width=80)
     
-    output$DEtable <- renderTable({
-        if (input$batchDE == 1) {
-            if (is.null(getShinyInputCombat())) {
-                session$sendCustomMessage(type = "testmessage", message = 
-                    "First run ComBat from the ComBat tab")
-                updateRadioButtons(session, "batchDE", choices = list(None = 0, 
-                    Combat = 1, SVA = 2), selected = 0)
-            } else {
-                setInputs(1)
-            }
-        } else if (input$batchDE == 2) {
-            if (is.null(getShinyInputSVA())) {
-                session$sendCustomMessage(type = "testmessage", message = 
-                    "First run SVA from the SVA tab")
-                updateRadioButtons(session, "batchDE", choices = list(None = 0, 
-                    Combat = 1, SVA = 2), selected = 0)
-            } else {
-                setInputs(2)
-            }
-        } else {
-            setInputs(0)
-        }
-        if (input$sortbybatch) {
-            BP()
-        } else {
-            DE()
-        }
-    })
+    # output$DEtable <- renderTable({
+    #     if (input$batchDE == 1) {
+    #         if (is.null(getShinyInputCombat())) {
+    #             session$sendCustomMessage(type = "testmessage", message = 
+    #                 "First run ComBat from the ComBat tab")
+    #             updateRadioButtons(session, "batchDE", choices = list(None = 0, 
+    #                 Combat = 1, SVA = 2), selected = 0)
+    #         } else {
+    #             setInputs(1)
+    #         }
+    #     } else if (input$batchDE == 2) {
+    #         if (is.null(getShinyInputSVA())) {
+    #             session$sendCustomMessage(type = "testmessage", message = 
+    #                 "First run SVA from the SVA tab")
+    #             updateRadioButtons(session, "batchDE", choices = list(None = 0, 
+    #                 Combat = 1, SVA = 2), selected = 0)
+    #         } else {
+    #             setInputs(2)
+    #         }
+    #     } else {
+    #         setInputs(0)
+    #     }
+    #     if (input$sortbybatch) {
+    #         BP()
+    #     } else {
+    #         DE()
+    #     }
+    # })
     
     output$LimmaTable <- renderTable({
         if (input$batchDE == 1) {
@@ -561,14 +562,17 @@ shinyServer(function(input, output, session) {
         }
         shinyInput <- getShinyInput()
         lcounts <- shinyInput$lcounts
+        lcountsReduced <- lcounts[1:input$noGenesHM,]
         batch <- shinyInput$batch
         bc <- rainbow(max(batch))
         colorfun <- function(i) {
             return(bc[i])
         }
         cc <- sapply(batch, colorfun, simplify = TRUE)
-        d3heatmap(lcounts, colors = "RdBu", labCol = make.unique(as.character(
-            batch)), dendrogram = if (input$cluster1) "both" else "none",ColSideColors=cc)
+        d3heatmap(lcountsReduced, colors = "RdBu", labCol = make.unique(
+            as.character(batch)), dendrogram = 
+            if (input$cluster1) "both" else "none",
+            ColSideColors=cc)
     })
     
     output$correlation <- renderD3heatmap({
@@ -597,8 +601,17 @@ shinyServer(function(input, output, session) {
         cormat <- shinyInput$cormat
         nsample <- dim(shinyInput$data)[2]
         sample <- 1:nsample
+        fbatch <- as.factor(shinyInput$batch)
+        nbatch <- nlevels(fbatch)
+        bc <- rainbow(nbatch)
+        intbatch <- as.integer(fbatch)
+        colorfun <- function(i) {
+            return(bc[i])
+        }
+        cc <- sapply(intbatch, colorfun, simplify = TRUE)
         d3heatmap(cormat, colors = "RdBu", labCol = sample, labRow = sample, 
-            dendrogram = if (input$cluster2) "both" else "none",ColSideColors=sinyInput$ColColor)
+            dendrogram = if (input$cluster2) "both" else "none",
+            ColSideColors=cc)
     })
     
     # Shape plots
@@ -695,7 +708,7 @@ shinyServer(function(input, output, session) {
     
     # interactive density plots
     output$densityQQPlots <- renderPlot({
-        shinyInput <- getShinyInput()
+        shinyInput <- getShinyInputOrig()
         delta.hat <- shinyInput$delta.hat
         gamma.hat <- shinyInput$gamma.hat
         gamma.bar <- shinyInput$gamma.bar
@@ -703,10 +716,12 @@ shinyServer(function(input, output, session) {
         b.prior <- shinyInput$b.prior
         layout(matrix(c(1, 2, 3, 4), 2, 2, byrow = TRUE))
         tmp <- density(gamma.hat[input$batches, ])
-        plot(tmp, type = "l", main = "Density Plot", lwd = 2)
         xx <- seq(min(tmp$x), max(tmp$x), length = 100)
-        lines(xx, dnorm(xx, gamma.bar[input$batches], 
-            sqrt(shinyInput$t2[input$batches])), col = 2, lwd = 2)
+        tmp1 <- dnorm(xx, gamma.bar[input$batches], 
+            sqrt(shinyInput$t2[input$batches]))
+        plot(tmp, type = "l", main = "Density Plot", 
+            ylim = c(0, max(tmp$y, tmp1)), lwd = 2)
+        lines(xx, tmp1, col = 2, lwd = 2)
         qqnorm(gamma.hat[input$batches, ])
         qqline(gamma.hat[input$batches, ], col = 2, lwd = 2)
         tmp <- density(delta.hat[input$batches, ])
@@ -722,7 +737,7 @@ shinyServer(function(input, output, session) {
         title("Q-Q Plot")
     })
     output$kstest <- renderPrint({
-        shinyInput <- getShinyInput()
+        shinyInput <- getShinyInputOrig()
         delta.hat <- shinyInput$delta.hat
         gamma.hat <- shinyInput$gamma.hat
         gamma.bar <- shinyInput$gamma.bar
@@ -777,6 +792,9 @@ shinyServer(function(input, output, session) {
             outText <- paste("Finished re-running ComBat.",
                 "Select the other tabs to view the ComBat results", sep=" ")
         }
+        shinyInput <- getShinyInputOrig()
+        batch <- shinyInput$batch
+        condition <- shinyInput$condition
         pdata <- data.frame(batch, condition)
         mean.only = FALSE
         if (input$optionMeanOnly == 1) {
@@ -787,8 +805,15 @@ shinyServer(function(input, output, session) {
             par.prior = FALSE
         }
         mod <- model.matrix(~as.factor(shinyInput$condition), data = pdata)
-        combat_data <- ComBat(dat = shinyInput$data, batch = shinyInput$batch, 
+        #combat_data <- ComBat(dat = shinyInput$data, batch = shinyInput$batch, 
+        #    mod = mod, par.prior = par.prior, mean.only = mean.only)
+        
+        lcounts <- shinyInput$lcounts
+        lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
+        gnormdata <- gnormalize(lcounts_adj)
+        combat_data <- ComBat(dat=lcounts_adj, batch = shinyInput$batch, 
             mod = mod, par.prior = par.prior, mean.only = mean.only)
+        
         report_option_binary = "111111111"
         report_option_vector <- unlist(strsplit(as.character(
             report_option_binary), ""))
@@ -809,7 +834,9 @@ shinyServer(function(input, output, session) {
         combatOutText()
     })
     output$svasummary <- renderText({
-        shinyInput <- getShinyInput()
+        shinyInput <- getShinyInputOrig()
+        batch <- shinyInput$batch
+        condition <- shinyInput$condition
         nsample <- dim(shinyInput$data)[2]
         sample <- 1:nsample
         pdata <- data.frame(sample, batch, condition)
@@ -824,7 +851,9 @@ shinyServer(function(input, output, session) {
         }
     })
     SVAOutText <- eventReactive(input$runSVA, {
-        shinyInput <- getShinyInput()
+        shinyInput <- getShinyInputOrig()
+        batch <- shinyInput$batch
+        condition <- shinyInput$condition
         if (input$fsvaOption) {
             if (is.null(getShinyInputSVAf())) {
                 pdata <- data.frame(batch, condition)
