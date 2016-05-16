@@ -14,7 +14,7 @@ condition <- rep(rep(1:ncond, each=npercond), nbatch)
 batchQC(data.matrix, batch=batch, condition=condition, 
         report_file="batchqc_report.html", report_dir=".", 
         report_option_binary="111111111",
-        view_report=FALSE, interactive=TRUE)
+        view_report=FALSE, interactive=TRUE, batchqc_output=TRUE)
 
 ### apply combat
 nsample <- nbatch*ncond*npercond
