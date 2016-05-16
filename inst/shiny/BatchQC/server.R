@@ -401,7 +401,7 @@ shinyServer(function(input, output, session) {
             dat2$condition <- as.factor(unlist(lapply(as.numeric(colnames(dat1))
                 , function(x) rep(condition[x], nrow(dat1)))))
             dat2$samples <- unlist(lapply(seq(ncol(dat1)), 
-                                          function(x) rep(seq(ncol(dat1))[x], nrow(dat1))))
+                function(x) rep(x, nrow(dat1))))
         } else {
             cond4 <- split(condition, as.factor(condition))
             cond5 <- unlist(lapply(1:length(cond4), 
@@ -413,13 +413,13 @@ shinyServer(function(input, output, session) {
             dat2$batch <- as.factor(unlist(lapply(as.numeric(colnames(dat1)), 
                 function(x) rep(batch[x], nrow(dat1)))))
             dat2$samples <- unlist(lapply(seq(ncol(dat1)), 
-                function(x) rep(seq(ncol(dat1))[x], nrow(dat1))))
+                function(x) rep(x, nrow(dat1))))
         }
         dat2 %>% group_by(batch) %>% ggvis(~samples, ~value, fill = 
             if (input$colbybatch) ~batch else ~condition) %>%
             layer_boxplots() %>% 
-            add_tooltip(function(dat2) { paste0("Sample: ", 
-                colnames(shinyInput$lcounts)[dat2$samples],
+            add_tooltip(function(dat2) { paste0("Sample: ", colnames(
+                shinyInput$lcounts)[as.numeric(colnames(dat1))[dat2$samples]],
                 "<br>", if (input$colbybatch) "Batch: " else "Condition: ", 
                 if (input$colbybatch) dat2$batch else dat2$condition)
                 }, "hover") %>% 
@@ -458,9 +458,15 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         if (input$sortbybatch) {
-            summary(BP())
+            dat1 <- BP()
+            colnames(dat1) <- colnames(shinyInput$lcounts)[as.numeric(
+                colnames(dat1))]
+            summary(dat1)
         } else {
-            summary(DE())
+            dat1 <- DE()
+            colnames(dat1) <- colnames(shinyInput$lcounts)[as.numeric(
+                colnames(dat1))]
+            summary(dat1)
         }
     }, width=80)
     
