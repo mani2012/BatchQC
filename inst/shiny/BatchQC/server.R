@@ -418,8 +418,10 @@ shinyServer(function(input, output, session) {
         dat2 %>% group_by(batch) %>% ggvis(~samples, ~value, fill = 
             if (input$colbybatch) ~batch else ~condition) %>%
             layer_boxplots() %>% 
-            add_tooltip(function(dat2) { paste0("Sample: ", colnames(
-                shinyInput$lcounts)[as.numeric(colnames(dat1))[dat2$samples]],
+            add_tooltip(function(dat2) { paste0("Sample: ", 
+                if (input$sortbybatch) colnames(shinyInput$lcounts)[
+                as.numeric(colnames(BP()))[dat2$samples]] else colnames(
+                shinyInput$lcounts)[as.numeric(colnames(DE()))[dat2$samples]],
                 "<br>", if (input$colbybatch) "Batch: " else "Condition: ", 
                 if (input$colbybatch) dat2$batch else dat2$condition)
                 }, "hover") %>% 
