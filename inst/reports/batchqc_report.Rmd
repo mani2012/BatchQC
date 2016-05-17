@@ -140,18 +140,25 @@ boxplot(lcounts,col=as.numeric(as.factor(batch)),main="Sample Boxplots (colored 
 `r if (eval_cell_2) '## LIMMA'`
 ```{r eval=eval_cell_2, echo=FALSE, message=FALSE}
 pdata <- data.frame(shinyInput$batch, shinyInput$condition)
-mod_full <- model.matrix(~as.factor(shinyInput$condition) + 
-    ~as.factor(shinyInput$batch), data = pdata)
-fit <- lmFit(shinyInput$data, mod_full)
-fit2 <- eBayes(fit)
 ncond <- nlevels(as.factor(shinyInput$condition))
-limmaTable <- topTable(fit2, coef = 2:ncond, number=10)
-for (j in 2:ncond)  {
-    colnames(limmaTable)[j-1] <- paste("Condition: ", 
-    levels(as.factor(shinyInput$condition))[j], " (logFC)", sep='')
+nbatch <- nlevels(as.factor(shinyInput$batch))
+if (ncond > 1)  {
+    if (nbatch <= 1)  {
+        mod_full <- model.matrix(~as.factor(shinyInput$condition), data = pdata)
+    } else  {
+        mod_full <- model.matrix(~as.factor(shinyInput$condition) + 
+            ~as.factor(shinyInput$batch), data = pdata)
+    }
+    fit <- lmFit(shinyInput$data, mod_full)
+    fit2 <- eBayes(fit)
+    limmaTable <- topTable(fit2, coef = 2:ncond, number=10)
+    for (j in 2:ncond)  {
+        colnames(limmaTable)[j-1] <- paste("Condition: ", 
+        levels(as.factor(shinyInput$condition))[j], " (logFC)", sep='')
+    }
+    panderOptions("table.split.table", 120)  ## table split at 100 (default 80) characters in a line
+    pander(limmaTable)
 }
-panderOptions("table.split.table", 120)  ## table split at 100 (default 80) characters in a line
-pander(limmaTable)
 ```
 
 ```{r, echo=FALSE}
@@ -246,53 +253,55 @@ eval_cell_8 = (report_option_vector[8]=="1")
 `r if (eval_cell_8) 'This is a plot showing whether parametric or non-parameteric prior is appropriate for this data. It also shows the Kolmogorov-Smirnov test comparing the parametric and non-parameteric prior distribution.'`
 ```{r, eval=eval_cell_8, echo=FALSE, message=FALSE}
 kstest <- combatPlot(lcounts, batch=shinyInput$batch, mod=mod)
-shinyInput <- getShinyInput()
-delta.hat <- shinyInput$delta.hat
-gamma.hat <- shinyInput$gamma.hat
-gamma.bar <- shinyInput$gamma.bar
-a.prior <- shinyInput$a.prior
-b.prior <- shinyInput$b.prior
-ksout <- ks.test(gamma.hat[1, ], "pnorm", 
-    gamma.bar[1], sqrt(shinyInput$t2[1]))  
-    # two-sided, exact
-summarytext <- 
-"Batch mean distribution across genes: Normal vs Empirical distribution"
-summarytext <- paste(summarytext, "Two-sided Kolmogorov-Smirnov test", 
-    sep = "\n")
-summarytext <- paste(summarytext, "Selected Batch: ", sep = "\n")
-summarytext <- paste(summarytext, 1, sep = "")
-summarytext <- paste(summarytext, "Statistic D = ", sep = "\n")
-summarytext <- paste(summarytext, signif(ksout$statistic, 4), sep = "")
-summarytext <- paste(summarytext, "p-value = ", sep = "\n")
-summarytext <- paste(summarytext, signif(ksout$p.value, 4), sep = "")
-
-invgam <- 1/rgamma(ncol(delta.hat), a.prior[1], 
-    b.prior[1])
-ksvarout <- ks.test(delta.hat[1, ], invgam)  
-    # two-sided, exact
-summarytext <- paste(summarytext, 
-    "\n\n\nBatch Variance distribution across genes: ",
-    "Inverse Gamma vs Empirical distribution", 
-    sep = "")
-summarytext <- paste(summarytext, "Two-sided Kolmogorov-Smirnov test", 
-    sep = "\n")
-summarytext <- paste(summarytext, "Selected Batch: ", sep = "\n")
-summarytext <- paste(summarytext, 1, sep = "")
-summarytext <- paste(summarytext, "Statistic D = ", sep = "\n")
-summarytext <- paste(summarytext, signif(ksvarout$statistic, 4), 
-    sep = "")
-summarytext <- paste(summarytext, "p-value = ", sep = "\n")
-summarytext <- paste(summarytext, signif(ksvarout$p.value, 4), sep = "")
-
-cat(summarytext)
-cat(paste("Note: The non-parametric version of ComBat",
-    "takes much longer time to run and we recommend it",
-    "only when the shape of the non-parametric curve",
-    "widely differs such as a bimodal or highly skewed",
-    "distribution. Otherwise, the difference in batch", 
-    "adjustment is very negligible and parametric version",
-    "is recommended even if p-value of KS test above is",
-    "significant.", sep=" "))
+if (!is.null(kstest))  {
+    shinyInput <- getShinyInput()
+    delta.hat <- shinyInput$delta.hat
+    gamma.hat <- shinyInput$gamma.hat
+    gamma.bar <- shinyInput$gamma.bar
+    a.prior <- shinyInput$a.prior
+    b.prior <- shinyInput$b.prior
+    ksout <- ks.test(gamma.hat[1, ], "pnorm", 
+        gamma.bar[1], sqrt(shinyInput$t2[1]))  
+        # two-sided, exact
+    summarytext <- 
+    "Batch mean distribution across genes: Normal vs Empirical distribution"
+    summarytext <- paste(summarytext, "Two-sided Kolmogorov-Smirnov test", 
+        sep = "\n")
+    summarytext <- paste(summarytext, "Selected Batch: ", sep = "\n")
+    summarytext <- paste(summarytext, 1, sep = "")
+    summarytext <- paste(summarytext, "Statistic D = ", sep = "\n")
+    summarytext <- paste(summarytext, signif(ksout$statistic, 4), sep = "")
+    summarytext <- paste(summarytext, "p-value = ", sep = "\n")
+    summarytext <- paste(summarytext, signif(ksout$p.value, 4), sep = "")
+    
+    invgam <- 1/rgamma(ncol(delta.hat), a.prior[1], 
+        b.prior[1])
+    ksvarout <- ks.test(delta.hat[1, ], invgam)  
+        # two-sided, exact
+    summarytext <- paste(summarytext, 
+        "\n\n\nBatch Variance distribution across genes: ",
+        "Inverse Gamma vs Empirical distribution", 
+        sep = "")
+    summarytext <- paste(summarytext, "Two-sided Kolmogorov-Smirnov test", 
+        sep = "\n")
+    summarytext <- paste(summarytext, "Selected Batch: ", sep = "\n")
+    summarytext <- paste(summarytext, 1, sep = "")
+    summarytext <- paste(summarytext, "Statistic D = ", sep = "\n")
+    summarytext <- paste(summarytext, signif(ksvarout$statistic, 4), 
+        sep = "")
+    summarytext <- paste(summarytext, "p-value = ", sep = "\n")
+    summarytext <- paste(summarytext, signif(ksvarout$p.value, 4), sep = "")
+    
+    cat(summarytext)
+    cat(paste("Note: The non-parametric version of ComBat",
+        "takes much longer time to run and we recommend it",
+        "only when the shape of the non-parametric curve",
+        "widely differs such as a bimodal or highly skewed",
+        "distribution. Otherwise, the difference in batch", 
+        "adjustment is very negligible and parametric version",
+        "is recommended even if p-value of KS test above is",
+        "significant.", sep=" "))
+}
 ```
 
 ```{r, echo=FALSE}
@@ -304,7 +313,7 @@ eval_cell_9 = (report_option_vector[9]=="1")
 ```{r, eval=eval_cell_9, echo=FALSE, message=FALSE}
 nsample <- dim(shinyInput$data)[2]
 sample <- 1:nsample
-pdata <- data.frame(sample, batch, condition)
+pdata <- data.frame(sample, condition)
 modmatrix = model.matrix(~as.factor(condition), data = pdata)
 n.sv <- batchQC_num.sv(shinyInput$data, modmatrix)
 cat(paste("Number of Surrogate Variables found in the given data:", n.sv))

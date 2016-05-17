@@ -131,23 +131,27 @@ gnormalize <- function(dat) {
 }
 
 overallPvalue <- function(Y, groups) {
+    n <- dim(Y)[1]
+    ngroups <- nlevels(as.factor(groups))
+    if (ngroups <= 1)  {
+        ps <- rep(1, n)
+        return(ps)
+    }
     mod1 = model.matrix(~as.factor(groups), data = data.frame(Y))
     # model with batch
     mod0 = model.matrix(~1, data = data.frame(Y))  # reduced model 
     
     ### Standard F test ###
-    n <- dim(Y)[1]
     Id <- diag(n)
     df1 <- dim(mod1)[2]
     df0 <- dim(mod0)[2]
     
-    resid <- t(Y) %*% (Id - mod1 %*% solve(t(mod1) %*% mod1) %*% 
-        t(mod1))
-    # residuals full model
+    resid <- t(Y) %*% (Id - mod1 %*% solve(t(mod1) %*% mod1) %*% t(mod1))
+        # residuals full model
     rss1 <- rowSums(resid * resid)  ## SSE full model
     
-    resid0 <- t(Y) %*% (Id - mod0 %*% solve(t(mod0) %*% mod0) %*% 
-        t(mod0))  # residuals reduced model
+    resid0 <- t(Y) %*% (Id - mod0 %*% solve(t(mod0) %*% mod0) %*% t(mod0))  
+        # residuals reduced model
     rss0 <- rowSums(resid0 * resid0)  ## SSE reduced model
     
     #delta <- (apply(t(Y), 1, mean) * 0.01)^2
@@ -167,15 +171,12 @@ delta_f.pvalue <- function(dat, mod, mod0) {
     df1 <- dim(mod)[2]
     df0 <- dim(mod0)[2]
     p <- rep(0, m)
-    #Id <- diag(n)
-    
-    #resid <- dat %*% (Id - mod %*% solve(t(mod) %*% mod) %*% t(mod))
+
     resid <- dat - dat %*% mod %*% solve(t(mod) %*% mod) %*% t(mod)
     rss1 <- rowSums(resid * resid)
     rm(resid)
     
     if (df0 > 0)  {
-        #resid0 <- dat %*% (Id - mod0 %*% solve(t(mod0) %*% mod0) %*% t(mod0))
         resid0 <- dat - dat %*% mod0 %*% solve(t(mod0) %*% mod0) %*% t(mod0)
     } else {
         resid0 <- dat
@@ -183,7 +184,6 @@ delta_f.pvalue <- function(dat, mod, mod0) {
     rss0 <- rowSums(resid0 * resid0)
     rm(resid0)
     
-    #resid00 <- dat %*% (Id - mod00 %*% solve(t(mod00) %*% mod00) %*% t(mod00))
     resid00 <- dat - dat %*% mod00 %*% solve(t(mod00) %*% mod00) %*% t(mod00)
     rss00 <- rowSums(resid00 * resid00)
     rm(resid00)
@@ -193,12 +193,20 @@ delta_f.pvalue <- function(dat, mod, mod0) {
     
     #delta <- (apply(dat, 1, mean) * 0.01)^2
     delta <- 0
-    fstats <- ((rss0 - rss1)/(df1 - df0))/(delta + rss1/(n - df1))
-    p <- 1 - pf(fstats, df1 = (df1 - df0), df2 = (n - df1))
+    p <- 1
+    if (df1 > df0)  {
+        fstats <- ((rss0 - rss1)/(df1 - df0))/(delta + rss1/(n - df1))
+        p <- 1 - pf(fstats, df1 = (df1 - df0), df2 = (n - df1))
+    }
     return(list(p = p, r2_full = r2_full, r2_reduced = r2_reduced))
 }
 
 batchEffectPvalue <- function(data, batch) {
+    nbatch <- nlevels(as.factor(batch))
+    if (nbatch <= 1)  {
+        batch_ps <- rep(1, 4)
+        return(batch_ps)
+    }
     batch1 <- as.factor(batch)
     batch2 <- split(which(batch == batch1), batch1)
     meanbatch <- unlist(lapply(1:length(batch2), function(x) apply(data[, 

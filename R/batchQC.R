@@ -213,9 +213,14 @@ combatPlot <- function(dat, batch, mod = NULL, par.prior = TRUE,
     # make batch a factor and make a set of indicators for batch
     if (length(dim(batch)) > 1) 
         {
-            stop("This version of ComBat only allows one batch variable")
+            warning("This version of ComBat only allows one batch variable")
+            return(NULL)
         }  ## to be updated soon!
     batch <- as.factor(batch)
+    if (nlevels(batch) <= 1) {
+        warning("There is no batch")
+        return(NULL)
+    }
     batchmod <- model.matrix(~-1 + batch)
     cat("Found", nlevels(batch), "batches\n")
     
