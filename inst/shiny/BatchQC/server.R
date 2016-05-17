@@ -243,7 +243,9 @@ shinyServer(function(input, output, session) {
         }
         shinyInput <- getShinyInput()
         pc <- shinyInput$pc
-        data.frame(pc[, c(input$xcol, input$ycol)])
+        if (!is.null(pc))  {
+            data.frame(pc[, c(input$xcol, input$ycol)])
+        }
     })
     
     # interactive PCA plot
@@ -271,6 +273,7 @@ shinyServer(function(input, output, session) {
         }
         shinyInput <- getShinyInput()
         pc <- shinyInput$pc
+        if (!is.null(pc))  {
         
         pc$id <- 1:nrow(pc)
         
@@ -297,10 +300,13 @@ shinyServer(function(input, output, session) {
         add_legend("fill", title = if (input$colbybatchPCA) 
             "Batches" else "Conditions", properties = legend_props(title = 
             list(fontSize = 15), labels = list(fontSize = 10)))
+        }
     })
     
     # interactive PCA summary
-    vis_pc %>% bind_shiny("plot")
+    if (!is.null(getShinyInput()$pc))  {
+        vis_pc %>% bind_shiny("plot")
+    }
     output$PCAsummary <- renderPrint({
         summary(PCA())
     })
@@ -885,15 +891,16 @@ shinyServer(function(input, output, session) {
         shinyInput <- getShinyInputOrig()
         batch <- shinyInput$batch
         condition <- shinyInput$condition
+        pdata <- data.frame(batch, condition)
+        ncond <- nlevels(as.factor(condition))
+        if (ncond <= 1)  {
+            mod = matrix(rep(1, ncol(shinyInput$data)), ncol = 1)
+        } else  {
+            mod = model.matrix(~as.factor(condition), data = pdata)
+        }
+        tryCatch({
         if (input$fsvaOption) {
             if (is.null(getShinyInputSVAf())) {
-                pdata <- data.frame(batch, condition)
-                ncond <- nlevels(as.factor(condition))
-                if (ncond <= 1)  {
-                    mod = matrix(rep(1, ncol(shinyInput$data)), ncol = 1)
-                } else  {
-                    mod = model.matrix(~as.factor(condition), data = pdata)
-                }
                 sva.object <- batchQC_sva(shinyInput$data, mod)
                 svaf_data <- batchQC_fsva_adjusted(shinyInput$data, mod, 
                     sva.object)
@@ -923,13 +930,6 @@ shinyServer(function(input, output, session) {
             }
         } else {
             if (is.null(getShinyInputSVAr())) {
-                pdata <- data.frame(batch, condition)
-                ncond <- nlevels(as.factor(condition))
-                if (ncond <= 1)  {
-                    mod = matrix(rep(1, ncol(shinyInput$data)), ncol = 1)
-                } else  {
-                    mod = model.matrix(~as.factor(condition), data = pdata)
-                }
                 sva.object <- batchQC_sva(shinyInput$data, mod)
                 svar_data <- batchQC_svregress_adjusted(shinyInput$data, mod, 
                     sva.object)
@@ -958,6 +958,13 @@ shinyServer(function(input, output, session) {
                     "Select the other tabs to view the SVA results.", sep=" ")
             }
         }
+        }, error = function(err) {
+            if (ncond <= 1)  {
+                stop("SVA not possible without multiple levels of conditions")
+            } else  {
+                stop("While running SVA: ",err)
+            }
+        })
     })
     output$SVAOutText <- renderText({
         SVAOutText()

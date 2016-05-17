@@ -146,9 +146,11 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
         sidebarLayout(
             sidebarPanel(
                 sliderInput('xcol', 'Principal Component (x-axis)', value=1,
-                    min = 1, max = ncol(shinyInput$pc), step=1),
+                    min = 1, max = if (is.null(shinyInput$pc)) 1 
+                    else ncol(shinyInput$pc), step=1),
                 sliderInput('ycol', 'Principal Component (y-axis)', value=2,
-                    min = 1, max = ncol(shinyInput$pc), step=1),
+                    min = 1, max = if (is.null(shinyInput$pc)) 1
+                    else ncol(shinyInput$pc), step=1),
                 checkboxInput("colbybatchPCA", 
                     "Color By Batch (Default: Color By Condition)", FALSE),
                 radioButtons('batchPCA', 'Batch Adjustment',
