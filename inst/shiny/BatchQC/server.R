@@ -826,7 +826,12 @@ shinyServer(function(input, output, session) {
         if (input$optionParameter == 1) {
             par.prior = FALSE
         }
-        mod <- model.matrix(~as.factor(shinyInput$condition), data = pdata)
+        ncond <- nlevels(as.factor(condition))
+        if (ncond <= 1)  {
+            mod = matrix(rep(1, ncol(shinyInput$data)), ncol = 1)
+        } else  {
+            mod = model.matrix(~as.factor(condition), data = pdata)
+        }
         #combat_data <- ComBat(dat = shinyInput$data, batch = shinyInput$batch, 
         #    mod = mod, par.prior = par.prior, mean.only = mean.only)
         
@@ -857,12 +862,16 @@ shinyServer(function(input, output, session) {
     })
     output$svasummary <- renderText({
         shinyInput <- getShinyInputOrig()
-        batch <- shinyInput$batch
         condition <- shinyInput$condition
         nsample <- dim(shinyInput$data)[2]
         sample <- 1:nsample
-        pdata <- data.frame(sample, batch, condition)
-        modmatrix = model.matrix(~as.factor(condition), data = pdata)
+        pdata <- data.frame(sample, condition)
+        ncond <- nlevels(as.factor(condition))
+        if (ncond <= 1)  {
+            modmatrix = matrix(rep(1, nsample), ncol = 1)
+        } else  {
+            modmatrix = model.matrix(~as.factor(condition), data = pdata)
+        }
         n.sv <- batchQC_num.sv(shinyInput$data, modmatrix)
         paste("Number of Surrogate Variables found in the given data:", n.sv)
     })
@@ -879,8 +888,12 @@ shinyServer(function(input, output, session) {
         if (input$fsvaOption) {
             if (is.null(getShinyInputSVAf())) {
                 pdata <- data.frame(batch, condition)
-                mod <- model.matrix(~as.factor(shinyInput$condition), 
-                    data = pdata)
+                ncond <- nlevels(as.factor(condition))
+                if (ncond <= 1)  {
+                    mod = matrix(rep(1, ncol(shinyInput$data)), ncol = 1)
+                } else  {
+                    mod = model.matrix(~as.factor(condition), data = pdata)
+                }
                 sva.object <- batchQC_sva(shinyInput$data, mod)
                 svaf_data <- batchQC_fsva_adjusted(shinyInput$data, mod, 
                     sva.object)
@@ -911,8 +924,12 @@ shinyServer(function(input, output, session) {
         } else {
             if (is.null(getShinyInputSVAr())) {
                 pdata <- data.frame(batch, condition)
-                mod <- model.matrix(~as.factor(shinyInput$condition), 
-                    data = pdata)
+                ncond <- nlevels(as.factor(condition))
+                if (ncond <= 1)  {
+                    mod = matrix(rep(1, ncol(shinyInput$data)), ncol = 1)
+                } else  {
+                    mod = model.matrix(~as.factor(condition), data = pdata)
+                }
                 sva.object <- batchQC_sva(shinyInput$data, mod)
                 svar_data <- batchQC_svregress_adjusted(shinyInput$data, mod, 
                     sva.object)

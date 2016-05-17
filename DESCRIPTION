@@ -1,8 +1,8 @@
 Package: BatchQC
 Type: Package
 Title: Batch Effects Quality Control Software
-Version: 1.1.4
-Date: 2016-05-16
+Version: 1.1.5
+Date: 2016-05-17
 Maintainer: Solaiappan Manimaran <manimaran_1975@hotmail.com>
 Description: Sequencing and microarray samples often are collected or
         processed in multiple batches or at different times. This often

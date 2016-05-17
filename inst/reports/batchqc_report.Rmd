@@ -314,7 +314,12 @@ eval_cell_9 = (report_option_vector[9]=="1")
 nsample <- dim(shinyInput$data)[2]
 sample <- 1:nsample
 pdata <- data.frame(sample, condition)
-modmatrix = model.matrix(~as.factor(condition), data = pdata)
+ncond <- nlevels(as.factor(condition))
+if (ncond <= 1)  {
+    modmatrix = matrix(rep(1, ncol(dat)), ncol = 1)
+} else  {
+    modmatrix = model.matrix(~as.factor(condition), data = pdata)
+}
 n.sv <- batchQC_num.sv(shinyInput$data, modmatrix)
 cat(paste("Number of Surrogate Variables found in the given data:", n.sv))
 ```
