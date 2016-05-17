@@ -165,6 +165,8 @@ batchQC <- function(dat, batch, condition = NULL,
     setShinyInputSVAr(NULL)
     setShinyInputSVA(NULL)
     if (batchqc_output)  {
+        if (is.null(batchqc_ev)) batchqc_ev <- list()
+        if (is.null(pca)) pca <- prcomp(0)
         batchQCout <- new ("BatchQCout", batchqc_ev=batchqc_ev, pca=pca)
         outfile <- file.path(report_dir, "batchqc_output.rda")
         save(batchQCout, file=outfile)

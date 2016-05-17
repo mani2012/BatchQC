@@ -75,11 +75,20 @@ pander(confound)
 `r if (eval_cell_1) '## Variation Analysis'`
 `r if (eval_cell_1) '### Variation explained by Batch and Condition'`
 ```{r eval=eval_cell_1, echo=FALSE, message=FALSE, fig.width=8, fig.height=5}
-batchqc_ev <- batchqc_explained_variation(shinyInput$data, 
+batchqc_ev <- tryCatch({
+batchqc_explained_variation(shinyInput$data, 
     shinyInput$condition, shinyInput$batch)
-boxplot(batchqc_ev$explained_variation, ylab = 
-    "Percent Explained Variation", main = 
-    "Percent of Variation Explained by Source")
+}, error = function(err) {
+    warning("Error in BatchQC Explained Variation: ",err)
+    return(NULL)
+})
+if (is.null(batchqc_ev))  {
+    eval_cell_1 = FALSE
+} else  {
+    boxplot(batchqc_ev$explained_variation, ylab = 
+        "Percent Explained Variation", main = 
+        "Percent of Variation Explained by Source")
+}
 ```
 
 ```{r eval=eval_cell_1, echo=FALSE, message=FALSE}
@@ -206,10 +215,19 @@ eval_cell_6 = (report_option_vector[6]=="1")
 `r if (eval_cell_6) '## PCA'`
 `r if (eval_cell_6) 'This is a plot of the top two principal components colored by batch to show the batch effects.'`
 ```{r, eval=eval_cell_6, echo=FALSE, message=FALSE, fig.width=6, fig.height=6}
-pca <- batchqc_pca(lcounts, batch=batch, mod=mod)
-shinyInput <- getShinyInput()
-shinyInput <- c(shinyInput, list("pc"=data.frame(pca$x), "vars"=pca$sdev^2))
-setShinyInput(shinyInput)
+pca <- tryCatch({
+    batchqc_pca(lcounts, batch=batch, mod=mod)
+}, error = function(err) {
+    warning("Error in BatchQC PCA: ",err)
+    return(NULL)
+})
+if (is.null(pca))  {
+    eval_cell_6 = FALSE
+} else  {
+    shinyInput <- getShinyInput()
+    shinyInput <- c(shinyInput, list("pc"=data.frame(pca$x), "vars"=pca$sdev^2))
+    setShinyInput(shinyInput)
+}
 ```
 
 `r if (eval_cell_6) '## Explained Variation'`
@@ -252,7 +270,12 @@ eval_cell_8 = (report_option_vector[8]=="1")
 `r if (eval_cell_8) '============'`
 `r if (eval_cell_8) 'This is a plot showing whether parametric or non-parameteric prior is appropriate for this data. It also shows the Kolmogorov-Smirnov test comparing the parametric and non-parameteric prior distribution.'`
 ```{r, eval=eval_cell_8, echo=FALSE, message=FALSE}
-kstest <- combatPlot(lcounts, batch=shinyInput$batch, mod=mod)
+kstest <- tryCatch({
+    combatPlot(lcounts, batch=shinyInput$batch, mod=mod)
+}, error = function(err) {
+    warning("Error in BatchQC ComBat Plot: ",err)
+    return(NULL)
+})
 if (!is.null(kstest))  {
     shinyInput <- getShinyInput()
     delta.hat <- shinyInput$delta.hat
