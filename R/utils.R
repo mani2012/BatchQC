@@ -581,7 +581,7 @@ batchQC_condition_adjusted = function(data.matrix, batch, condition) {
     y <- data.matrix
     nlc <- nlevels(as.factor(condition))
     if (nlc <= 1)  {
-        return(Y)
+        return(y)
     }
     P <- nlevels(as.factor(batch))
     if (P <= 1)  {

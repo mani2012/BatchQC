@@ -131,8 +131,15 @@ batchQC <- function(dat, batch, condition = NULL,
     report_file = "batchqc_report.html", report_dir = ".", 
     report_option_binary = "111111111", view_report = TRUE, 
     interactive = TRUE, batchqc_output=FALSE) {
+    if (is.null(condition))  condition <- rep(1,ncol(dat))
+    if (is.null(batch))  batch <- rep(1,ncol(dat))
     pdata <- data.frame(batch, condition)
-    mod = model.matrix(~as.factor(condition), data = pdata)
+    ncond <- nlevels(as.factor(condition))
+    if (ncond <= 1)  {
+        mod = matrix(rep(1, ncol(dat)), ncol = 1)
+    } else  {
+        mod = model.matrix(~as.factor(condition), data = pdata)
+    }
     if (report_dir == ".") {
         report_dir = getwd()
     }
