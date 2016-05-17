@@ -127,20 +127,20 @@ shinyServer(function(input, output, session) {
     
     # P-Value Analysis
     output$PvalueTable <- renderTable({
-        if (input$batchPA == 1) {
+        if (input$batchVA == 1) {
             if (is.null(getShinyInputCombat())) {
                 session$sendCustomMessage(type = "testmessage", message = 
                     "First run ComBat from the ComBat tab")
-                updateRadioButtons(session, "batchPA", choices = list(None = 0, 
+                updateRadioButtons(session, "batchVA", choices = list(None = 0, 
                     Combat = 1, SVA = 2), selected = 0)
             } else {
                 setInputs(1)
             }
-        } else if (input$batchPA == 2) {
+        } else if (input$batchVA == 2) {
             if (is.null(getShinyInputSVA())) {
                 session$sendCustomMessage(type = "testmessage", message = 
                     "First run SVA from the SVA tab")
-                updateRadioButtons(session, "batchPA", choices = list(None = 0, 
+                updateRadioButtons(session, "batchVA", choices = list(None = 0, 
                     Combat = 1, SVA = 2), selected = 0)
             } else {
                 setInputs(2)
@@ -162,12 +162,12 @@ shinyServer(function(input, output, session) {
     })
     # P-Value plots
     output$BatchPvaluePlot <- renderPlot({
-        if (input$batchPA == 1) {
+        if (input$batchVA == 1) {
             if (is.null(getShinyInputCombat())) {
             } else {
                 setInputs(1)
             }
-        } else if (input$batchPA == 2) {
+        } else if (input$batchVA == 2) {
             if (is.null(getShinyInputSVA())) {
             } else {
                 setInputs(2)
@@ -190,12 +190,12 @@ shinyServer(function(input, output, session) {
         title("Distribution of Batch Effect p-values Across Genes")
     })
     output$ConditionPvaluePlot <- renderPlot({
-        if (input$batchPA == 1) {
+        if (input$batchVA == 1) {
             if (is.null(getShinyInputCombat())) {
             } else {
                 setInputs(1)
             }
-        } else if (input$batchPA == 2) {
+        } else if (input$batchVA == 2) {
             if (is.null(getShinyInputSVA())) {
             } else {
                 setInputs(2)
@@ -274,32 +274,34 @@ shinyServer(function(input, output, session) {
         shinyInput <- getShinyInput()
         pc <- shinyInput$pc
         if (!is.null(pc))  {
-        
-        pc$id <- 1:nrow(pc)
-        
-        all_values <- function(x) {
-            if (is.null(x)) 
-                return(NULL)
-            row <- pc[pc$id == x$id, ]
-            paste0(paste0("PC", input$xcol), ": ", signif(with(row, 
-                get(names(row)[input$xcol])), 3), "<br>", 
-                paste0("PC", input$ycol), ": ", signif(with(row, 
-                get(names(row)[input$ycol])), 3), "<br>")
-        }
-        
-        pc %>% 
-        ggvis(~get(names(pc)[input$xcol]), ~get(names(pc)[input$ycol]), 
-            fill = if (input$colbybatchPCA) ~factor(batch) 
-            else ~factor(condition), `:=`(key, ~id)) %>% 
-        layer_points(`:=`(size, 75), `:=`(size.hover, 200)) %>% 
-        add_tooltip(all_values, "hover") %>% 
-        add_axis("x", title = paste0("PC", input$xcol), properties = axis_props(
-            title = list(fontSize = 15), labels = list(fontSize = 10))) %>% 
-        add_axis("y", title = paste0("PC", input$ycol), properties = axis_props(
-            title = list(fontSize = 15), labels = list(fontSize = 10))) %>% 
-        add_legend("fill", title = if (input$colbybatchPCA) 
-            "Batches" else "Conditions", properties = legend_props(title = 
-            list(fontSize = 15), labels = list(fontSize = 10)))
+            pc$id <- 1:nrow(pc)
+            
+            all_values <- function(x) {
+                if (is.null(x)) 
+                    return(NULL)
+                row <- pc[pc$id == x$id, ]
+                paste0(paste0("PC", input$xcol), ": ", signif(with(row, 
+                    get(names(row)[input$xcol])), 3), "<br>", 
+                    paste0("PC", input$ycol), ": ", signif(with(row, 
+                    get(names(row)[input$ycol])), 3), "<br>")
+            }
+            
+            pc %>% 
+            ggvis(~get(names(pc)[input$xcol]), ~get(names(pc)[input$ycol]), 
+                fill = if (input$colbybatchPCA) ~factor(batch) 
+                else ~factor(condition), `:=`(key, ~id)) %>% 
+            layer_points(`:=`(size, 75), `:=`(size.hover, 200)) %>% 
+            add_tooltip(all_values, "hover") %>% 
+            add_axis("x", title = paste0("PC", input$xcol), properties = 
+                axis_props(title = list(fontSize = 15), 
+                    labels = list(fontSize = 10))) %>% 
+            add_axis("y", title = paste0("PC", input$ycol), properties = 
+                axis_props(title = list(fontSize = 15), 
+                    labels = list(fontSize = 10))) %>% 
+            add_legend("fill", title = if (input$colbybatchPCA) 
+                "Batches" else "Conditions", properties = legend_props(title = 
+                list(fontSize = 15), labels = list(fontSize = 10))) %>%
+            set_options(width="auto", height="auto")
         }
     })
     
@@ -440,7 +442,8 @@ shinyServer(function(input, output, session) {
                 list(fontSize = 15),labels = list(fontSize = 10))) %>% 
             add_legend("fill", title = if (input$colbybatch) 
                 "Batches" else "Conditions", properties = legend_props(title = 
-                list(fontSize = 15), labels = list(fontSize = 10)))
+                list(fontSize = 15), labels = list(fontSize = 10))) %>%
+            set_options(width="auto", height="auto")
     })
     diffex_bp %>% bind_shiny("DiffExPlot")
     output$DEsummary <- renderPrint({
@@ -536,9 +539,9 @@ shinyServer(function(input, output, session) {
         limmaTable <- NULL
         if (ncond > 1)  {
             if (nbatch <= 1)  {
-                mod_full <- model.matrix(~as.factor(condition), data = pdata)
+                mod <- model.matrix(~as.factor(condition), data = pdata)
             } else  {
-                mod_full <- model.matrix(~as.factor(condition) + 
+                mod <- model.matrix(~as.factor(condition) + 
                     ~as.factor(batch), data = pdata)
             }
             fit <- lmFit(shinyInput$data, mod)
@@ -555,6 +558,27 @@ shinyServer(function(input, output, session) {
     
     # interactive scatter plot
     output$outliers <- renderPlot({
+        if (input$batchMC == 1) {
+            if (is.null(getShinyInputCombat())) {
+                session$sendCustomMessage(type = "testmessage", message = 
+                    "First run ComBat from the ComBat tab")
+                updateRadioButtons(session, "batchMC", choices = list(None = 0,
+                    Combat = 1, SVA = 2), selected = 0)
+            } else {
+                setInputs(1)
+            }
+        } else if (input$batchMC == 2) {
+            if (is.null(getShinyInputSVA())) {
+                session$sendCustomMessage(type = "testmessage", message = 
+                    "First run SVA from the SVA tab")
+                updateRadioButtons(session, "batchMC", choices = list(None = 0,
+                    Combat = 1, SVA = 2), selected = 0)
+            } else {
+                setInputs(2)
+            }
+        } else {
+            setInputs(0)
+        }
         shinyInput <- getShinyInput()
         BatchQC::batchqc_corscatter(shinyInput$data, shinyInput$batch, 
             mod = shinyInput$mod)
@@ -562,20 +586,20 @@ shinyServer(function(input, output, session) {
     
     # interactive heatmap
     output$heatmap <- renderD3heatmap({
-        if (input$batchHM1 == 1) {
+        if (input$batchHM == 1) {
             if (is.null(getShinyInputCombat())) {
                 session$sendCustomMessage(type = "testmessage", message = 
                     "First run ComBat from the ComBat tab")
-                updateRadioButtons(session, "batchHM1", choices = list(None = 0,
+                updateRadioButtons(session, "batchHM", choices = list(None = 0,
                     Combat = 1, SVA = 2), selected = 0)
             } else {
                 setInputs(1)
             }
-        } else if (input$batchHM1 == 2) {
+        } else if (input$batchHM == 2) {
             if (is.null(getShinyInputSVA())) {
                 session$sendCustomMessage(type = "testmessage", message = 
                     "First run SVA from the SVA tab")
-                updateRadioButtons(session, "batchHM1", choices = list(None = 0,
+                updateRadioButtons(session, "batchHM", choices = list(None = 0,
                     Combat = 1, SVA = 2), selected = 0)
             } else {
                 setInputs(2)
@@ -594,25 +618,25 @@ shinyServer(function(input, output, session) {
         cc <- sapply(batch, colorfun, simplify = TRUE)
         d3heatmap(lcountsReduced, colors = "RdBu", labCol = make.unique(
             as.character(batch)), dendrogram = 
-            if (input$cluster1) "both" else "none",
+            if (input$cluster) "both" else "none",
             ColSideColors=cc)
     })
     
     output$correlation <- renderD3heatmap({
-        if (input$batchHM2 == 1) {
+        if (input$batchHM == 1) {
             if (is.null(getShinyInputCombat())) {
                 session$sendCustomMessage(type = "testmessage", message = 
                     "First run ComBat from the ComBat tab")
-                updateRadioButtons(session, "batchHM2", choices = list(None = 0,
+                updateRadioButtons(session, "batchHM", choices = list(None = 0,
                     Combat = 1, SVA = 2), selected = 0)
             } else {
                 setInputs(1)
             }
-        } else if (input$batchHM2 == 2) {
+        } else if (input$batchHM == 2) {
             if (is.null(getShinyInputSVA())) {
                 session$sendCustomMessage(type = "testmessage", message = 
                     "First run SVA from the SVA tab")
-                updateRadioButtons(session, "batchHM2", choices = list(None = 0,
+                updateRadioButtons(session, "batchHM", choices = list(None = 0,
                     Combat = 1, SVA = 2), selected = 0)
             } else {
                 setInputs(2)
@@ -633,7 +657,7 @@ shinyServer(function(input, output, session) {
         }
         cc <- sapply(intbatch, colorfun, simplify = TRUE)
         d3heatmap(cormat, colors = "RdBu", labCol = sample, labRow = sample, 
-            dendrogram = if (input$cluster2) "both" else "none",
+            dendrogram = if (input$cluster) "both" else "none",
             ColSideColors=cc)
     })
     
