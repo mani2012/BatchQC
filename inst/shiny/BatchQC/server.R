@@ -525,15 +525,24 @@ shinyServer(function(input, output, session) {
         }
         shinyInput <- getShinyInput()
         pdata <- data.frame(batch, condition)
-        mod <- model.matrix(~as.factor(condition) + ~as.factor(batch), 
-            data = pdata)
-        fit <- lmFit(shinyInput$data, mod)
-        fit2 <- eBayes(fit)
         ncond <- nlevels(as.factor(condition))
-        limmaTable <- topTable(fit2, coef = 2:ncond, number = input$noGenes)
-        for (j in 2:ncond)  {
-            colnames(limmaTable)[j-1] <- paste("Condition: ", 
-            levels(as.factor(condition))[j], " (logFC)", sep='')
+        nbatch <- nlevels(as.factor(batch))
+        limmaTable <- NULL
+        if (ncond > 1)  {
+            if (nbatch <= 1)  {
+                mod_full <- model.matrix(~as.factor(condition), data = pdata)
+            } else  {
+                mod_full <- model.matrix(~as.factor(condition) + 
+                    ~as.factor(batch), data = pdata)
+            }
+            fit <- lmFit(shinyInput$data, mod)
+            fit2 <- eBayes(fit)
+            ncond <- nlevels(as.factor(condition))
+            limmaTable <- topTable(fit2, coef = 2:ncond, number = input$noGenes)
+            for (j in 2:ncond)  {
+                colnames(limmaTable)[j-1] <- paste("Condition: ", 
+                levels(as.factor(condition))[j], " (logFC)", sep='')
+            }
         }
         limmaTable
     })
@@ -718,71 +727,76 @@ shinyServer(function(input, output, session) {
     output$densityQQPlots <- renderPlot({
         shinyInput <- getShinyInputOrig()
         delta.hat <- shinyInput$delta.hat
-        gamma.hat <- shinyInput$gamma.hat
-        gamma.bar <- shinyInput$gamma.bar
-        a.prior <- shinyInput$a.prior
-        b.prior <- shinyInput$b.prior
-        layout(matrix(c(1, 2, 3, 4), 2, 2, byrow = TRUE))
-        tmp <- density(gamma.hat[input$batches, ])
-        xx <- seq(min(tmp$x), max(tmp$x), length = 100)
-        tmp1 <- dnorm(xx, gamma.bar[input$batches], 
-            sqrt(shinyInput$t2[input$batches]))
-        plot(tmp, type = "l", main = "Density Plot", 
-            ylim = c(0, max(tmp$y, tmp1)), lwd = 2)
-        lines(xx, tmp1, col = 2, lwd = 2)
-        qqnorm(gamma.hat[input$batches, ])
-        qqline(gamma.hat[input$batches, ], col = 2, lwd = 2)
-        tmp <- density(delta.hat[input$batches, ])
-        invgam <- 1/rgamma(ncol(delta.hat), a.prior[input$batches], 
-            b.prior[input$batches])
-        tmp1 <- density(invgam)
-        plot(tmp, main = "Density Plot", ylim = c(0, max(tmp$y, tmp1$y)), 
-            lwd = 2)
-        lines(tmp1, col = 2, lwd = 2)
-        qqplot(delta.hat[input$batches, ], invgam, xlab = "Sample Quantiles", 
-            ylab = "Theoretical Quantiles")
-        lines(c(0, max(invgam)), c(0, max(invgam)), col = 2, lwd = 2)
-        title("Q-Q Plot")
+        if (!is.null(delta.hat))  {
+            gamma.hat <- shinyInput$gamma.hat
+            gamma.bar <- shinyInput$gamma.bar
+            a.prior <- shinyInput$a.prior
+            b.prior <- shinyInput$b.prior
+            layout(matrix(c(1, 2, 3, 4), 2, 2, byrow = TRUE))
+            tmp <- density(gamma.hat[input$batches, ])
+            xx <- seq(min(tmp$x), max(tmp$x), length = 100)
+            tmp1 <- dnorm(xx, gamma.bar[input$batches], 
+                          sqrt(shinyInput$t2[input$batches]))
+            plot(tmp, type = "l", main = "Density Plot", 
+                 ylim = c(0, max(tmp$y, tmp1)), lwd = 2)
+            lines(xx, tmp1, col = 2, lwd = 2)
+            qqnorm(gamma.hat[input$batches, ])
+            qqline(gamma.hat[input$batches, ], col = 2, lwd = 2)
+            tmp <- density(delta.hat[input$batches, ])
+            invgam <- 1/rgamma(ncol(delta.hat), a.prior[input$batches], 
+                               b.prior[input$batches])
+            tmp1 <- density(invgam)
+            plot(tmp, main = "Density Plot", ylim = c(0, max(tmp$y, tmp1$y)), 
+                 lwd = 2)
+            lines(tmp1, col = 2, lwd = 2)
+            qqplot(delta.hat[input$batches, ], invgam, xlab="Sample Quantiles", 
+                   ylab = "Theoretical Quantiles")
+            lines(c(0, max(invgam)), c(0, max(invgam)), col = 2, lwd = 2)
+            title("Q-Q Plot")
+        }
     })
     output$kstest <- renderPrint({
         shinyInput <- getShinyInputOrig()
         delta.hat <- shinyInput$delta.hat
-        gamma.hat <- shinyInput$gamma.hat
-        gamma.bar <- shinyInput$gamma.bar
-        a.prior <- shinyInput$a.prior
-        b.prior <- shinyInput$b.prior
-        ksout <- ks.test(gamma.hat[input$batches, ], "pnorm", 
-            gamma.bar[input$batches], sqrt(shinyInput$t2[input$batches]))  
+        summarytext <- ""
+        if (!is.null(delta.hat))  {
+            gamma.hat <- shinyInput$gamma.hat
+            gamma.bar <- shinyInput$gamma.bar
+            a.prior <- shinyInput$a.prior
+            b.prior <- shinyInput$b.prior
+            ksout <- ks.test(gamma.hat[input$batches, ], "pnorm", 
+                             gamma.bar[input$batches], sqrt(shinyInput$t2[input$batches]))  
             # two-sided, exact
-        summarytext <- 
-        "Batch mean distribution across genes: Normal vs Empirical distribution"
-        summarytext <- paste(summarytext, "Two-sided Kolmogorov-Smirnov test", 
-            sep = "\n")
-        summarytext <- paste(summarytext, "Selected Batch: ", sep = "\n")
-        summarytext <- paste(summarytext, input$batches, sep = "")
-        summarytext <- paste(summarytext, "Statistic D = ", sep = "\n")
-        summarytext <- paste(summarytext, signif(ksout$statistic, 4), sep = "")
-        summarytext <- paste(summarytext, "p-value = ", sep = "\n")
-        summarytext <- paste(summarytext, signif(ksout$p.value, 4), sep = "")
-        
-        invgam <- 1/rgamma(ncol(delta.hat), a.prior[input$batches], 
-            b.prior[input$batches])
-        ksvarout <- ks.test(delta.hat[input$batches, ], invgam)  
+            summarytext <- 
+                "Batch mean distribution across genes: Normal vs Empirical distribution"
+            summarytext <- paste(summarytext, "Two-sided Kolmogorov-Smirnov test", 
+                                 sep = "\n")
+            summarytext <- paste(summarytext, "Selected Batch: ", sep = "\n")
+            summarytext <- paste(summarytext, input$batches, sep = "")
+            summarytext <- paste(summarytext, "Statistic D = ", sep = "\n")
+            summarytext <- paste(summarytext, signif(ksout$statistic, 4), sep = "")
+            summarytext <- paste(summarytext, "p-value = ", sep = "\n")
+            summarytext <- paste(summarytext, signif(ksout$p.value, 4), sep = "")
+            
+            invgam <- 1/rgamma(ncol(delta.hat), a.prior[input$batches], 
+                               b.prior[input$batches])
+            ksvarout <- ks.test(delta.hat[input$batches, ], invgam)  
             # two-sided, exact
-        summarytext <- paste(summarytext, 
-            "\n\n\nBatch Variance distribution across genes: ",
-            "Inverse Gamma vs Empirical distribution", 
-            sep = "")
-        summarytext <- paste(summarytext, "Two-sided Kolmogorov-Smirnov test", 
-            sep = "\n")
-        summarytext <- paste(summarytext, "Selected Batch: ", sep = "\n")
-        summarytext <- paste(summarytext, input$batches, sep = "")
-        summarytext <- paste(summarytext, "Statistic D = ", sep = "\n")
-        summarytext <- paste(summarytext, signif(ksvarout$statistic, 4), 
-            sep = "")
-        summarytext <- paste(summarytext, "p-value = ", sep = "\n")
-        summarytext <- paste(summarytext, signif(ksvarout$p.value, 4), sep = "")
-        
+            summarytext <- paste(summarytext, 
+                "\n\n\nBatch Variance distribution across genes: ",
+                "Inverse Gamma vs Empirical distribution", 
+                sep = "")
+            summarytext <- paste(summarytext, 
+                "Two-sided Kolmogorov-Smirnov test", sep = "\n")
+            summarytext <- paste(summarytext, "Selected Batch: ", sep = "\n")
+            summarytext <- paste(summarytext, input$batches, sep = "")
+            summarytext <- paste(summarytext, "Statistic D = ", sep = "\n")
+            summarytext <- paste(summarytext, signif(ksvarout$statistic, 4), 
+                sep = "")
+            summarytext <- paste(summarytext, "p-value = ", sep = "\n")
+            summarytext <- paste(summarytext, signif(ksvarout$p.value, 4), 
+                sep = "")
+        }
         cat(summarytext)
     })
     observe({

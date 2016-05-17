@@ -195,7 +195,8 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
         sidebarLayout(
             sidebarPanel(
                 sliderInput('batches', 'Batch', value=1,
-                    min = 1, max = nrow(shinyInput$delta.hat), step=1),
+                    min = 1, max = if (is.null(shinyInput$delta.hat)) 1 
+                    else nrow(shinyInput$delta.hat), step=1),
                 br(),
                 radioButtons('optionMeanOnly', 'Batch Adjustment Option',
                     c('Mean and Variance'=0, 'Mean only'=1), 0),

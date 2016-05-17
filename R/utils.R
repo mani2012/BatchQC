@@ -425,28 +425,27 @@ batchqc_f.pvalue <- function(dat, mod, mod0) {
     df1 <- dim(mod)[2]
     df0 <- dim(mod0)[2]
     p <- rep(0, m)
-    Id <- diag(n)
-    
-    resid <- dat %*% (Id - mod %*% solve(t(mod) %*% mod) %*% 
-        t(mod))
+
+    resid <- dat - dat %*% mod %*% solve(t(mod) %*% mod) %*% t(mod)
     rss1 <- rowSums(resid * resid)
     rm(resid)
     
-    resid0 <- dat %*% (Id - mod0 %*% solve(t(mod0) %*% mod0) %*% 
-        t(mod0))
+    resid0 <- dat - dat %*% mod0 %*% solve(t(mod0) %*% mod0) %*% t(mod0)
     rss0 <- rowSums(resid0 * resid0)
     rm(resid0)
-    # co
-    resid00 <- dat %*% (Id - mod00 %*% solve(t(mod00) %*% mod00) %*% 
-        t(mod00))
+
+    resid00 <- dat - dat %*% mod00 %*% solve(t(mod00) %*% mod00) %*% t(mod00)
     rss00 <- rowSums(resid00 * resid00)
     rm(resid00)
     
     r2_full <- 1 - rss1/rss00
     r2_reduced <- 1 - rss0/rss00
     
-    fstats <- ((rss0 - rss1)/(df1 - df0))/(rss1/(n - df1))
-    p <- 1 - pf(fstats, df1 = (df1 - df0), df2 = (n - df1))
+    p <- 1
+    if (df1 > df0)  {
+        fstats <- ((rss0 - rss1)/(df1 - df0))/(rss1/(n - df1))
+        p <- 1 - pf(fstats, df1 = (df1 - df0), df2 = (n - df1))
+    }
     return(list(p = p, r2_full = r2_full, r2_reduced = r2_reduced))
 }
 
@@ -467,10 +466,22 @@ batchqc_f.pvalue <- function(dat, mod, mod0) {
 #' batch <- rep(1:nbatch, each=ncond*npercond)
 #' condition <- rep(rep(1:ncond, each=npercond), nbatch)
 #' batchqc_explained_variation(data.matrix, condition, batch)
-batchqc_explained_variation <- function(data.matrix, condition, 
-    batch) {
-    cond_mod <- model.matrix(~as.factor(condition))
-    batch_mod <- model.matrix(~as.factor(batch))
+batchqc_explained_variation <- function(data.matrix, condition, batch) {
+    nlb <- nlevels(as.factor(batch))
+    nlc <- nlevels(as.factor(condition))
+    if ((nlb <= 1)&&(nlc <= 1))  {
+        cond_mod <- matrix(rep(1, ncol(data.matrix)), ncol = 1)
+        batch_mod <- matrix(rep(1, ncol(data.matrix)), ncol = 1)
+    } else if(nlb <= 1)  {
+        cond_mod <- model.matrix(~as.factor(condition))
+        batch_mod <- matrix(rep(1, ncol(data.matrix)), ncol = 1)
+    } else if(nlc <= 1)  {
+        cond_mod <- matrix(rep(1, ncol(data.matrix)), ncol = 1)
+        batch_mod <- model.matrix(~as.factor(batch))
+    } else {
+        cond_mod <- model.matrix(~as.factor(condition))
+        batch_mod <- model.matrix(~as.factor(batch))
+    }
     mod <- cbind(cond_mod, batch_mod[, -1])
     
     cond_test <- batchqc_f.pvalue(data.matrix, mod, batch_mod)
@@ -512,10 +523,22 @@ batchqc_explained_variation <- function(data.matrix, condition,
 #' pca <- batchqc_pca(data.matrix, batch, mod=modmatrix)
 #' pcs <- t(data.frame(pca$x))
 #' batchqc_pc_explained_variation(pcs, pca$sdev^2, condition, batch)
-batchqc_pc_explained_variation <- function(pcs, vars, condition, 
-    batch) {
-    cond_mod <- model.matrix(~as.factor(condition))
-    batch_mod <- model.matrix(~as.factor(batch))
+batchqc_pc_explained_variation <- function(pcs, vars, condition, batch) {
+    nlb <- nlevels(as.factor(batch))
+    nlc <- nlevels(as.factor(condition))
+    if ((nlb <= 1)&&(nlc <= 1))  {
+        cond_mod <- matrix(rep(1, ncol(pcs)), ncol = 1)
+        batch_mod <- matrix(rep(1, ncol(pcs)), ncol = 1)
+    } else if(nlb <= 1)  {
+        cond_mod <- model.matrix(~as.factor(condition))
+        batch_mod <- matrix(rep(1, ncol(pcs)), ncol = 1)
+    } else if(nlc <= 1)  {
+        cond_mod <- matrix(rep(1, ncol(pcs)), ncol = 1)
+        batch_mod <- model.matrix(~as.factor(batch))
+    } else {
+        cond_mod <- model.matrix(~as.factor(condition))
+        batch_mod <- model.matrix(~as.factor(batch))
+    }
     mod <- cbind(cond_mod, batch_mod[, -1])
     cond_test <- batchqc_f.pvalue(pcs, mod, batch_mod)
     batch_test <- batchqc_f.pvalue(pcs, mod, cond_mod)
@@ -556,13 +579,21 @@ batchqc_pc_explained_variation <- function(pcs, vars, condition,
 #' batchQC_condition_adjusted(data.matrix, batch, condition)
 batchQC_condition_adjusted = function(data.matrix, batch, condition) {
     y <- data.matrix
-    pdata <- data.frame(batch, condition)
-    X <- model.matrix(~as.factor(batch) + as.factor(condition), 
-        data = pdata)
+    nlc <- nlevels(as.factor(condition))
+    if (nlc <= 1)  {
+        return(Y)
+    }
+    P <- nlevels(as.factor(batch))
+    if (P <= 1)  {
+        pdata <- data.frame(condition)
+        X <- model.matrix(~as.factor(condition), data = pdata)
+        P <- 1
+    } else  {
+        pdata <- data.frame(batch, condition)
+        X <- model.matrix(~as.factor(batch) + as.factor(condition), data=pdata)
+    }
     Hat <- solve(t(X) %*% X) %*% t(X)
     beta <- (Hat %*% t(y))
-    P <- nlevels(as.factor(batch))
-    condition_adjusted <- y - t(as.matrix(X[, -c(1:P)]) %*% beta[-c(1:P), 
-        ])
+    condition_adjusted <- y - t(as.matrix(X[, -c(1:P)]) %*% beta[-c(1:P), ])
     return(condition_adjusted)
 } 
