@@ -20,36 +20,41 @@ maxGenes <- dim(shinyInput$data)[1]
 nbatch <- nlevels(as.factor(shinyInput$batch))
 shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE, 
     tabPanel("Summary",
-        tabsetPanel(
-            tabPanel("Confounding", 
-                br(),
-                h3("Number of samples in each Batch and Condition"),
-                tableOutput("CondBatchTable"),
-                br(),
-                h3("Measures of confounding between Batch and Condition"),
-                tableOutput("ConfoundTable")
-            ),
-            tabPanel("Variation Analysis", 
+        sidebarLayout(
+            sidebarPanel(
                 radioButtons('batchVA', 'Batch Adjustment',
                     c('None'=0, 'Combat'=1,'SVA'=2), 0),
-                h3("Variation explained by Batch and Condition"),
-                plotOutput("VariationPlot"),
-                br(),
                 sliderInput('noGenesVA', 
-                    'No. of Genes to include in the table below', value =
+                    'No. of Genes to include in the table', value =
                     if (maxGenes>defaultGenesDisp) defaultGenesDisp 
                     else maxGenes, min = 1, max = maxGenes, step=1),
-                tableOutput("VariationTable")
+                width=3
             ),
-            tabPanel("P-value Analysis", 
-                radioButtons('batchPA', 'Batch Adjustment',
-                    c('None'=0, 'Combat'=1,'SVA'=2), 0),
-                h3(
+            mainPanel(
+                tabsetPanel(
+                    tabPanel("Confounding", 
+                        br(),
+                        h3("Number of samples in each Batch and Condition"),
+                        tableOutput("CondBatchTable"),
+                        br(),
+                    h3("Measures of confounding between Batch and Condition"),
+                        tableOutput("ConfoundTable")
+                    ),
+                    tabPanel("Variation Analysis", 
+                        h3("Variation explained by Batch and Condition"),
+                        plotOutput("VariationPlot"),
+                        br(),
+                        tableOutput("VariationTable")
+                    ),
+                    tabPanel("P-value Analysis", 
+                        h3(
             "Distribution of Batch and Condition Effect p-values Across Genes"),
-                tableOutput("PvalueTable"),
-                plotOutput("BatchPvaluePlot"),
-                br(),
-                plotOutput("ConditionPvaluePlot")
+                        tableOutput("PvalueTable"),
+                        plotOutput("BatchPvaluePlot"),
+                        br(),
+                        plotOutput("ConditionPvaluePlot")
+                    )
+                ), width=9
             )
         )
     ),
@@ -85,7 +90,8 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                         }
                         );'
                     ))
-                )
+                ),
+                width=3
             ),
             mainPanel(
                 tabsetPanel(
@@ -94,30 +100,45 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                     #tabPanel("Table", tableOutput("DEtable")), 
                     tabPanel("LIMMA",tableOutput("LimmaTable"))
                     #tabPanel("GLS",tableOutput("GlsTable")), 
-                    #tabPanel("Mixed Effects",tableOutput("MixEffTable")) 
-                )
+                    #tabPanel("Mixed Effects",tableOutput("MixEffTable"))
+                ), width=9
             )
         )
     ),
-    tabPanel("Median Correlations", plotOutput("outliers")),
-    tabPanel("Heatmaps",
-        tabsetPanel(
-            tabPanel("Heatmap",
-                #selectInput("palette", "Palette", c("RdBu","Greens", "Blues")),
-                radioButtons('batchHM1', 'Batch Adjustment',
+    tabPanel("Median Correlations", 
+        sidebarLayout(
+            sidebarPanel(
+                radioButtons('batchMC', 'Batch Adjustment',
                     c('None'=0, 'Combat'=1,'SVA'=2), 0),
-                checkboxInput("cluster1", "Apply clustering"),
+                width=3
+            ),
+            mainPanel(
+                plotOutput("outliers", width="100%"), width=9)
+        )
+    ),
+    tabPanel("Heatmaps",
+        sidebarLayout(
+            sidebarPanel(
+                #selectInput("palette", "Palette", c("RdBu","Greens", "Blues")),
+                radioButtons('batchHM', 'Batch Adjustment',
+                    c('None'=0, 'Combat'=1,'SVA'=2), 0),
+                checkboxInput("cluster", "Apply clustering"),
                 sliderInput('noGenesHM', 
                     'No. of Genes to include in heatmap display', value =
                     if (maxGenes>defaultGenesDisp) defaultGenesDisp 
                     else maxGenes, min = 1, max = maxGenes, step=1),
-                d3heatmapOutput("heatmap")
+                width=3
             ),
-            tabPanel("Sample Correlations",
-                radioButtons('batchHM2', 'Batch Adjustment',
-                    c('None'=0, 'Combat'=1,'SVA'=2), 0),
-                checkboxInput("cluster2", "Apply clustering"),
-                d3heatmapOutput("correlation")
+            mainPanel(
+                tabsetPanel(
+                    tabPanel("Heatmap",
+                        d3heatmapOutput("heatmap", width="100%", height="550px")
+                    ),
+                    tabPanel("Sample Correlations",
+                        d3heatmapOutput("correlation", width="100%", 
+                            height="550px")
+                    )
+                ) , width=9
             )
         )
     ),
@@ -135,10 +156,12 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                 checkboxInput("colbybatchCD", 
                     "Color By Batch (Default: Color By Condition)", FALSE),
                 radioButtons('batchCD', 'Batch Adjustment',
-                    c('None'=0, 'Combat'=1,'SVA'=2), 0)
+                    c('None'=0, 'Combat'=1,'SVA'=2), 0),
+                width=3
             ),
             mainPanel(
-                plotOutput("circos", height = "550px", width = "100%")
+                plotOutput("circos", height = "550px", width = "100%"),
+                width=9
             )
         )
     ),
@@ -154,7 +177,8 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                 checkboxInput("colbybatchPCA", 
                     "Color By Batch (Default: Color By Condition)", FALSE),
                 radioButtons('batchPCA', 'Batch Adjustment',
-                    c('None'=0, 'Combat'=1,'SVA'=2), 0)
+                    c('None'=0, 'Combat'=1,'SVA'=2), 0),
+                width=3
             ),
             mainPanel(
                 tabsetPanel(
@@ -163,7 +187,7 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                     tabPanel("Table",tableOutput("PCAtable")),
                     tabPanel("Explained Variation",
                         tableOutput("PCAExplainedVariation"))
-                )
+                ), width=9
             )
         )
     ),
@@ -171,7 +195,8 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
         sidebarLayout(
             sidebarPanel(
                 radioButtons('batchShape', 'Batch Adjustment',
-                    c('None'=0, 'Combat'=1,'SVA'=2), 0)
+                    c('None'=0, 'Combat'=1,'SVA'=2), 0),
+                width=3
             ),
             mainPanel(
                 tabsetPanel(
@@ -189,7 +214,7 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                     )
                     # tabPanel("Manova", plotOutput("Manova")),
                     # tabPanel("SO Plot", plotOutput("SOplot"))
-                )
+                ), width=9
             )
         )
     ),
@@ -207,8 +232,9 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                     c('Parametric'=0, 'Non-Parametric'=1), 0),
                 br(),
                 actionButton("runCombat", "Run ComBat"),
-                shiny::p(
-        "Click the button to run ComBat and see the results in the other tabs.")
+                shiny::p(paste("Click the button to run ComBat and see the",
+                    "results in the other tabs.", sep=" ")),
+                width=3
             ),
             mainPanel(
                 tabsetPanel(
@@ -228,7 +254,7 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                     ),
                     tabPanel("ComBat Output", value="ComBatOutput", 
                         verbatimTextOutput("combatOutText"))
-                )
+                ), width=9
             )
         )
     ),
@@ -238,8 +264,9 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                 checkboxInput("fsvaOption", 
                     "Frozen SVA (Default: Regression Adjusted)", FALSE),
                 actionButton("runSVA", "Run SVA"),
-                shiny::p(
-        "Click the button to run SVA and see the results in the other tabs.")
+                shiny::p(paste("Click the button to run SVA and see the",
+                    "results in the other tabs.", sep=" ")),
+                width=3
             ),
             mainPanel(
                 tabsetPanel(
@@ -247,7 +274,7 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                     tabPanel("Summary", verbatimTextOutput("svasummary")),
                     tabPanel("SVA Output", value="SVAOutput", 
                         verbatimTextOutput("SVAOutText"))
-                )
+                ), width=9
             )
         )
     )
