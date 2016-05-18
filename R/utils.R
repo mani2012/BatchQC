@@ -578,10 +578,9 @@ batchqc_pc_explained_variation <- function(pcs, vars, condition, batch) {
 #' condition <- rep(rep(1:ncond, each=npercond), nbatch)
 #' batchQC_condition_adjusted(data.matrix, batch, condition)
 batchQC_condition_adjusted = function(data.matrix, batch, condition) {
-    y <- data.matrix
     nlc <- nlevels(as.factor(condition))
     if (nlc <= 1)  {
-        return(y)
+        return(data.matrix)
     }
     P <- nlevels(as.factor(batch))
     if (P <= 1)  {
@@ -593,7 +592,66 @@ batchQC_condition_adjusted = function(data.matrix, batch, condition) {
         X <- model.matrix(~as.factor(batch) + as.factor(condition), data=pdata)
     }
     Hat <- solve(t(X) %*% X) %*% t(X)
-    beta <- (Hat %*% t(y))
-    condition_adjusted <- y - t(as.matrix(X[, -c(1:P)]) %*% beta[-c(1:P), ])
+    beta <- (Hat %*% t(data.matrix))
+    condition_adjusted <- data.matrix - t(as.matrix(X[, -c(1:P)]) %*% 
+        beta[-c(1:P), ])
     return(condition_adjusted)
-} 
+}
+
+#' Returns a datset after filtering genes of zero variance across 
+#' batch and condition combinations
+#' 
+#' @param data.matrix Given data or simulated data from rnaseq_sim()
+#' @param batch Batch covariate 
+#' @param condition Condition covariate of interest
+#' @return Filtered dataset after filtering genes of zero variance across 
+#' batch and condition combinations
+#' @export
+#' @examples
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+#'     npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' filtered.data <- batchQC_filter_genes(data.matrix, batch, condition)
+batchQC_filter_genes = function(data.matrix, batch, condition) {
+    ngenes <- nrow(data.matrix)
+    filterindex <- c()
+    for (i in 1:ngenes)  {
+        if (var(data.matrix[i,])==0)  {
+            filterindex <- c(filterindex, i)
+            next
+        }
+        cond1 <- as.factor(condition)
+        if (nlevels(cond1)>1)  {
+            cond2 <- split(which(condition == cond1), cond1)
+            filtered <- FALSE
+            for (j in 1:length(cond2))  {
+                if (var(data.matrix[i,cond2[[j]]])==0)  {
+                    filterindex <- c(filterindex, i)
+                    filtered <- TRUE
+                    break
+                }
+            }
+        }
+        if (filtered) next
+        batch1 <- as.factor(batch)
+        if (nlevels(batch1)>1)  {
+            batch2 <- split(which(batch == batch1), batch1)
+            for (j in 1:length(batch2))  {
+                if (var(data.matrix[i,batch2[[j]]])==0)  {
+                    filterindex <- c(filterindex, i)
+                    break
+                }
+            }
+        }
+    }
+    if (length(filterindex) > 0)  {
+        filtered.data <- data.matrix[-c(filterindex),]
+    } else  {
+        filtered.data <- data.matrix
+    }
+    return(filtered.data)
+}

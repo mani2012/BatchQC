@@ -13,15 +13,9 @@ output:
 ```{r, echo=FALSE}
 shinyInput <- getShinyInput()
 dat <- shinyInput$data
-if (is.null(colnames(dat)))  {
-    colnames(dat) <- 1:dim(dat)[2]
-}
-lcounts <- log2CPM(dat)$y
-if (is.null(shinyInput)) {
-    shinyInput <- list(data = data.matrix, batch = batch)
-}
-shinyInput <- c(shinyInput, list(lcounts = lcounts))
-setShinyInput(shinyInput)
+batch <- shinyInput$batch
+condition <- shinyInput$condition
+lcounts <- shinyInput$lcounts
 report_option_vector <- shinyInput$report_option_vector
 eval_cell_1 = (report_option_vector[1]=="1")
 ```

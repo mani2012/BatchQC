@@ -862,21 +862,21 @@ shinyServer(function(input, output, session) {
         } else  {
             mod = model.matrix(~as.factor(condition), data = pdata)
         }
-        #combat_data <- ComBat(dat = shinyInput$data, batch = shinyInput$batch, 
-        #    mod = mod, par.prior = par.prior, mean.only = mean.only)
-        
-        lcounts <- shinyInput$lcounts
-        lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
-        gnormdata <- gnormalize(lcounts_adj)
-        combat_data <- ComBat(dat=lcounts_adj, batch = shinyInput$batch, 
+        combat_data <- ComBat(dat = shinyInput$data, batch = shinyInput$batch, 
             mod = mod, par.prior = par.prior, mean.only = mean.only)
+        if (shinyInput$log2cpm_transform)  {
+            lcounts_combat <- log2CPM(combat_data)$y
+        } else  {
+            lcounts_combat <- combat_data
+        }
         
         report_option_binary = "111111111"
         report_option_vector <- unlist(strsplit(as.character(
             report_option_binary), ""))
         shinyInput <- list(data = combat_data, batch = batch, condition = 
             condition, report_dir = shinyInput$report_dir, 
-            report_option_vector = report_option_vector)
+            report_option_vector = report_option_vector,
+            lcounts=lcounts_combat)
         setShinyInput(shinyInput)
         rmdfile <- system.file("reports/batchqc_report.Rmd", 
             package = "BatchQC")
@@ -928,12 +928,18 @@ shinyServer(function(input, output, session) {
                 sva.object <- batchQC_sva(shinyInput$data, mod)
                 svaf_data <- batchQC_fsva_adjusted(shinyInput$data, mod, 
                     sva.object)
+                if (shinyInput$log2cpm_transform)  {
+                    lcounts_svaf <- log2CPM(svaf_data)$y
+                } else  {
+                    lcounts_svaf <- svaf_data
+                }
                 report_option_binary = "111111111"
                 report_option_vector <- unlist(strsplit(as.character(
                     report_option_binary), ""))
                 shinyInput <- list(data = svaf_data, batch = batch, condition = 
                     condition, report_dir = shinyInput$report_dir, 
-                    report_option_vector = report_option_vector)
+                    report_option_vector = report_option_vector,
+                    lcounts=lcounts_svaf)
                 setShinyInput(shinyInput)
                 rmdfile <- system.file("reports/batchqc_report.Rmd", 
                     package = "BatchQC")
@@ -957,12 +963,18 @@ shinyServer(function(input, output, session) {
                 sva.object <- batchQC_sva(shinyInput$data, mod)
                 svar_data <- batchQC_svregress_adjusted(shinyInput$data, mod, 
                     sva.object)
+                if (shinyInput$log2cpm_transform)  {
+                    lcounts_svar <- log2CPM(svar_data)$y
+                } else  {
+                    lcounts_svar <- svar_data
+                }
                 report_option_binary = "111111111"
                 report_option_vector <- unlist(strsplit(as.character(
                     report_option_binary), ""))
                 shinyInput <- list(data = svar_data, batch = batch, condition = 
                     condition, report_dir = shinyInput$report_dir, 
-                    report_option_vector = report_option_vector)
+                    report_option_vector = report_option_vector,
+                    lcounts=lcounts_svar)
                 setShinyInput(shinyInput)
                 rmdfile <- system.file("reports/batchqc_report.Rmd", 
                     package = "BatchQC")
