@@ -3,6 +3,7 @@
 export(batchQC)
 export(batchQC_analyze)
 export(batchQC_condition_adjusted)
+export(batchQC_filter_genes)
 export(batchQC_fsva_adjusted)
 export(batchQC_num.sv)
 export(batchQC_shapeVariation)
