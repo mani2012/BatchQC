@@ -3,6 +3,7 @@ require(limma)
 require(pander)
 require(stats)
 require(graphics)
+require(methods)
 
 #' Batch and Condition indicator for signature data captured when 
 #' activating different growth pathway genes in human mammary epithelial cells. 
@@ -47,8 +48,6 @@ setOldClass("prcomp")
 #'    \item{batchqc_ev}{a single object of class list}
 #'    \item{pca}{a single object of S3 class prcomp}
 #' }
-#' @seealso
-#'  The constructor, \code{\link{BatchQCout}}
 #' 
 #' @name BatchQCout-class
 #' @rdname BatchQCout-class

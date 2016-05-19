@@ -63,7 +63,7 @@ test_that("batchqc_explained_variation", {
     batch <- rep(1:nbatch, each=ncond*npercond)
     condition <- rep(rep(1:ncond, each=npercond), nbatch)
     batchqc_ev <- batchqc_explained_variation(data.matrix, condition, batch)
-    expect_equal(dim(batchqc_ev$explained_variation), c(50,4))
+    expect_equal(dim(batchqc_ev$explained_variation), c(50,3))
 })
 
 test_that("batchqc_pc_explained_variation", {
@@ -80,7 +80,7 @@ test_that("batchqc_pc_explained_variation", {
     pcs <- t(data.frame(pca$x))
     explained_variation <- batchqc_pc_explained_variation(pcs, pca$sdev^2, 
         condition, batch)
-    expect_equal(dim(explained_variation), c(50,8))
+    expect_equal(dim(explained_variation), c(50,7))
 })
 
 test_that("log2CPM", {
