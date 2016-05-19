@@ -624,10 +624,10 @@ batchQC_filter_genes = function(data.matrix, batch, condition) {
             filterindex <- c(filterindex, i)
             next
         }
+        filtered <- FALSE
         cond1 <- as.factor(condition)
         if (nlevels(cond1)>1)  {
             cond2 <- split(which(condition == cond1), cond1)
-            filtered <- FALSE
             for (j in 1:length(cond2))  {
                 if (var(data.matrix[i,cond2[[j]]])==0)  {
                     filterindex <- c(filterindex, i)
