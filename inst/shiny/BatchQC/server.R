@@ -217,7 +217,8 @@ shinyServer(function(input, output, session) {
         title("Distribution of Condition Effect p-values Across Genes")
     })
     
-    
+    xcol <- reactive({as.numeric(input$xcoln)})
+    ycol <- reactive({as.numeric(input$ycoln)})
     # interactive PCA
     PCA <- reactive({
         if (input$batchPCA == 1) {
@@ -244,7 +245,7 @@ shinyServer(function(input, output, session) {
         shinyInput <- getShinyInput()
         pc <- shinyInput$pc
         if (!is.null(pc))  {
-            data.frame(pc[, c(input$xcol, input$ycol)])
+            data.frame(pc[, c(xcol(), ycol())])
         }
     })
     
@@ -280,22 +281,22 @@ shinyServer(function(input, output, session) {
                 if (is.null(x)) 
                     return(NULL)
                 row <- pc[pc$id == x$id, ]
-                paste0(paste0("PC", input$xcol), ": ", signif(with(row, 
-                    get(names(row)[input$xcol])), 3), "<br>", 
-                    paste0("PC", input$ycol), ": ", signif(with(row, 
-                    get(names(row)[input$ycol])), 3), "<br>")
+                paste0(paste0("PC", xcol()), ": ", signif(with(row, 
+                    get(names(row)[xcol()])), 3), "<br>", 
+                    paste0("PC", ycol()), ": ", signif(with(row, 
+                    get(names(row)[ycol()])), 3), "<br>")
             }
             
             pc %>% 
-            ggvis(~get(names(pc)[input$xcol]), ~get(names(pc)[input$ycol]), 
+            ggvis(~get(names(pc)[xcol()]), ~get(names(pc)[ycol()]), 
                 fill = if (input$colbybatchPCA) ~factor(batch) 
                 else ~factor(condition), `:=`(key, ~id)) %>% 
             layer_points(`:=`(size, 75), `:=`(size.hover, 200)) %>% 
             add_tooltip(all_values, "hover") %>% 
-            add_axis("x", title = paste0("PC", input$xcol), properties = 
+            add_axis("x", title = paste0("PC", xcol()), properties = 
                 axis_props(title = list(fontSize = 15), 
                     labels = list(fontSize = 10))) %>% 
-            add_axis("y", title = paste0("PC", input$ycol), properties = 
+            add_axis("y", title = paste0("PC", ycol()), properties = 
                 axis_props(title = list(fontSize = 15), 
                     labels = list(fontSize = 10))) %>% 
             add_legend("fill", title = if (input$colbybatchPCA) 
