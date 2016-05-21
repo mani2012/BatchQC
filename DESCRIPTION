@@ -61,7 +61,8 @@ Imports:
     limma,
     grDevices, 
     graphics, 
-    stats
+    stats,
+    methods
 biocViews: BatchEffect, GraphAndNetwork, Microarray, PrincipalComponent, 
     Sequencing, Software, Visualization, QualityControl, RNASeq, Preprocessing,
     DifferentialExpression

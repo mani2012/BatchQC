@@ -14,7 +14,4 @@ slots:
    \item{pca}{a single object of S3 class prcomp}
 }
 }
-\seealso{
-The constructor, \code{\link{BatchQCout}}
-}
 
