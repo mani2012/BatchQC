@@ -38,7 +38,7 @@ Collate: 'simulate_data.R' 'heatmap.R' 'pca.R' 'batchtest.R'
 Suggests: testthat
 Imports: utils, rmarkdown, knitr, pander, gplots, MCMCpack, shiny, sva,
         corpcor, moments, matrixStats, ggvis, d3heatmap, reshape2,
-        limma, grDevices, graphics, stats
+        limma, grDevices, graphics, stats, methods
 biocViews: BatchEffect, GraphAndNetwork, Microarray,
         PrincipalComponent, Sequencing, Software, Visualization,
         QualityControl, RNASeq, Preprocessing, DifferentialExpression
