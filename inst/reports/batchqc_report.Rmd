@@ -12,10 +12,8 @@ output:
 
 ```{r, echo=FALSE}
 shinyInput <- getShinyInput()
-dat <- shinyInput$data
 batch <- shinyInput$batch
 condition <- shinyInput$condition
-lcounts <- shinyInput$lcounts
 report_option_vector <- shinyInput$report_option_vector
 eval_cell_1 = (report_option_vector[1]=="1")
 ```
@@ -70,7 +68,7 @@ pander(confound)
 `r if (eval_cell_1) '### Variation explained by Batch and Condition'`
 ```{r eval=eval_cell_1, echo=FALSE, message=FALSE, fig.width=8, fig.height=5}
 batchqc_ev <- tryCatch({
-batchqc_explained_variation(shinyInput$data, 
+batchqc_explained_variation(shinyInput$lcounts, 
     shinyInput$condition, shinyInput$batch)
 }, error = function(err) {
     warning("Error in BatchQC Explained Variation: ",err)
@@ -137,7 +135,7 @@ eval_cell_2 = (report_option_vector[2]=="1")
 `r if (eval_cell_2) 'Boxplots for all values for each of the samples and are colored by batch membership.'`
 
 ```{r eval=eval_cell_2, echo=FALSE, message=FALSE, fig.width=8, fig.height=5}
-boxplot(lcounts,col=as.numeric(as.factor(batch)),main="Sample Boxplots (colored by batch)",xlab="Samples")
+boxplot(shinyInput$lcounts,col=as.numeric(as.factor(batch)),main="Sample Boxplots (colored by batch)",xlab="Samples")
 ```
 
 `r if (eval_cell_2) '## LIMMA'`
@@ -152,7 +150,7 @@ if (ncond > 1)  {
         mod_full <- model.matrix(~as.factor(shinyInput$condition) + 
             ~as.factor(shinyInput$batch), data = pdata)
     }
-    fit <- lmFit(shinyInput$data, mod_full)
+    fit <- lmFit(shinyInput$lcounts, mod_full)
     fit2 <- eBayes(fit)
     limmaTable <- topTable(fit2, coef = 2:ncond, number=10)
     for (j in 2:ncond)  {
@@ -171,7 +169,7 @@ eval_cell_3 = (report_option_vector[3]=="1")
 `r if (eval_cell_3) '==================='`
 `r if (eval_cell_3) 'This plot helps identify outlying samples.'`
 ```{r, eval=eval_cell_3, echo=FALSE, message=FALSE, fig.width=8, fig.height=4}
-batchqc_corscatter(dat, batch=batch, mod=mod)
+batchqc_corscatter(shinyInput$lcounts, batch=batch, mod=mod)
 ```
 
 ```{r, echo=FALSE}
@@ -182,13 +180,13 @@ eval_cell_4 = (report_option_vector[4]=="1")
 `r if (eval_cell_4) '## Heatmap'`
 `r if (eval_cell_4) 'This is a heatmap of the given data matrix showing the batch effects and variations with different conditions.'`
 ```{r, eval=eval_cell_4, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
-batchqc_heatmap(dat, batch=batch, mod=mod)
+batchqc_heatmap(shinyInput$lcounts, batch=batch, mod=mod)
 ```
 
 `r if (eval_cell_4) '## Sample Correlations'`
 `r if (eval_cell_4) 'This is a heatmap of the correlation between samples.'`
 ```{r, eval=eval_cell_4, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8}
-batchqc_correlation(dat, batch=batch, mod=mod)
+batchqc_correlation(shinyInput$lcounts, batch=batch, mod=mod)
 ```
 
 ```{r, echo=FALSE}
@@ -198,7 +196,7 @@ eval_cell_5 = (report_option_vector[5]=="1")
 `r if (eval_cell_5) '==================='`
 `r if (eval_cell_5) 'This is a Circular Dendrogram of the given data matrix colored by batch to show the batch effects.'`
 ```{r, eval=eval_cell_5, echo=FALSE, message=FALSE, fig.width=5, fig.height=5}
-batchqc_circosplot(shinyInput$data, shinyInput$batch, "complete")
+batchqc_circosplot(shinyInput$lcounts, shinyInput$batch, "complete")
 ```
 
 ```{r, echo=FALSE}
@@ -210,7 +208,7 @@ eval_cell_6 = (report_option_vector[6]=="1")
 `r if (eval_cell_6) 'This is a plot of the top two principal components colored by batch to show the batch effects.'`
 ```{r, eval=eval_cell_6, echo=FALSE, message=FALSE, fig.width=6, fig.height=6}
 pca <- tryCatch({
-    batchqc_pca(lcounts, batch=batch, mod=mod)
+    batchqc_pca(shinyInput$lcounts, batch=batch, mod=mod)
 }, error = function(err) {
     warning("Error in BatchQC PCA: ",err)
     return(NULL)
@@ -241,8 +239,7 @@ eval_cell_7 = (report_option_vector[7]=="1")
 `r if (eval_cell_7) '====='`
 `r if (eval_cell_7) 'This is a heatmap plot showing the variation of gene expression mean, variance, skewness and kurtosis between samples grouped by batch to see the batch effects variation'`
 ```{r, eval=eval_cell_7, echo=FALSE, message=FALSE, fig.width=9, fig.height=5}
-lcounts <- shinyInput$lcounts
-lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
+lcounts_adj <- batchQC_condition_adjusted(shinyInput$lcounts, batch, condition)
 bf <- as.factor(shinyInput$batch)
 pval <- batchQC_shapeVariation(lcounts_adj, batch, plot = TRUE, groupCol = 
     rainbow(nlevels(bf))[bf])
@@ -265,7 +262,7 @@ eval_cell_8 = (report_option_vector[8]=="1")
 `r if (eval_cell_8) 'This is a plot showing whether parametric or non-parameteric prior is appropriate for this data. It also shows the Kolmogorov-Smirnov test comparing the parametric and non-parameteric prior distribution.'`
 ```{r, eval=eval_cell_8, echo=FALSE, message=FALSE}
 kstest <- tryCatch({
-    combatPlot(lcounts, batch=shinyInput$batch, mod=mod)
+    combatPlot(shinyInput$lcounts, batch=shinyInput$batch, mod=mod)
 }, error = function(err) {
     warning("Error in BatchQC ComBat Plot: ",err)
     return(NULL)
@@ -328,15 +325,15 @@ eval_cell_9 = (report_option_vector[9]=="1")
 `r if (eval_cell_9) '==='`
 `r if (eval_cell_6) '## Summary'`
 ```{r, eval=eval_cell_9, echo=FALSE, message=FALSE}
-nsample <- dim(shinyInput$data)[2]
+nsample <- dim(shinyInput$lcounts)[2]
 sample <- 1:nsample
 pdata <- data.frame(sample, condition)
 ncond <- nlevels(as.factor(condition))
 if (ncond <= 1)  {
-    modmatrix = matrix(rep(1, ncol(dat)), ncol = 1)
+    modmatrix = matrix(rep(1, ncol(shinyInput$lcounts)), ncol = 1)
 } else  {
     modmatrix = model.matrix(~as.factor(condition), data = pdata)
 }
-n.sv <- batchQC_num.sv(shinyInput$data, modmatrix)
+n.sv <- batchQC_num.sv(shinyInput$lcounts, modmatrix)
 cat(paste("Number of Surrogate Variables found in the given data:", n.sv))
 ```

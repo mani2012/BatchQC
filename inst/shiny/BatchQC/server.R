@@ -97,7 +97,7 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         shinyInput <- getShinyInput()
-        batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, 
+        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition, 
             batch)
         batchqc_ev$explained_variation[1:input$noGenesVA,]
     })
@@ -117,7 +117,7 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         shinyInput <- getShinyInput()
-        batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, 
+        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition, 
             batch)
         apply(batchqc_ev$explained_variation, 2, summary)
         boxplot(batchqc_ev$explained_variation, ylab = 
@@ -149,7 +149,7 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         shinyInput <- getShinyInput()
-        batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, 
+        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition, 
             batch)
         cond_ps <- batchqc_ev$cond_test$p
         batch_ps <- batchqc_ev$batch_test$p
@@ -176,7 +176,7 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         shinyInput <- getShinyInput()
-        batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, 
+        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition, 
             batch)
         cond_ps <- batchqc_ev$cond_test$p
         batch_ps <- batchqc_ev$batch_test$p
@@ -204,7 +204,7 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         shinyInput <- getShinyInput()
-        batchqc_ev <- batchqc_explained_variation(shinyInput$data, condition, 
+        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition, 
             batch)
         cond_ps <- batchqc_ev$cond_test$p
         nf <- layout(mat = matrix(c(1, 2), 2, 1, byrow = TRUE), 
@@ -545,7 +545,7 @@ shinyServer(function(input, output, session) {
                 mod <- model.matrix(~as.factor(condition) + 
                     ~as.factor(batch), data = pdata)
             }
-            fit <- lmFit(shinyInput$data, mod)
+            fit <- lmFit(shinyInput$lcounts, mod)
             fit2 <- eBayes(fit)
             ncond <- nlevels(as.factor(condition))
             limmaTable <- topTable(fit2, coef = 2:ncond, number = input$noGenes)
@@ -581,7 +581,7 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         shinyInput <- getShinyInput()
-        BatchQC::batchqc_corscatter(shinyInput$data, shinyInput$batch, 
+        BatchQC::batchqc_corscatter(shinyInput$lcounts, shinyInput$batch, 
             mod = shinyInput$mod)
     })
     
@@ -647,7 +647,7 @@ shinyServer(function(input, output, session) {
         }
         shinyInput <- getShinyInput()
         cormat <- shinyInput$cormat
-        nsample <- dim(shinyInput$data)[2]
+        nsample <- dim(shinyInput$lcounts)[2]
         sample <- 1:nsample
         fbatch <- as.factor(shinyInput$batch)
         nbatch <- nlevels(fbatch)
@@ -859,11 +859,11 @@ shinyServer(function(input, output, session) {
         }
         ncond <- nlevels(as.factor(condition))
         if (ncond <= 1)  {
-            mod = matrix(rep(1, ncol(shinyInput$data)), ncol = 1)
+            mod = matrix(rep(1, ncol(shinyInput$lcounts)), ncol = 1)
         } else  {
             mod = model.matrix(~as.factor(condition), data = pdata)
         }
-        combat_data <- ComBat(dat = shinyInput$data, batch = shinyInput$batch, 
+        combat_data <- ComBat(dat = shinyInput$lcounts, batch = shinyInput$batch, 
             mod = mod, par.prior = par.prior, mean.only = mean.only)
         if (shinyInput$log2cpm_transform)  {
             lcounts_combat <- log2CPM(combat_data)$y
@@ -894,7 +894,7 @@ shinyServer(function(input, output, session) {
     output$svasummary <- renderText({
         shinyInput <- getShinyInputOrig()
         condition <- shinyInput$condition
-        nsample <- dim(shinyInput$data)[2]
+        nsample <- dim(shinyInput$lcounts)[2]
         sample <- 1:nsample
         pdata <- data.frame(sample, condition)
         ncond <- nlevels(as.factor(condition))
@@ -903,7 +903,7 @@ shinyServer(function(input, output, session) {
         } else  {
             modmatrix = model.matrix(~as.factor(condition), data = pdata)
         }
-        n.sv <- batchQC_num.sv(shinyInput$data, modmatrix)
+        n.sv <- batchQC_num.sv(shinyInput$lcounts, modmatrix)
         paste("Number of Surrogate Variables found in the given data:", n.sv)
     })
     observe({
@@ -919,15 +919,15 @@ shinyServer(function(input, output, session) {
         pdata <- data.frame(batch, condition)
         ncond <- nlevels(as.factor(condition))
         if (ncond <= 1)  {
-            mod = matrix(rep(1, ncol(shinyInput$data)), ncol = 1)
+            mod = matrix(rep(1, ncol(shinyInput$lcounts)), ncol = 1)
         } else  {
             mod = model.matrix(~as.factor(condition), data = pdata)
         }
         tryCatch({
         if (input$fsvaOption) {
             if (is.null(getShinyInputSVAf())) {
-                sva.object <- batchQC_sva(shinyInput$data, mod)
-                svaf_data <- batchQC_fsva_adjusted(shinyInput$data, mod, 
+                sva.object <- batchQC_sva(shinyInput$lcounts, mod)
+                svaf_data <- batchQC_fsva_adjusted(shinyInput$lcounts, mod, 
                     sva.object)
                 if (shinyInput$log2cpm_transform)  {
                     lcounts_svaf <- log2CPM(svaf_data)$y
@@ -961,8 +961,8 @@ shinyServer(function(input, output, session) {
             }
         } else {
             if (is.null(getShinyInputSVAr())) {
-                sva.object <- batchQC_sva(shinyInput$data, mod)
-                svar_data <- batchQC_svregress_adjusted(shinyInput$data, mod, 
+                sva.object <- batchQC_sva(shinyInput$lcounts, mod)
+                svar_data <- batchQC_svregress_adjusted(shinyInput$lcounts, mod, 
                     sva.object)
                 if (shinyInput$log2cpm_transform)  {
                     lcounts_svar <- log2CPM(svar_data)$y
@@ -1056,7 +1056,7 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         shinyInput <- getShinyInput()
-        batchqc_circosplot(shinyInput$data, if (input$colbybatchCD) 
+        batchqc_circosplot(shinyInput$lcounts, if (input$colbybatchCD) 
             shinyInput$batch else shinyInput$condition, input$AggMethod)
     }, width = mywidth, height = myheight)
 }) 
