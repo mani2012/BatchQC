@@ -202,15 +202,15 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                 tabsetPanel(
                     tabPanel("Batch Variation", plotOutput("BatchMeanVar"), 
                         br(),
-                        h4(paste("Note: Overall p-value is calculated for the",
-                        "variation across samples on the overall measure",
-                        "across genes. Pairwise p-value is calculated for the",
-                        "pairwise variation of each gene between batches",
-                        "on the measure across each batch. If the data is", 
-                        "quantum normalized, then the overall measure across",
-                        "genes is same for all samples and pairwise p-value",
-                        "is a good measure, which also discounts very small", 
-                        "variations.", sep=" "))
+                        h4(paste("Note: Sample-wise p-value is calculated for ",
+                        "the variation across samples on the measure",
+                        "across genes. Gene-wise p-value is calculated for the",
+                        "variation of each gene between batches on the ",
+                        "measure across each batch. If the data is quantum ", 
+                        "normalized, then the Sample-wise measure across",
+                        "genes is same for all samples and Gene-wise p-value",
+                        "is a good measure.", 
+                        sep=" "))
                     )
                     # tabPanel("Manova", plotOutput("Manova")),
                     # tabPanel("SO Plot", plotOutput("SOplot"))

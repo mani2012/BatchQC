@@ -5,8 +5,8 @@
 \title{Generate simulated count data with batch effects for ngenes}
 \usage{
 rnaseq_sim(ngenes = 50, nbatch = 3, ncond = 2, npercond = 10,
-    ggstep = 5, bbstep = 15000, ccstep = 10000, bvarstep = 2,
-    seed = 1000)
+    basemean = 10000, ggstep = 50, bbstep = 20000, ccstep = 8000,
+    basedisp = 100, bdispstep = 10, swvar = 10, seed = 1000)
 }
 \arguments{
 \item{ngenes}{Number of genes to simulate}
@@ -17,13 +17,17 @@ rnaseq_sim(ngenes = 50, nbatch = 3, ncond = 2, npercond = 10,
 
 \item{npercond}{Number of samples per condition per batch to simulate}
 
+\item{basemean}{Base mean}
+
 \item{ggstep}{Gene to Gene step variation}
 
 \item{bbstep}{Batch to Batch step variation}
 
 \item{ccstep}{Condition to Condition step variation}
 
-\item{bvarstep}{Batch to Batch variance step variation}
+\item{basedisp}{Base Dispersion}
+
+\item{bdispstep}{Batch to Batch Dispersion step variation}
 
 \item{seed}{Random seed for reproducibility}
 }
@@ -36,7 +40,8 @@ Generate simulated count data with batch effects for ngenes
 \examples{
 rnaseq_sim()
 rnaseq_sim(ngenes=100, nbatch=5, seed=1234)
-rnaseq_sim(ngenes=100, nbatch=3, ncond=2, npercond=10, ggstep=5, 
-    bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+rnaseq_sim(ngenes=100, nbatch=3, ncond=2, npercond=10, basemean=10000,
+    ggstep=50, bbstep=20000, ccstep=8000, basedisp=100, bdispstep=10, 
+    seed=1234)
 }
 

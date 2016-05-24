@@ -6,10 +6,13 @@ require("MCMCpack")
 #' @param nbatch Number of batches to simulate
 #' @param ncond Number of conditions to simulate
 #' @param npercond Number of samples per condition per batch to simulate
+#' @param basemean Base mean
 #' @param ggstep Gene to Gene step variation
 #' @param bbstep Batch to Batch step variation
 #' @param ccstep Condition to Condition step variation
-#' @param bvarstep Batch to Batch variance step variation
+#' @param basedisp Base Dispersion
+#' @param bdispstep Batch to Batch Dispersion step variation
+#' @param swvar Sample-wise extra variation
 #' @param seed Random seed for reproducibility
 #' @return RNA Seq count data matrix
 #' @import MCMCpack
@@ -17,26 +20,28 @@ require("MCMCpack")
 #' @examples
 #' rnaseq_sim()
 #' rnaseq_sim(ngenes=100, nbatch=5, seed=1234)
-#' rnaseq_sim(ngenes=100, nbatch=3, ncond=2, npercond=10, ggstep=5, 
-#'     bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#' rnaseq_sim(ngenes=100, nbatch=3, ncond=2, npercond=10, basemean=10000,
+#'     ggstep=50, bbstep=20000, ccstep=8000, basedisp=100, bdispstep=10, 
+#'     swvar=1000, seed=1234)
 rnaseq_sim <- function(ngenes = 50, nbatch = 3, ncond = 2, npercond = 10, 
-    ggstep = 5, bbstep = 15000, ccstep = 10000, bvarstep = 2, seed = 1000) {
+    basemean = 10000, ggstep = 50, bbstep = 20000, ccstep = 8000, 
+    basedisp = 100, bdispstep = 10, swvar = 1000, seed = 1000) {
     set.seed(seed, kind = NULL, normal.kind = NULL)
-    mu <- seq(ggstep, length.out = ngenes, by = ggstep)
-    bmu <- seq(bbstep, length.out = nbatch, by = bbstep)
-    cmu <- seq(ccstep, length.out = ncond, by = ccstep)
-    bsize <- seq(bvarstep, length.out = nbatch, by = bvarstep)
-    A.matrix <- matrix(0, nrow = ngenes, ncol = nbatch * ncond * 
-        npercond)
+    mu <- seq(0, length.out = ngenes, by = ggstep)
+    bmu <- seq(0, length.out = nbatch, by = bbstep)
+    cmu <- seq(0, length.out = ncond, by = ccstep)
+    bsize <- seq(basedisp, length.out = nbatch, by = bdispstep)
+    ncol <- nbatch * ncond * npercond
+    A.matrix <- matrix(0, nrow = ngenes, ncol = ncol)
+    samplewisevar <- swvar*rbeta(ncol,2,2)
     for (i in 1:ngenes) {
         genei <- c()
         for (j in 1:nbatch) {
-            batchmu <- rnorm(1, mean = bmu[j], sd = 1)
-            size <- rinvgamma(1, shape = bsize[j], scale = 1)
             for (k in 1:ncond) {
-                condmu <- rnorm(1, mean = cmu[k], sd = 1)
-                genei <- c(genei, rnbinom(npercond, size = size, 
-                    mu = mu[i] + batchmu + condmu))
+                for (l in 1:npercond) {
+                    genei <- c(genei, rnbinom(1, size = bsize[j], 
+                        mu = basemean+mu[i]+bmu[j]+cmu[k]+samplewisevar[j*k*l]))
+                }
             }
         }
         A.matrix[i, ] <- genei

@@ -79,12 +79,12 @@ batchQC_shapeVariation = function(data, groups, plot = FALSE,
             "navy"))(n = 99)
         
         main = paste0(
-            "\n\nBatch Effect Variation Analysis \n Mean p-value: Overall = ", 
-            mpvaltext, ", Pairwise = ", mpvaltext2, 
-            "\n Variance p-value: Overall = ", vpvaltext, ", Pairwise = ", 
-            vpvaltext2, "\n Skewness p-value: Overall = ", spvaltext, 
-            ", Pairwise = ", spvaltext2, "\n Kurtosis p-value: Overall = ", 
-            kpvaltext, ", Pairwise = ", kpvaltext2)
+            "\n\nBatch Effect Variation Analysis \nMean p-value: Sample-wise = "
+            , mpvaltext, ", Gene-wise = ", mpvaltext2, 
+            "\nVariance p-value: Sample-wise = ", vpvaltext, ", Gene-wise = ", 
+            vpvaltext2, "\nSkewness p-value: Sample-wise = ", spvaltext, 
+            ", Gene-wise = ", spvaltext2, "\nKurtosis p-value: Sample-wise = ", 
+            kpvaltext, ", Gene-wise = ", kpvaltext2)
         
         gplots::heatmap.2(t(Y), trace = "none", Rowv = FALSE, 
             Colv = FALSE, dendrogram = "none", col = pal, ColSideColors = 
@@ -125,7 +125,7 @@ gnormalize <- function(dat) {
     ssdmat <- apply(row(dat), c(1,2), function(x, ssd) ssd[x], ssd)
     # Genewise normalize the data
     gnormdata <- matrix(mapply(
-        function(x, smean, ssd) ((x-smean)/ssd) + smean, 
+        function(x, smean, ssd) ((x-smean)/ssd), 
         dat, smeanmat, ssdmat), nrow = nrow(dat))
     return(gnormdata)
 }

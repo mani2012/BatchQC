@@ -21,7 +21,8 @@ require(BatchQC)
 ## ggstep: Gene to Gene step variation
 ## bbstep: Batch to Batch step variation
 ## ccstep: Condition to Condition step variation
-## bbvarstep: Batch to Batch variance step variation
+## basedisp: Base Dispersion
+## bdispstep: Batch to Batch Dispersion step variation
 
 set.seed(47)
 
@@ -33,9 +34,11 @@ ggstep=5
 bbstep=15000
 ccstep=10000
 
-bvarstep<-2
+basedisp <- 100
+bdispstep <- -10
 data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-    npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+    npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+    basedisp=basedisp, bdispstep=bdispstep, swvar=1000, seed=1234)
 
 # genes 10 to 25 affected by an independent unobserved factor
 unmodeled.factor.indicator=rbinom(60,1,.5)
@@ -43,7 +46,7 @@ unmodeled.factor.indicator=rbinom(60,1,.5)
 nsamples=nbatch*ncond*npercond
 eh.matrix <- matrix(0, nrow=ngenes, ncol=nsamples)
 for(j in 1:nsamples){
-    bsize <- seq(bvarstep, length.out=nbatch, by=bvarstep)
+    bsize <- seq(basedisp, length.out=nbatch, by=bdispstep)
     size<-rinvgamma(1, shape=mean(bsize), scale=1)
     bmu <- seq(bbstep, length.out=nbatch, by=bbstep)
     cmu <- seq(ccstep, length.out=ncond, by=ccstep)
@@ -80,12 +83,20 @@ sva.object=batchQC_sva(data.matrix, modmatrix)
 ## Plot the surrogate variables by batch and the unmodeled factor
 
 par(mfrow=c(1,2))
-for(i in 1:sva.object$n.sv){
-    boxplot(sva.object$sv[,i]~unmodeled.factor.indicator,xlab=
-        "Unmodeled Factor ",ylab=paste("Surrogate Variable",i,sep=" "),main=
+if (sva.object$n.sv > 1)  {
+    for(i in 1:sva.object$n.sv){
+        boxplot(sva.object$sv[,i]~unmodeled.factor.indicator,xlab=
+            "Unmodeled Factor ",ylab=paste("Surrogate Variable",i,sep=" "),main=
+            "Simulated Data ")
+        boxplot(sva.object$sv[,i]~batch,xlab="Batch",ylab=paste(
+            "Surrogate Variable",i,sep=" "),main="Simulated Data")
+    }
+} else  {
+    boxplot(sva.object$sv~unmodeled.factor.indicator,xlab=
+        "Unmodeled Factor ",ylab=paste("Surrogate Variable",1,sep=" "),main=
         "Simulated Data ")
-    boxplot(sva.object$sv[,i]~batch,xlab="Batch",ylab=paste(
-        "Surrogate Variable",i,sep=" "),main="Simulated Data")
+    boxplot(sva.object$sv~batch,xlab="Batch",ylab=paste(
+        "Surrogate Variable",1,sep=" "),main="Simulated Data")
 }
 
 pprob.gam=sva.object$pprob.gam ##prob each gene is affected by EH
@@ -145,7 +156,7 @@ unmodeled.factor.indicator=rbinom(60,1,.5)
 nsamples=nbatch*ncond*npercond
 eh.matrix <- matrix(0, nrow=ngenes, ncol=nsamples)
 for(j in 1:nsamples){
-    bsize <- seq(bvarstep, length.out=nbatch, by=bvarstep)
+    bsize <- seq(basedisp, length.out=nbatch, by=bdispstep)
     size<-rinvgamma(1, shape=mean(bsize), scale=1)
     bmu <- seq(bbstep, length.out=nbatch, by=bbstep)
     cmu <- seq(ccstep, length.out=ncond, by=ccstep)
@@ -176,13 +187,22 @@ combat_data.matrix.eh = ComBat(dat=data.matrix.eh, batch=batch, mod=modmatrix)
 sva.object.eh=batchQC_sva(data.matrix.eh, modmatrix)
 
 par(mfrow=c(1,2))
-for(i in 1:sva.object.eh$n.sv){
-    boxplot(sva.object.eh$sv[,i]~unmodeled.factor.indicator,xlab=
-        "Unmodeled Factor ",ylab=paste("Surrogate Variable",i,sep=" "),main=
+if (sva.object.eh$n.sv > 1)  {
+    for(i in 1:sva.object.eh$n.sv){
+        boxplot(sva.object.eh$sv[,i]~unmodeled.factor.indicator,xlab=
+            "Unmodeled Factor ",ylab=paste("Surrogate Variable",i,sep=" "),main=
+            "Simulated Data with EH")
+    
+        boxplot(sva.object.eh$sv[,i]~batch,xlab="Batch",ylab=paste(
+            "Surrogate Variable",i,sep=" "),main="Simulated Data with EH")
+    }
+} else  {
+    boxplot(sva.object.eh$sv~unmodeled.factor.indicator,xlab=
+        "Unmodeled Factor ",ylab=paste("Surrogate Variable",1,sep=" "),main=
         "Simulated Data with EH")
 
-    boxplot(sva.object.eh$sv[,i]~batch,xlab="Batch",ylab=paste(
-        "Surrogate Variable",i,sep=" "),main="Simulated Data with EH")
+    boxplot(sva.object.eh$sv~batch,xlab="Batch",ylab=paste(
+        "Surrogate Variable",1,sep=" "),main="Simulated Data with EH")
 }
 
 pprob.gam.eh=sva.object.eh$pprob.gam ##prob each gene is affected by EH
