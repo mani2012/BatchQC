@@ -6,7 +6,7 @@ nbatch <- 3
 ncond <- 2
 npercond <- 10
 data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-    npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+    npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
     basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
 
 ### apply BatchQC

@@ -30,14 +30,14 @@ nbatch <- 3
 ncond <- 2
 npercond <- 10
 ngenes <- 50
-ggstep=5
-bbstep=15000
-ccstep=10000
+ggstep <- 50
+bbstep <- 2000
+ccstep <- 800
 
 basedisp <- 100
 bdispstep <- -10
-data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-    npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+data.matrix <- rnaseq_sim(ngenes=ngenes, nbatch=nbatch, ncond=ncond, npercond=
+    npercond, basemean=10000, ggstep=ggstep, bbstep=bbstep, ccstep=ccstep, 
     basedisp=basedisp, bdispstep=bdispstep, swvar=1000, seed=1234)
 
 # genes 10 to 25 affected by an independent unobserved factor
