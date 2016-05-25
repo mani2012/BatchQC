@@ -24,7 +24,7 @@ require("MCMCpack")
 #'     ggstep=50, bbstep=20000, ccstep=8000, basedisp=100, bdispstep=10, 
 #'     swvar=1000, seed=1234)
 rnaseq_sim <- function(ngenes = 50, nbatch = 3, ncond = 2, npercond = 10, 
-    basemean = 10000, ggstep = 50, bbstep = 20000, ccstep = 8000, 
+    basemean = 10000, ggstep = 50, bbstep = 2000, ccstep = 800, 
     basedisp = 100, bdispstep = 10, swvar = 1000, seed = 1000) {
     set.seed(seed, kind = NULL, normal.kind = NULL)
     mu <- seq(0, length.out = ngenes, by = ggstep)

@@ -6,7 +6,7 @@ test_that("batchQC_analyze", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     pca <- batchQC_analyze(data.matrix, batch)
@@ -18,7 +18,7 @@ test_that("batchQC", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     condition <- rep(rep(1:ncond, each=npercond), nbatch)
@@ -32,14 +32,14 @@ test_that("combatPlot", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     condition <- rep(rep(1:ncond, each=npercond), nbatch)
     pdata <- data.frame(batch, condition)
     mod = model.matrix(~as.factor(condition), data = pdata)
     kstest <- combatPlot(data.matrix, batch, mod=mod)
-    expect_equal(signif(kstest$p.value, 4), 0.3204)
+    expect_equal(signif(kstest$p.value, 4), 0.8879)
 })
 
 test_that("batchQC_condition_adjusted", {
@@ -47,7 +47,7 @@ test_that("batchQC_condition_adjusted", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     condition <- rep(rep(1:ncond, each=npercond), nbatch)
@@ -61,7 +61,7 @@ test_that("batchqc_explained_variation", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     condition <- rep(rep(1:ncond, each=npercond), nbatch)
@@ -74,7 +74,7 @@ test_that("batchqc_pc_explained_variation", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     condition <- rep(rep(1:ncond, each=npercond), nbatch)
@@ -92,7 +92,7 @@ test_that("log2CPM", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     data.matrix <- as.matrix(data.matrix)
     ld <- log2CPM(data.matrix)
@@ -105,7 +105,7 @@ test_that("batchQC_num.sv", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     condition <- rep(rep(1:ncond, each=npercond), nbatch)
@@ -120,7 +120,7 @@ test_that("batchQC_fsva_adjusted", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     condition <- rep(rep(1:ncond, each=npercond), nbatch)
@@ -136,7 +136,7 @@ test_that("batchQC_svregress_adjusted", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     condition <- rep(rep(1:ncond, each=npercond), nbatch)
@@ -152,7 +152,7 @@ test_that("batchQC_shapeVariation", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     sl <- batchQC_shapeVariation(data.matrix, groups=batch)
@@ -164,7 +164,7 @@ test_that("batchqc_pca", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     condition <- rep(rep(1:ncond, each=npercond), nbatch)
@@ -179,7 +179,7 @@ test_that("batchqc_pca_svd", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     condition <- rep(rep(1:ncond, each=npercond), nbatch)
@@ -194,7 +194,7 @@ test_that("batchtest", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     batch <- rep(1:nbatch, each=ncond*npercond)
     condition <- rep(rep(1:ncond, each=npercond), nbatch)
@@ -210,7 +210,7 @@ test_that("rnaseq_sim", {
     ncond <- 2
     npercond <- 10
     data.matrix <- rnaseq_sim(ngenes=100, nbatch=nbatch, ncond=ncond, npercond=
-        npercond, basemean=10000, ggstep=50, bbstep=20000, ccstep=8000, 
+        npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
         basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
     expect_equal(dim(data.matrix), c(100,60))
 })
