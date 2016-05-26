@@ -3,7 +3,6 @@ require(limma)
 require(pander)
 require(stats)
 require(graphics)
-require(methods)
 
 #' Batch and Condition indicator for signature data captured when 
 #' activating different growth pathway genes in human mammary epithelial cells. 
@@ -37,6 +36,7 @@ require(methods)
 #' @return Signature data 
 "signature_data"
 
+#' @importFrom methods setOldClass
 setOldClass("prcomp")
 ################################################################################
 #' The BatchQC output class to output BatchQC results
@@ -74,9 +74,9 @@ setClass(Class="BatchQCout",
 #' nbatch <- 3
 #' ncond <- 2
 #' npercond <- 10
-#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, 
-#'     npercond=npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, 
-#'     seed=1234)
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+#'     npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
+#'     basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
 #' batch <- rep(1:nbatch, each=ncond*npercond)
 #' condition <- rep(rep(1:ncond, each=npercond), nbatch)
 #' pdata <- data.frame(batch, condition)
@@ -121,9 +121,9 @@ batchQC_analyze <- function(data.matrix, batch, mod = NULL) {
 #' nbatch <- 3
 #' ncond <- 2
 #' npercond <- 10
-#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, 
-#'     npercond=npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, 
-#'     seed=1234)
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+#'     npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
+#'     basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
 #' batch <- rep(1:nbatch, each=ncond*npercond)
 #' condition <- rep(rep(1:ncond, each=npercond), nbatch)
 #' batchQC(data.matrix, batch=batch, condition=condition, view_report=FALSE, 
@@ -220,9 +220,9 @@ batchQC <- function(dat, batch, condition = NULL,
 #' nbatch <- 3
 #' ncond <- 2
 #' npercond <- 10
-#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, 
-#'     npercond=npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, 
-#'     seed=1234)
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+#'     npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
+#'     basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
 #' batch <- rep(1:nbatch, each=ncond*npercond)
 #' condition <- rep(rep(1:ncond, each=npercond), nbatch)
 #' pdata <- data.frame(batch, condition)

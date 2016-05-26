@@ -12,9 +12,9 @@ BinToDec <- function(x) sum(2^(which(rev(unlist(strsplit(as.character(x),
 #' nbatch <- 3
 #' ncond <- 2
 #' npercond <- 10
-#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, 
-#'     npercond=npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, 
-#'     seed=1234)
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+#'     npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
+#'     basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
 #' data.matrix <- as.matrix(data.matrix)
 #' log2CPM(data.matrix)
 log2CPM <- function(qcounts, lib.size = NULL) {
@@ -462,7 +462,8 @@ batchqc_f.pvalue <- function(dat, mod, mod0) {
 #' ncond <- 2
 #' npercond <- 10
 #' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-#'     npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#'     npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
+#'     basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
 #' batch <- rep(1:nbatch, each=ncond*npercond)
 #' condition <- rep(rep(1:ncond, each=npercond), nbatch)
 #' batchqc_explained_variation(data.matrix, condition, batch)
@@ -515,7 +516,8 @@ batchqc_explained_variation <- function(data.matrix, condition, batch) {
 #' ncond <- 2
 #' npercond <- 10
 #' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-#'     npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#'     npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
+#'     basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
 #' batch <- rep(1:nbatch, each=ncond*npercond)
 #' condition <- rep(rep(1:ncond, each=npercond), nbatch)
 #' pdata <- data.frame(batch, condition)
@@ -573,7 +575,8 @@ batchqc_pc_explained_variation <- function(pcs, vars, condition, batch) {
 #' ncond <- 2
 #' npercond <- 10
 #' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-#'     npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#'     npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
+#'     basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
 #' batch <- rep(1:nbatch, each=ncond*npercond)
 #' condition <- rep(rep(1:ncond, each=npercond), nbatch)
 #' batchQC_condition_adjusted(data.matrix, batch, condition)
@@ -612,7 +615,8 @@ batchQC_condition_adjusted = function(data.matrix, batch, condition) {
 #' ncond <- 2
 #' npercond <- 10
 #' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
-#'     npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, seed=1234)
+#'     npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
+#'     basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
 #' batch <- rep(1:nbatch, each=ncond*npercond)
 #' condition <- rep(rep(1:ncond, each=npercond), nbatch)
 #' filtered.data <- batchQC_filter_genes(data.matrix, batch, condition)
