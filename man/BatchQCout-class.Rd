@@ -10,8 +10,8 @@ Contains all currently-supported BatchQC output data classes:
 \details{
 slots:
 \describe{
-   \item{batchqc_ev}{a single object of class list}
-   \item{pca}{a single object of S3 class prcomp}
+    \item{batchqc_ev}{a single object of class list}
+    \item{pca}{a single object of S3 class prcomp}
 }
 }
 
