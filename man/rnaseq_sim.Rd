@@ -5,8 +5,8 @@
 \title{Generate simulated count data with batch effects for ngenes}
 \usage{
 rnaseq_sim(ngenes = 50, nbatch = 3, ncond = 2, npercond = 10,
-    basemean = 10000, ggstep = 50, bbstep = 20000, ccstep = 8000,
-    basedisp = 100, bdispstep = 10, swvar = 10, seed = 1000)
+    basemean = 10000, ggstep = 50, bbstep = 2000, ccstep = 800,
+    basedisp = 100, bdispstep = 10, swvar = 1000, seed = 1000)
 }
 \arguments{
 \item{ngenes}{Number of genes to simulate}
@@ -29,6 +29,8 @@ rnaseq_sim(ngenes = 50, nbatch = 3, ncond = 2, npercond = 10,
 
 \item{bdispstep}{Batch to Batch Dispersion step variation}
 
+\item{swvar}{Sample-wise extra variation}
+
 \item{seed}{Random seed for reproducibility}
 }
 \value{
@@ -42,6 +44,6 @@ rnaseq_sim()
 rnaseq_sim(ngenes=100, nbatch=5, seed=1234)
 rnaseq_sim(ngenes=100, nbatch=3, ncond=2, npercond=10, basemean=10000,
     ggstep=50, bbstep=20000, ccstep=8000, basedisp=100, bdispstep=10, 
-    seed=1234)
+    swvar=1000, seed=1234)
 }
 

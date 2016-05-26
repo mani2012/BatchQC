@@ -11,9 +11,9 @@
 #' nbatch <- 3
 #' ncond <- 2
 #' npercond <- 10
-#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, 
-#'     npercond=npercond, ggstep=5, bbstep=15000, ccstep=10000, bvarstep=2, 
-#'     seed=1234)
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+#'     npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
+#'     basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
 #' batch <- rep(1:nbatch, each=ncond*npercond)
 #' batchQC_shapeVariation(data.matrix, groups=batch)
 batchQC_shapeVariation = function(data, groups, plot = FALSE, 
@@ -142,15 +142,14 @@ overallPvalue <- function(Y, groups) {
     mod0 = model.matrix(~1, data = data.frame(Y))  # reduced model 
     
     ### Standard F test ###
-    Id <- diag(n)
     df1 <- dim(mod1)[2]
     df0 <- dim(mod0)[2]
     
-    resid <- t(Y) %*% (Id - mod1 %*% solve(t(mod1) %*% mod1) %*% t(mod1))
+    resid <- t(Y) - t(Y) %*% mod1 %*% solve(t(mod1) %*% mod1) %*% t(mod1)
         # residuals full model
     rss1 <- rowSums(resid * resid)  ## SSE full model
     
-    resid0 <- t(Y) %*% (Id - mod0 %*% solve(t(mod0) %*% mod0) %*% t(mod0))  
+    resid0 <- t(Y) - t(Y) %*% mod0 %*% solve(t(mod0) %*% mod0) %*% t(mod0)
         # residuals reduced model
     rss0 <- rowSums(resid0 * resid0)  ## SSE reduced model
     

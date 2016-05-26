@@ -16,6 +16,7 @@ require("MCMCpack")
 #' @param seed Random seed for reproducibility
 #' @return RNA Seq count data matrix
 #' @import MCMCpack
+#' @importFrom stats rbeta
 #' @export
 #' @examples
 #' rnaseq_sim()
