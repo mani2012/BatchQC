@@ -97,7 +97,7 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         shinyInput <- getShinyInput()
-        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition, 
+        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition,
             batch)
         batchqc_ev$explained_variation[1:input$noGenesVA,]
     })
@@ -117,7 +117,7 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         shinyInput <- getShinyInput()
-        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition, 
+        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition,
             batch)
         apply(batchqc_ev$explained_variation, 2, summary)
         boxplot(batchqc_ev$explained_variation, ylab = 
@@ -149,7 +149,7 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         shinyInput <- getShinyInput()
-        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition, 
+        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition,
             batch)
         cond_ps <- batchqc_ev$cond_test$p
         batch_ps <- batchqc_ev$batch_test$p
@@ -176,7 +176,7 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         shinyInput <- getShinyInput()
-        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition, 
+        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition,
             batch)
         cond_ps <- batchqc_ev$cond_test$p
         batch_ps <- batchqc_ev$batch_test$p
@@ -204,7 +204,7 @@ shinyServer(function(input, output, session) {
             setInputs(0)
         }
         shinyInput <- getShinyInput()
-        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition, 
+        batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition,
             batch)
         cond_ps <- batchqc_ev$cond_test$p
         nf <- layout(mat = matrix(c(1, 2), 2, 1, byrow = TRUE), 
@@ -436,7 +436,7 @@ shinyServer(function(input, output, session) {
                 }, "hover") %>% 
             add_axis("x", title = if (input$sortbybatch) 
                 paste(input$noSamples, "Sample(s) Per Batch", sep = " ") 
-                else paste(input$ncSamples, "Sample(s) Per Condition", sep=" "), 
+                else paste(input$ncSamples, "Sample(s) Per Condition", sep=" "),
                 properties = axis_props(title = list(fontSize = 15), 
                 labels = list(fontSize = 5, angle = 90))) %>% 
             add_axis("y", title = "Expression", properties = axis_props(title = 
@@ -487,7 +487,7 @@ shinyServer(function(input, output, session) {
     #         if (is.null(getShinyInputCombat())) {
     #             session$sendCustomMessage(type = "testmessage", message = 
     #                 "First run ComBat from the ComBat tab")
-    #             updateRadioButtons(session, "batchDE", choices = list(None = 0, 
+    #             updateRadioButtons(session, "batchDE", choices=list(None = 0, 
     #                 Combat = 1, SVA = 2), selected = 0)
     #         } else {
     #             setInputs(1)
@@ -496,7 +496,7 @@ shinyServer(function(input, output, session) {
     #         if (is.null(getShinyInputSVA())) {
     #             session$sendCustomMessage(type = "testmessage", message = 
     #                 "First run SVA from the SVA tab")
-    #             updateRadioButtons(session, "batchDE", choices = list(None = 0, 
+    #             updateRadioButtons(session, "batchDE", choices=list(None = 0, 
     #                 Combat = 1, SVA = 2), selected = 0)
     #         } else {
     #             setInputs(2)
@@ -767,21 +767,21 @@ shinyServer(function(input, output, session) {
             tmp <- density(gamma.hat[input$batches, ])
             xx <- seq(min(tmp$x), max(tmp$x), length = 100)
             tmp1 <- dnorm(xx, gamma.bar[input$batches], 
-                          sqrt(shinyInput$t2[input$batches]))
+                sqrt(shinyInput$t2[input$batches]))
             plot(tmp, type = "l", main = "Density Plot", 
-                 ylim = c(0, max(tmp$y, tmp1)), lwd = 2)
+                ylim = c(0, max(tmp$y, tmp1)), lwd = 2)
             lines(xx, tmp1, col = 2, lwd = 2)
             qqnorm(gamma.hat[input$batches, ])
             qqline(gamma.hat[input$batches, ], col = 2, lwd = 2)
             tmp <- density(delta.hat[input$batches, ])
             invgam <- 1/rgamma(ncol(delta.hat), a.prior[input$batches], 
-                               b.prior[input$batches])
+                b.prior[input$batches])
             tmp1 <- density(invgam)
             plot(tmp, main = "Density Plot", ylim = c(0, max(tmp$y, tmp1$y)), 
-                 lwd = 2)
+                lwd = 2)
             lines(tmp1, col = 2, lwd = 2)
             qqplot(delta.hat[input$batches, ], invgam, xlab="Sample Quantiles", 
-                   ylab = "Theoretical Quantiles")
+                ylab = "Theoretical Quantiles")
             lines(c(0, max(invgam)), c(0, max(invgam)), col = 2, lwd = 2)
             title("Q-Q Plot")
         }
@@ -796,21 +796,23 @@ shinyServer(function(input, output, session) {
             a.prior <- shinyInput$a.prior
             b.prior <- shinyInput$b.prior
             ksout <- ks.test(gamma.hat[input$batches, ], "pnorm", 
-                             gamma.bar[input$batches], sqrt(shinyInput$t2[input$batches]))  
+                gamma.bar[input$batches], sqrt(shinyInput$t2[input$batches]))  
             # two-sided, exact
             summarytext <- 
-                "Batch mean distribution across genes: Normal vs Empirical distribution"
-            summarytext <- paste(summarytext, "Two-sided Kolmogorov-Smirnov test", 
-                                 sep = "\n")
+        "Batch mean distribution across genes: Normal vs Empirical distribution"
+            summarytext <- paste(summarytext, 
+                "Two-sided Kolmogorov-Smirnov test", sep = "\n")
             summarytext <- paste(summarytext, "Selected Batch: ", sep = "\n")
             summarytext <- paste(summarytext, input$batches, sep = "")
             summarytext <- paste(summarytext, "Statistic D = ", sep = "\n")
-            summarytext <- paste(summarytext, signif(ksout$statistic, 4), sep = "")
+            summarytext <- paste(summarytext, signif(ksout$statistic, 4), 
+                sep = "")
             summarytext <- paste(summarytext, "p-value = ", sep = "\n")
-            summarytext <- paste(summarytext, signif(ksout$p.value, 4), sep = "")
+            summarytext <- paste(summarytext, signif(ksout$p.value, 4), 
+                sep = "")
             
             invgam <- 1/rgamma(ncol(delta.hat), a.prior[input$batches], 
-                               b.prior[input$batches])
+                b.prior[input$batches])
             ksvarout <- ks.test(delta.hat[input$batches, ], invgam)  
             # two-sided, exact
             summarytext <- paste(summarytext, 
@@ -863,7 +865,7 @@ shinyServer(function(input, output, session) {
         } else  {
             mod = model.matrix(~as.factor(condition), data = pdata)
         }
-        combat_data <- ComBat(dat = shinyInput$lcounts, batch = shinyInput$batch, 
+        combat_data <- ComBat(dat=shinyInput$lcounts, batch=shinyInput$batch, 
             mod = mod, par.prior = par.prior, mean.only = mean.only)
         if (shinyInput$log2cpm_transform)  {
             lcounts_combat <- log2CPM(combat_data)$y
@@ -962,7 +964,7 @@ shinyServer(function(input, output, session) {
         } else {
             if (is.null(getShinyInputSVAr())) {
                 sva.object <- batchQC_sva(shinyInput$lcounts, mod)
-                svar_data <- batchQC_svregress_adjusted(shinyInput$lcounts, mod, 
+                svar_data <- batchQC_svregress_adjusted(shinyInput$lcounts, mod,
                     sva.object)
                 if (shinyInput$log2cpm_transform)  {
                     lcounts_svar <- log2CPM(svar_data)$y
