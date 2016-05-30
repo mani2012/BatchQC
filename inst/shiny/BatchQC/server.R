@@ -612,7 +612,9 @@ shinyServer(function(input, output, session) {
         lcounts <- shinyInput$lcounts
         lcountsReduced <- lcounts[1:input$noGenesHM,]
         batch <- shinyInput$batch
-        bc <- rainbow(max(batch))
+        fbatch <- as.factor(shinyInput$batch)
+        nbatch <- nlevels(fbatch)
+        bc <- rainbow(nbatch)
         colorfun <- function(i) {
             return(bc[i])
         }
