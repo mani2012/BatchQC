@@ -150,15 +150,21 @@ if (ncond > 1)  {
         mod_full <- model.matrix(~as.factor(shinyInput$condition) + 
             ~as.factor(shinyInput$batch), data = pdata)
     }
-    fit <- lmFit(shinyInput$lcounts, mod_full)
-    fit2 <- eBayes(fit)
-    limmaTable <- topTable(fit2, coef = 2:ncond, number=10)
-    for (j in 2:ncond)  {
-        colnames(limmaTable)[j-1] <- paste("Condition: ", 
-        levels(as.factor(shinyInput$condition))[j], " (logFC)", sep='')
-    }
-    panderOptions("table.split.table", 120)  ## table split at 100 (default 80) characters in a line
-    pander(limmaTable)
+    tryCatch({
+        fit <- lmFit(shinyInput$lcounts, mod_full)
+        fit2 <- eBayes(fit)
+        limmaTable <- topTable(fit2, coef = 2:ncond, number=10)
+        for (j in 2:ncond)  {
+            colnames(limmaTable)[j-1] <- paste("Condition: ", 
+            levels(as.factor(shinyInput$condition))[j], " (logFC)", sep='')
+        }
+        panderOptions("table.split.table", 120)  
+        ## table split at 100 (default 80) characters in a line
+        pander(limmaTable)
+    }, error = function(err) {
+        warning("Error in BatchQC Limma Table: ",err)
+    })
+
 }
 ```
 
@@ -226,10 +232,18 @@ if (is.null(pca))  {
 ```{r, eval=eval_cell_6, echo=FALSE, message=FALSE}
 pc <- shinyInput$pc
 pcs <- t(pc)
-explained_variation <- batchqc_pc_explained_variation(pcs, 
-    shinyInput$vars, condition, batch)
-panderOptions("table.split.table", 240)  ## table split at 240 (default 80) characters in a line
-pander(explained_variation)
+explained_variation <- tryCatch({
+    explained_variation <- batchqc_pc_explained_variation(pcs, 
+        shinyInput$vars, condition, batch)
+}, error = function(err) {
+    warning("Error in BatchQC PC Explained Variation: ",err)
+    return(NULL)
+})
+if (!is.null(explained_variation))  {
+    panderOptions("table.split.table", 240)  
+    ## table split at 240 (default 80) characters in a line
+    pander(explained_variation)
+}
 ```
 
 ```{r, echo=FALSE}
@@ -239,7 +253,12 @@ eval_cell_7 = (report_option_vector[7]=="1")
 `r if (eval_cell_7) '====='`
 `r if (eval_cell_7) 'This is a heatmap plot showing the variation of gene expression mean, variance, skewness and kurtosis between samples grouped by batch to see the batch effects variation'`
 ```{r, eval=eval_cell_7, echo=FALSE, message=FALSE, fig.width=9, fig.height=5}
-lcounts_adj <- batchQC_condition_adjusted(shinyInput$lcounts, batch, condition)
+lcounts_adj <- tryCatch({
+    batchQC_condition_adjusted(shinyInput$lcounts, batch, condition)
+}, error = function(err) {
+    warning("Error in BatchQC Condition adjusted data: ",err)
+    return(shinyInput$lcounts)
+})
 bf <- as.factor(shinyInput$batch)
 pval <- batchQC_shapeVariation(lcounts_adj, batch, plot = TRUE, groupCol = 
     rainbow(nlevels(bf))[bf])
