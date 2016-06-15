@@ -624,6 +624,11 @@ batchQC_filter_genes = function(data.matrix, batch, condition) {
     ngenes <- nrow(data.matrix)
     filterindex <- c()
     for (i in 1:ngenes)  {
+        missing <- sum(is.na(data.matrix[i,]))
+        if (missing > 0) {
+            filterindex <- c(filterindex, i)
+            next
+        }
         if (var(data.matrix[i,])==0)  {
             filterindex <- c(filterindex, i)
             next
