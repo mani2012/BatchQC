@@ -61,3 +61,14 @@ batchQC(edata, batch=batch, condition=condition,
         report_option_binary="111111111",
         view_report=FALSE, interactive=TRUE)
 ```
+### Example 4: Real protein expression dataset
+This dataset is from protein expression data captured for 39 proteins.
+It has two batches and two conditions corresponding to case and control.
+```r
+library(BatchQC)
+data(protein_example_data)
+batchQC(protein_data, protein_sample_info$Batch, protein_sample_info$category,
+        report_file="batchqc_protein_data_report.html", report_dir=".", 
+        report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE)
+```
