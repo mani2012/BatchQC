@@ -77,23 +77,10 @@ batchQC(edata, batch=batch, condition=condition,
         view_report=FALSE, interactive=TRUE)
 
 
-### Combat paper dataset
-data <- read.delim("arielGeneric.txt")
-sampleinfo <- read.delim("arielGenericSampleInfo.txt")
-batch <- sampleinfo$Batch
-condition <- paste(sampleinfo$Treatment, sampleinfo$Time, sep='')
-batchQC(data, batch=batch, condition=condition, 
-        report_file="batchqc_report.html", report_dir=".", 
+### Protein dataset example
+data(protein_example_data)
+batchQC(protein_data, protein_sample_info$Batch, protein_sample_info$category,
+        report_file="batchqc_protein_data_report.html", report_dir=".", 
         report_option_binary="111111111",
         view_report=FALSE, interactive=TRUE)
 
-
-### Tufts Diet Study dataset
-data <- read.csv("diet_study_16S_genus.csv", row.names=1)
-sampleinfo <- read.delim("diet_study_sample_info.txt")
-batch <- sampleinfo$SubjectID
-condition <- as.factor(sampleinfo$Diet)
-batchQC(data, batch=batch, condition=condition, 
-        report_file="batchqc_report.html", report_dir=".", 
-        report_option_binary="111111111",
-        view_report=FALSE, interactive=TRUE)
