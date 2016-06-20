@@ -160,7 +160,7 @@ batchQC_analyze <- function(data.matrix, batch, mod = NULL) {
 #'     interactive=FALSE)
 batchQC <- function(dat, batch, condition = NULL, 
     report_file = "batchqc_report.html", report_dir = ".", 
-    report_option_binary = "111111111", view_report = TRUE, 
+    report_option_binary = "111111111", view_report = FALSE, 
     interactive = TRUE, batchqc_output=FALSE, log2cpm_transform=FALSE) {
     if (is.null(condition))  condition <- rep(1,ncol(dat))
     if (is.null(batch))  batch <- rep(1,ncol(dat))
