@@ -146,6 +146,7 @@ batchQC_analyze <- function(data.matrix, batch, mod = NULL) {
 #' reorder rgamma rnbinom rnorm sd var
 #' @importFrom utils browseURL
 #' @importFrom shiny runApp
+#' @importFrom methods new
 #' @export
 #' @examples
 #' nbatch <- 3
