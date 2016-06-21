@@ -84,3 +84,19 @@ batchQC(protein_data, protein_sample_info$Batch, protein_sample_info$category,
         report_option_binary="111111111",
         view_report=FALSE, interactive=TRUE)
 
+
+### Second simulated dataset example with only batch variance difference
+nbatch <- 3
+ncond <- 2
+npercond <- 10
+data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+    npercond, basemean=5000, ggstep=50, bbstep=0, ccstep=2000, 
+    basedisp=10, bdispstep=-4, swvar=1000, seed=1234)
+
+### apply BatchQC
+batch <- rep(1:nbatch, each=ncond*npercond)
+condition <- rep(rep(1:ncond, each=npercond), nbatch)
+batchQC(data.matrix, batch=batch, condition=condition, 
+        report_file="batchqc_report.html", report_dir=".", 
+        report_option_binary="111111111",
+        view_report=FALSE, interactive=TRUE, batchqc_output=TRUE)
