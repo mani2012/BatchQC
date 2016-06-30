@@ -334,12 +334,12 @@ shinyServer(function(input, output, session) {
         if (input$batchDE == 1) {
             if (is.null(getShinyInputCombat())) {
                 updateRadioButtons(session, "batchDE", choices = list(None = 0, 
-                    Combat = 1, SVA = 2), selected = 0)
+                    'Batch as Covariate'=3, Combat = 1, SVA = 2), selected = 0)
             }
         } else if (input$batchDE == 2) {
             if (is.null(getShinyInputSVA())) {
                 updateRadioButtons(session, "batchDE", choices = list(None = 0, 
-                    Combat = 1, SVA = 2), selected = 0)
+                    'Batch as Covariate'=3, Combat = 1, SVA = 2), selected = 0)
             }
         }
         shinyInput <- getShinyInput()
@@ -358,12 +358,12 @@ shinyServer(function(input, output, session) {
         if (input$batchDE == 1) {
             if (is.null(getShinyInputCombat())) {
                 updateRadioButtons(session, "batchDE", choices = list(None = 0, 
-                    Combat = 1, SVA = 2), selected = 0)
+                    'Batch as Covariate'=3, Combat = 1, SVA = 2), selected = 0)
             }
         } else if (input$batchDE == 2) {
             if (is.null(getShinyInputSVA())) {
                 updateRadioButtons(session, "batchDE", choices = list(None = 0, 
-                    Combat = 1, SVA = 2), selected = 0)
+                    'Batch as Covariate'=3, Combat = 1, SVA = 2), selected = 0)
             }
         }
         shinyInput <- getShinyInput()
@@ -383,7 +383,7 @@ shinyServer(function(input, output, session) {
                 session$sendCustomMessage(type = "testmessage", message = 
                     "First run ComBat from the ComBat tab")
                 updateRadioButtons(session, "batchDE", choices = list(None = 0, 
-                    Combat = 1, SVA = 2), selected = 0)
+                    'Batch as Covariate'=3, Combat = 1, SVA = 2), selected = 0)
             } else {
                 setInputs(1)
             }
@@ -392,7 +392,7 @@ shinyServer(function(input, output, session) {
                 session$sendCustomMessage(type = "testmessage", message = 
                     "First run SVA from the SVA tab")
                 updateRadioButtons(session, "batchDE", choices = list(None = 0, 
-                    Combat = 1, SVA = 2), selected = 0)
+                    'Batch as Covariate'=3, Combat = 1, SVA = 2), selected = 0)
             } else {
                 setInputs(2)
             }
@@ -453,7 +453,7 @@ shinyServer(function(input, output, session) {
                 session$sendCustomMessage(type = "testmessage", message = 
                     "First run ComBat from the ComBat tab")
                 updateRadioButtons(session, "batchDE", choices = list(None = 0, 
-                    Combat = 1, SVA = 2), selected = 0)
+                    'Batch as Covariate'=3, Combat = 1, SVA = 2), selected = 0)
             } else {
                 setInputs(1)
             }
@@ -462,7 +462,7 @@ shinyServer(function(input, output, session) {
                 session$sendCustomMessage(type = "testmessage", message = 
                     "First run SVA from the SVA tab")
                 updateRadioButtons(session, "batchDE", choices = list(None = 0, 
-                    Combat = 1, SVA = 2), selected = 0)
+                    'Batch as Covariate'=3, Combat = 1, SVA = 2), selected = 0)
             } else {
                 setInputs(2)
             }
@@ -517,7 +517,7 @@ shinyServer(function(input, output, session) {
                 session$sendCustomMessage(type = "testmessage", message = 
                     "First run ComBat from the ComBat tab")
                 updateRadioButtons(session, "batchDE", choices = list(None = 0, 
-                    Combat = 1, SVA = 2), selected = 0)
+                    'Batch as Covariate'=3, Combat = 1, SVA = 2), selected = 0)
             } else {
                 setInputs(1)
             }
@@ -526,7 +526,7 @@ shinyServer(function(input, output, session) {
                 session$sendCustomMessage(type = "testmessage", message = 
                     "First run SVA from the SVA tab")
                 updateRadioButtons(session, "batchDE", choices = list(None = 0, 
-                    Combat = 1, SVA = 2), selected = 0)
+                    'Batch as Covariate'=3, Combat = 1, SVA = 2), selected = 0)
             } else {
                 setInputs(2)
             }
@@ -539,7 +539,7 @@ shinyServer(function(input, output, session) {
         nbatch <- nlevels(as.factor(batch))
         limmaTable <- NULL
         if (ncond > 1)  {
-            if (nbatch <= 1)  {
+            if ((nbatch <= 1)||(input$batchDE == 0))  {
                 mod <- model.matrix(~as.factor(condition), data = pdata)
             } else  {
                 mod <- model.matrix(~as.factor(condition) + 

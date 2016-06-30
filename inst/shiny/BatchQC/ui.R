@@ -73,7 +73,7 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
                 checkboxInput("colbybatch", 
                     "Color By Batch (Default: Color By Condition)", FALSE),
                 radioButtons('batchDE', 'Batch Adjustment',
-                    c('None'=0, 'Combat'=1,'SVA'=2), 0),
+                    c('None'=0, 'Batch as Covariate'=3, 'Combat'=1,'SVA'=2), 0),
                 sliderInput('noGenes', 
                     'No. of top Differentially Expressed Genes to display', 
                     value=if (maxGenes>defaultTopGenesDisp) defaultTopGenesDisp 
