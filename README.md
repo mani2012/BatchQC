@@ -108,5 +108,16 @@ module load R/R-3.3.0
 
 And do something like the following
 ```r
-install.packages("devtools", repos="http://cran.r-project.org", lib="/my_own_local_directory/R_libs")
+install.packages("devtools", repos="http://cran.r-project.org", 
+lib="/my_own_local_directory/R_libs")
 ```
+
+If you get an error "X11 font -adobe-helvetica-%s-%s-*-*-%d-*-*-*-*-*-*-*, 
+face 1 at size 6 could not be loaded" in your browser, when you view
+some plots, this could be due to a missing fonts setup in the OS.
+This issue has been discussed at the following link:
+http://goo.gl/ukQXMI
+
+The fonts installed can be found by typing the command ‘xlsfonts’ from bash and 
+installing (or re-installing) xorg-x11-fonts for 75 and 100 dpi as mentioned
+in the link above could do the trick to resolve this issue.
