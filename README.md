@@ -8,7 +8,7 @@ that streamlines batch preprocessing and evaluation by providing interactive
 diagnostics, visualizations, and statistical analyses to explore the extent to 
 which batch variation impacts the data. BatchQC diagnostics help determine 
 whether batch adjustment needs to be done, and how correction should be applied 
-before proceeding with a downstream analysis. Moreover, BatchQCvinteractively 
+before proceeding with a downstream analysis. Moreover, BatchQC interactively 
 applies multiple common batch effect approaches to the data, and the user can 
 quickly see the benefits of each method. BatchQC is developed as a Shiny App. 
 The output is organized into multiple tabs, and each tab features an important 
