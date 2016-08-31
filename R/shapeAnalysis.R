@@ -191,7 +191,8 @@ delta_f.pvalue <- function(dat, mod, mod0) {
     r2_reduced <- 1 - rss0/rss00
     
     #delta <- (apply(dat, 1, mean) * 0.01)^2
-    delta <- 0
+    delta <- n * (apply(dat, 1, mean) * 0.05)^2
+    #delta <- 0
     p <- 1
     if (df1 > df0)  {
         fstats <- ((rss0 - rss1)/(df1 - df0))/(delta + rss1/(n - df1))
