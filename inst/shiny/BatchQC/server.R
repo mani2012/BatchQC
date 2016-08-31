@@ -887,7 +887,8 @@ shinyServer(function(input, output, session) {
             package = "BatchQC")
         # dat <- as.matrix(combat_data)
         outputfile <- rmarkdown::render(rmdfile, output_file = 
-            "combat_batchqc_report.html", output_dir = shinyInput$report_dir)
+            "combat_batchqc_report.html", output_dir = shinyInput$report_dir,
+            clean=FALSE)
         shinyInput <- getShinyInput()
         setShinyInputCombat(shinyInput)
         outText
@@ -951,7 +952,7 @@ shinyServer(function(input, output, session) {
                 # dat <- as.matrix(svaf_data)
                 outputfile <- rmarkdown::render(rmdfile, output_file = 
                     "svaf_batchqc_report.html", output_dir = 
-                    shinyInput$report_dir)
+                    shinyInput$report_dir, clean=FALSE)
                 shinyInput <- getShinyInput()
                 setShinyInput(shinyInput)
                 setShinyInputSVAf(shinyInput)
@@ -986,7 +987,7 @@ shinyServer(function(input, output, session) {
                 # dat <- as.matrix(svar_data)
                 outputfile <- rmarkdown::render(rmdfile, output_file = 
                     "svar_batchqc_report.html", output_dir = 
-                    shinyInput$report_dir)
+                    shinyInput$report_dir, clean=FALSE)
                 shinyInput <- getShinyInput()
                 setShinyInput(shinyInput)
                 setShinyInputSVAr(shinyInput)

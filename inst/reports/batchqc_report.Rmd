@@ -353,6 +353,13 @@ if (ncond <= 1)  {
 } else  {
     modmatrix = model.matrix(~as.factor(condition), data = pdata)
 }
-n.sv <- batchQC_num.sv(shinyInput$lcounts, modmatrix)
+n.sv <- tryCatch({
+    batchQC_num.sv(shinyInput$lcounts, modmatrix)
+}, error = function(err) {
+    warning("Error in BatchQC num.sv surrogate variables compution: ",err)
+    return(NULL)
+})
+if (!is.null(n.sv))  {
 cat(paste("Number of Surrogate Variables found in the given data:", n.sv))
+}
 ```
