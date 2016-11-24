@@ -47,8 +47,8 @@ shinyServer(function(input, output, session) {
             simplify = TRUE)
         rownames(countsmatrix) <- sapply(rownames(countsmatrix), catcondition, 
             simplify = TRUE)
-        countsmatrix
-    })
+        as.data.frame.matrix(countsmatrix)
+    }, rownames = TRUE, colnames = TRUE)
     output$ConfoundTable <- renderTable({
         counts = table(condition, batch)
         rowsums = apply(counts, 1, sum)
@@ -71,7 +71,7 @@ shinyServer(function(input, output, session) {
         rownames(confound) <- c(
         "Confounding Coefficients (0=no confounding, 1=complete confounding)")
         confound
-    })
+    }, rownames = TRUE, colnames = TRUE)
     
     # Variation Analysis
     output$VariationTable <- renderTable({
@@ -100,7 +100,7 @@ shinyServer(function(input, output, session) {
         batchqc_ev <- batchqc_explained_variation(shinyInput$lcounts, condition,
             batch)
         batchqc_ev$explained_variation[1:input$noGenesVA,]
-    })
+    }, rownames = TRUE, colnames = TRUE)
     # Variation plots
     output$VariationPlot <- renderPlot({
         if (input$batchVA == 1) {
@@ -159,7 +159,7 @@ shinyServer(function(input, output, session) {
             `Condition P-values` = c(summary(cond_ps), 
             `Ps<0.05` = mean(cond_ps <= 0.05)))
         pvalue_table
-    })
+    }, rownames = TRUE, colnames = TRUE)
     # P-Value plots
     output$BatchPvaluePlot <- renderPlot({
         if (input$batchVA == 1) {
@@ -317,7 +317,7 @@ shinyServer(function(input, output, session) {
     # interactive PCA table
     output$PCAtable <- renderTable({
         PCA()
-    })
+    }, rownames = TRUE, colnames = TRUE)
     
     output$PCAExplainedVariation <- renderTable({
         PCA()
@@ -327,7 +327,7 @@ shinyServer(function(input, output, session) {
         explained_variation <- batchqc_pc_explained_variation(pcs, 
             shinyInput$vars, condition, batch)
         explained_variation
-    })
+    }, rownames = TRUE, colnames = TRUE)
     
     # interactive boxplot
     BP <- reactive({
@@ -555,8 +555,8 @@ shinyServer(function(input, output, session) {
             }
         }
         limmaTable
-    })
-    
+    }, rownames = TRUE)
+
     # interactive scatter plot
     output$outliers <- renderPlot({
         if (input$batchMC == 1) {
