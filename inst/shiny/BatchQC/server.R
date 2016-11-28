@@ -4,6 +4,7 @@ library(ggvis)
 library(d3heatmap)
 library(reshape2)
 library(limma)
+library(Matrix)
 library(sva)
 # library(HTShape)
 library(BatchQC)
@@ -556,7 +557,59 @@ shinyServer(function(input, output, session) {
         }
         limmaTable
     }, rownames = TRUE)
-
+    
+    output$LimmaCTable <- renderTable({
+        if (input$batchDE == 1) {
+            if (is.null(getShinyInputCombat())) {
+                session$sendCustomMessage(type = "testmessage", message = 
+                    "First run ComBat from the ComBat tab")
+                updateRadioButtons(session, "batchDE", choices = list(None = 0, 
+                    'Batch as Covariate'=3, Combat = 1, SVA = 2), selected = 0)
+            } else {
+                setInputs(1)
+            }
+        } else if (input$batchDE == 2) {
+            if (is.null(getShinyInputSVA())) {
+                session$sendCustomMessage(type = "testmessage", message = 
+                    "First run SVA from the SVA tab")
+                updateRadioButtons(session, "batchDE", choices = list(None = 0, 
+                    'Batch as Covariate'=3, Combat = 1, SVA = 2), selected = 0)
+            } else {
+                setInputs(2)
+            }
+        } else {
+            setInputs(0)
+        }
+        shinyInput <- getShinyInput()
+        pdata <- data.frame(batch, condition)
+        ncond <- nlevels(as.factor(condition))
+        nbatch <- nlevels(as.factor(batch))
+        limmaCTable <- NULL
+        if (ncond > 1)  {
+            cormat <- cor(shinyInput$data)
+            ncormat <- nearPD(cormat)$mat
+            #corvector <- cormat[lower.tri(cormat)]
+            mod <- model.matrix(~as.factor(condition), data = pdata)
+            #fit <- gls(data=shinyInput$data, model=mod, corr=corSymm(corVector))
+            #fit <- lmFit(shinyInput$lcounts, mod) 
+            #fit <- lmFit(shinyInput$lcounts, mod, 
+            #    correlation=corSymm(corVector))
+            #dupcor <- duplicateCorrelation(shinyInput$lcounts,mod,block=batch)
+            #dupcor <- duplicateCorrelation(shinyInput$lcounts,mod)
+            #fit <- lmFit(shinyInput$lcounts, mod, correlation=
+            #    dupcor$consensus.correlation)
+            fit <- lmFitC(shinyInput$lcounts, mod, cormatrix=ncormat) 
+            fit2 <- eBayes(fit)
+            ncond <- nlevels(as.factor(condition))
+            limmaCTable <- topTable(fit2, coef = 2:ncond, number = input$noGenes)
+            for (j in 2:ncond)  {
+                colnames(limmaCTable)[j-1] <- paste("Condition: ", 
+                levels(as.factor(condition))[j], " (logFC)", sep='')
+            }
+        }
+        limmaCTable
+    }, rownames = TRUE)
+    
     # interactive scatter plot
     output$outliers <- renderPlot({
         if (input$batchMC == 1) {
