@@ -147,6 +147,7 @@ batchQC_analyze <- function(data.matrix, batch, mod = NULL) {
 #' @importFrom utils browseURL
 #' @importFrom shiny runApp
 #' @importFrom methods new
+#' @importFrom Matrix nearPD
 #' @export
 #' @examples
 #' nbatch <- 3

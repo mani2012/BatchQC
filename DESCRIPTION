@@ -1,8 +1,8 @@
 Package: BatchQC
 Type: Package
 Title: Batch Effects Quality Control Software
-Version: 1.3.1
-Date: 2016-11-23
+Version: 1.3.2
+Date: 2016-11-28
 Maintainer: Solaiappan Manimaran <manimaran_1975@hotmail.com>
 Description: Sequencing and microarray samples often are collected or
         processed in multiple batches or at different times. This often
@@ -34,11 +34,11 @@ License: GPL (>= 2)
 Depends: R (>= 3.3.0)
 Collate: 'simulate_data.R' 'heatmap.R' 'pca.R' 'batchtest.R'
         'batchQC.R' 'correlation.R' 'utils.R' 'sva.R' 'Circos.R'
-        'shapeAnalysis.R'
+        'shapeAnalysis.R' 'lmfitC.R'
 Suggests: testthat
 Imports: utils, rmarkdown, knitr, pander, gplots, MCMCpack, shiny, sva,
         corpcor, moments, matrixStats, ggvis, d3heatmap, reshape2,
-        limma, grDevices, graphics, stats, methods
+        limma, grDevices, graphics, stats, methods, Matrix
 biocViews: BatchEffect, GraphAndNetwork, Microarray,
         PrincipalComponent, Sequencing, Software, Visualization,
         QualityControl, RNASeq, Preprocessing, DifferentialExpression
