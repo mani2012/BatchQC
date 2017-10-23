@@ -31,8 +31,13 @@ batchqc_pca <- function(data.matrix, batch, mod = NULL) {
     if (!is.null(mod)) {
         # print ('Need to implement this part') do something here
     }
-    pca <- prcomp(t(data.matrix), retx = TRUE, center = TRUE, 
-        scale = TRUE)
+    pca <- tryCatch({
+        prcomp(t(data.matrix), retx = TRUE, center = TRUE, 
+            scale = TRUE)
+    }, error = function(err) {
+        prcomp(t(data.matrix), retx = TRUE, center = TRUE, 
+            scale = FALSE)
+    })
     pc <- pca$x
     xlab <- "Principal Component PC1"
     ylab <- "Principal Component PC2"
