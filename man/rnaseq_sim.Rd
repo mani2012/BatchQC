@@ -46,4 +46,3 @@ rnaseq_sim(ngenes=100, nbatch=3, ncond=2, npercond=10, basemean=10000,
     ggstep=50, bbstep=20000, ccstep=8000, basedisp=100, bdispstep=10, 
     swvar=1000, seed=1234)
 }
-

@@ -31,4 +31,3 @@ data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
 batch <- rep(1:nbatch, each=ncond*npercond)
 batchQC_shapeVariation(data.matrix, groups=batch)
 }
-

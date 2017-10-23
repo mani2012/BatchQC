@@ -15,4 +15,3 @@ Getter function to get the shinyInputSVAf option
 \examples{
 getShinyInputSVAf()
 }
-

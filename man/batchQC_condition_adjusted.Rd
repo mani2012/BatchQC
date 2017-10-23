@@ -30,4 +30,3 @@ batch <- rep(1:nbatch, each=ncond*npercond)
 condition <- rep(rep(1:ncond, each=npercond), nbatch)
 batchQC_condition_adjusted(data.matrix, batch, condition)
 }
-
