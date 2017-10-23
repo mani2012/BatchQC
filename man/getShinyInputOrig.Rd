@@ -15,3 +15,4 @@ Getter function to get the shinyInputOrig option
 \examples{
 getShinyInputOrig()
 }
+

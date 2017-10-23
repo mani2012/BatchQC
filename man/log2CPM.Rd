@@ -27,3 +27,4 @@ data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
 data.matrix <- as.matrix(data.matrix)
 log2CPM(data.matrix)
 }
+

@@ -36,3 +36,4 @@ pca <- batchqc_pca(data.matrix, batch, mod=modmatrix)
 pcs <- t(data.frame(pca$x))
 batchqc_pc_explained_variation(pcs, pca$sdev^2, condition, batch)
 }
+

@@ -53,3 +53,4 @@ condition <- rep(rep(1:ncond, each=npercond), nbatch)
 batchQC(data.matrix, batch=batch, condition=condition, view_report=FALSE, 
     interactive=FALSE)
 }
+

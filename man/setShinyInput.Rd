@@ -18,3 +18,4 @@ Setter function to set the shinyInput option
 \examples{
 setShinyInput(NULL)
 }
+

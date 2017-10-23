@@ -15,3 +15,4 @@ Getter function to get the shinyInput option
 \examples{
 getShinyInput()
 }
+

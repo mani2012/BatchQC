@@ -18,3 +18,4 @@ Setter function to set the shinyInputOrig option
 \examples{
 setShinyInputOrig(NULL)
 }
+

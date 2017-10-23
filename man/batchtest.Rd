@@ -34,3 +34,4 @@ modmatrix = model.matrix(~as.factor(condition), data=pdata)
 pca <- batchqc_pca(data.matrix, batch, mod=modmatrix)
 batchtest(pca, batch, mod=modmatrix)
 }
+

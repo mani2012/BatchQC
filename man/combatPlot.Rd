@@ -53,3 +53,4 @@ pdata <- data.frame(batch, condition)
 mod = model.matrix(~as.factor(condition), data = pdata)
 combatPlot(data.matrix, batch, mod=mod)
 }
+

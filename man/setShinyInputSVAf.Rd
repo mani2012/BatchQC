@@ -18,3 +18,4 @@ Setter function to set the shinyInputSVAf option
 \examples{
 setShinyInputSVAf(NULL)
 }
+

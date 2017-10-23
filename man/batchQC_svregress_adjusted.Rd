@@ -34,3 +34,4 @@ modmatrix = model.matrix(~as.factor(condition), data=pdata)
 sva.object <- batchQC_sva(data.matrix, mod=modmatrix)
 batchQC_svregress_adjusted(data.matrix, modmatrix, sva.object)
 }
+

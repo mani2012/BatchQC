@@ -35,3 +35,4 @@ pdata <- data.frame(batch, condition)
 modmatrix = model.matrix(~as.factor(condition), data=pdata)
 batchqc_heatmap(data.matrix, batch, mod=modmatrix)
 }
+

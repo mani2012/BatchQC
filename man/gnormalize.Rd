@@ -19,3 +19,4 @@ Perform Genewise Normalization of the given data matrix
 dat <- matrix(1:10, 2)
 gnormdata <- gnormalize(dat)
 }
+
