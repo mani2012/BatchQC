@@ -6,9 +6,9 @@
 with information including whether the batch needs to be adjusted}
 \usage{
 batchQC(dat, batch, condition = NULL, report_file = "batchqc_report.html",
-    report_dir = ".", report_option_binary = "111111111",
-    view_report = FALSE, interactive = TRUE, batchqc_output = FALSE,
-    log2cpm_transform = FALSE)
+  report_dir = ".", report_option_binary = "111111111",
+  view_report = FALSE, interactive = TRUE, batchqc_output = FALSE,
+  log2cpm_transform = FALSE)
 }
 \arguments{
 \item{dat}{Given data or simulated data from rnaseq_sim()}
@@ -53,4 +53,3 @@ condition <- rep(rep(1:ncond, each=npercond), nbatch)
 batchQC(data.matrix, batch=batch, condition=condition, view_report=FALSE, 
     interactive=FALSE)
 }
-

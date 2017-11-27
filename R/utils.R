@@ -664,3 +664,153 @@ batchQC_filter_genes = function(data.matrix, batch, condition) {
     }
     return(filtered.data)
 }
+
+
+
+#' Visualize sample-wise moments
+#' 
+#' @param data Given data or simulated data from rnaseq_sim()
+#' @param batch Batch covariate 
+#' @param robust Boolean indicator of using robust (TRUE) or non-robust test (FALSE) in visualization
+#' @return Sample-wise moments
+#' @export
+#' @examples
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+#'     npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
+#'     basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' data_adjusted <- batchQC_condition_adjusted(data.matrix, batch, condition)
+#' sample_moments <- plot_samplewise_moments(data_adjusted, batch, robust=FALSE)
+plot_samplewise_moments <- function(data, batch, robust){
+  ## Sort samples by batch
+  batchorder <- order(batch)
+  sortdata <- data[, batchorder]
+  sortbatch <- batch[batchorder]
+  gnormdata <- gnormalize(sortdata)
+  
+  ## Compute sample-wise moments
+  smean <- apply(gnormdata, 2, mean)
+  svariance <- apply(gnormdata, 2, var)
+  sskew <- apply(gnormdata, 2, skewness)
+  skurt <- apply(gnormdata, 2, kurtosis)
+  sfit <- cbind(smean, svariance, sskew, skurt)
+  colnames(sfit) <- c("Mean", "Variance", "Skewness", "Kurtosis")
+  rownames(sfit) <- colnames(gnormdata)
+  
+  ## Visualize
+  par(mfrow=c(2, 2))
+  sample_plot(sfit, sortbatch, "Mean", robust)
+  sample_plot(sfit, sortbatch, "Variance", robust)
+  sample_plot(sfit, sortbatch, "Skewness", robust)
+  sample_plot(sfit, sortbatch, "Kurtosis", robust)
+  
+  return(sfit)
+}
+
+sample_plot <- function(sfit, sortbatch, moment_name, robust){
+  moment_lst <- list()
+  for(ind in 1:length(unique(sortbatch))){
+    moment_lst[[ind]] <- sfit[which(sortbatch==unique(sortbatch)[ind]), moment_name]
+  }
+  if(!identical(do.call(c, moment_lst), sfit[,moment_name])){print("ERROR!")}
+  names(moment_lst) <- unique(sortbatch)
+  
+  ps <- overallPvalue(sfit, sortbatch, robust=robust)
+  names(ps) <- c("Mean", "Variance", "Skewness", "Kurtosis")
+  
+  box_means <- sapply(moment_lst, mean)
+  box_var <- sapply(moment_lst, var)
+  
+  par(xpd=T, mar=par()$mar+c(0,1,0,1))
+  r_max = max(sapply(moment_lst, max))
+  r_min = min(sapply(moment_lst, min))
+  boxplot(moment_lst, ylab="Moment Estimates", xlab="Batch", 
+          main=paste("Sample-wise", moment_name, "P =", 
+                     round(ps,4)[moment_name]))
+  points(box_means,col="red", pch=18)
+  text(x=1:nlevels(factor(batch)),
+       y=rep(r_max+abs(r_max-r_min)/10, nlevels(factor(batch))), 
+       labels=paste(round(box_means,3), '(', round(box_var, 3),')'))
+  par(mar=c(5, 4, 4, 2) + 0.1)
+}
+
+# sample_plot_bar <- function(sfit, sortbatch, moment_name){
+#   
+# }
+
+#' Visualize gene-wise moments
+#' 
+#' @param data Given data or simulated data from rnaseq_sim()
+#' @param batch Batch covariate 
+#' @param robust Boolean indicator of using robust (TRUE) or non-robust test (FALSE) in visualization
+#' @return Gene-wise moments
+#' @export
+#' @examples
+#' nbatch <- 3
+#' ncond <- 2
+#' npercond <- 10
+#' data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
+#'     npercond, basemean=10000, ggstep=50, bbstep=2000, ccstep=800, 
+#'     basedisp=100, bdispstep=-10, swvar=1000, seed=1234)
+#' batch <- rep(1:nbatch, each=ncond*npercond)
+#' condition <- rep(rep(1:ncond, each=npercond), nbatch)
+#' data_adjusted <- batchQC_condition_adjusted(data.matrix, batch, condition)
+#' gene_moments <- plot_genewise_moments(data_adjusted, batch, robust=FALSE)
+plot_genewise_moments <- function(data, batch, robust){
+  ## Sort samples by batch
+  batchorder <- order(batch)
+  sortdata <- data[, batchorder]
+  sortbatch <- batch[batchorder]
+  gnormdata <- gnormalize(sortdata)
+  
+  ## Compute gene-wise moments
+  par(mfrow=c(2, 2))
+  mean_res <- gene_plot(gnormdata, sortbatch, "Mean", robust=robust)
+  var_res <- gene_plot(gnormdata, sortbatch, "Variance", robust=robust)  
+  skew_res <- gene_plot(gnormdata, sortbatch, "Skewness", robust=robust)  
+  kurt_res <- gene_plot(gnormdata, sortbatch, "Kurtosis", robust=robust)  
+  
+  return(list(mean=mean_res, var=var_res, skew=skew_res, kurt=kurt_res))  
+}
+
+gene_plot <- function(dat, sortbatch, moment_name, robust){
+  if(moment_name=="Mean"){
+    func_name <- mean
+  }else if(moment_name=="Variance"){
+    func_name <- var
+  }else if(moment_name=="Skewness"){
+    func_name <- skewness
+  }else if(moment_name=="Kurtosis"){
+    func_name <- kurtosis
+  }
+  
+  ps_gene <- batchEffectPvalue(dat, batch=sortbatch, robust=robust)
+  names(ps_gene) <- c("Mean", "Variance", "Skewness", "Kurtosis")
+  
+  moment_lst <- list()
+  for(ind in 1:length(unique(sortbatch))){
+    moment_lst[[ind]] <- apply(dat[, which(sortbatch==unique(sortbatch)[ind])], 1, func_name)
+  } #sapply(moment_lst, length)
+  names(moment_lst) <- unique(sortbatch)
+  
+  box_means <- sapply(moment_lst, mean)
+  box_var <- sapply(moment_lst, var)
+  
+  par(xpd=T, mar=par()$mar+c(0,1,0,1))
+  r_max = max(sapply(moment_lst, max))
+  r_min = min(sapply(moment_lst, min))
+  boxplot(moment_lst, ylab="Moment Estimates", xlab="Batch", 
+          main=paste("Gene-wise", moment_name, "P =", 
+                     round(ps_gene, 4)[moment_name]))
+  points(box_means,col="red", pch=18)
+  text(x=1:nlevels(factor(batch)),
+       y=rep(r_max+abs(r_max-r_min)/10, nlevels(factor(batch))), 
+       labels=paste(round(box_means,3), '(', round(box_var, 3),')'))
+  par(mar=c(5, 4, 4, 2) + 0.1)
+  
+  return(do.call(cbind, moment_lst))
+}  

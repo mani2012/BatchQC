@@ -15,4 +15,3 @@ returns a list of svd components v and d
 \description{
 Compute singular value decomposition
 }
-

@@ -193,31 +193,35 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
         )
     ),
     tabPanel("Shape",
-        sidebarLayout(
-            sidebarPanel(
-                radioButtons('batchShape', 'Batch Adjustment',
-                    c('None'=0, 'Combat'=1,'SVA'=2), 0),
-                width=3
-            ),
-            mainPanel(
-                tabsetPanel(
-                    tabPanel("Batch Variation", plotOutput("BatchMeanVar"), 
-                        br(),
-                        h4(paste("Note: Sample-wise p-value is calculated for ",
-                        "the variation across samples on the measure",
-                        "across genes. Gene-wise p-value is calculated for the",
-                        "variation of each gene between batches on the ",
-                        "measure across each batch. If the data is quantum ", 
-                        "normalized, then the Sample-wise measure across",
-                        "genes is same for all samples and Gene-wise p-value",
-                        "is a good measure.", 
-                        sep=" "))
-                    )
-                    # tabPanel("Manova", plotOutput("Manova")),
-                    # tabPanel("SO Plot", plotOutput("SOplot"))
-                ), width=9
-            )
-        )
+             sidebarLayout(
+               sidebarPanel(
+                 radioButtons('batchShape', 'Batch Adjustment',
+                              c('None'=0, 'Combat'=1,'SVA'=2), 0),
+                 checkboxInput('robustSample', 'Robust Sample Test', FALSE),
+                 checkboxInput('robustGene', 'Robust Gene Test', FALSE),
+                 width=3
+               ),
+               mainPanel(
+                 tabsetPanel(
+                   tabPanel("Batch Variation", plotOutput("BatchMeanVar"), 
+                            br(),
+                            h4(paste("Note: Sample-wise p-value is calculated for ",
+                                     "the variation across samples on the measure",
+                                     "across genes. Gene-wise p-value is calculated for the",
+                                     "variation of each gene between batches on the ",
+                                     "measure across each batch. If the data is quantum ", 
+                                     "normalized, then the Sample-wise measure across",
+                                     "genes is same for all samples and Gene-wise p-value",
+                                     "is a good measure.", 
+                                     sep=" "))
+                   ),
+                   # tabPanel("Manova", plotOutput("Manova")),
+                   # tabPanel("SO Plot", plotOutput("SOplot"))
+                   tabPanel("Sample-wise Moments", plotOutput("SamplewiseMoments"), br()),
+                   tabPanel("Gene-wise Moments", plotOutput("GenewiseMoments"), br())
+                 ), width=9
+               )
+             )
     ),
     tabPanel("ComBat",
         sidebarLayout(
