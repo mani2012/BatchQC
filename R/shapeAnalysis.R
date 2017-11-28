@@ -4,6 +4,8 @@
 #' @param groups a character vector indicating sample group membership
 #' @param plot Indicate whether to generate plot
 #' @param groupCol group color
+#' @param robustSample Indicate whether to use robust sample-wise test
+#' @param robustGene Indicate whether to use robust gene-wise test
 #' @return Mean and Variance batch variation Overall and Pairwise p-values
 #' @import gplots moments
 #' @export
@@ -17,7 +19,7 @@
 #' batch <- rep(1:nbatch, each=ncond*npercond)
 #' batchQC_shapeVariation(data.matrix, groups=batch)
 batchQC_shapeVariation = function(data, groups, plot = FALSE, 
-    groupCol = NULL) {
+    groupCol = NULL, robustSample = FALSE, robustGene = FALSE) {
     
     groupsorder <- order(groups)
     sortdata <- data[,groupsorder]
@@ -27,9 +29,9 @@ batchQC_shapeVariation = function(data, groups, plot = FALSE,
     #Y = fitMoments(sortdata)
     Y = fitMoments(gnormdata)
     
-    ps <- overallPvalue(Y, sortgroups)
+    ps <- overallPvalue(Y, sortgroups, robust=robustSample)
     #batch_ps <- batchEffectPvalue(sortdata, sortgroups)
-    batch_ps <- batchEffectPvalue(gnormdata, sortgroups)
+    batch_ps <- batchEffectPvalue(gnormdata, sortgroups, robust=robustGene)
     
     mpval = ps[1]
     vpval = ps[2]
@@ -130,7 +132,7 @@ gnormalize <- function(dat) {
     return(gnormdata)
 }
 
-overallPvalue <- function(Y, groups) {
+overallPvalue <- function(Y, groups, robust) {
     n <- dim(Y)[1]
     ngroups <- nlevels(as.factor(groups))
     if (ngroups <= 1)  {
@@ -153,15 +155,20 @@ overallPvalue <- function(Y, groups) {
         # residuals reduced model
     rss0 <- rowSums(resid0 * resid0)  ## SSE reduced model
     
-    #delta <- (apply(t(Y), 1, mean) * 0.01)^2
-    delta <- 0
+    if(robust){
+      delta <- n * (apply(t(Y), 1, mean) * 0.05)^2
+      #delta <- (apply(t(Y), 1, mean) * 0.01)^2
+    }else{
+      delta <- 0
+    }
+    
     Fstat = ((rss0 - rss1)/(df1 - df0))/(delta + rss1/(n - df1))
     # Compute p-value
     ps = 1 - pf(Fstat, df1 - df0, n - df1)
     return(ps)
 }
 
-delta_f.pvalue <- function(dat, mod, mod0) {
+delta_f.pvalue <- function(dat, mod, mod0, robust) {
     ## F-test (full/reduced model) and returns R2 values
     ## (full/reduced) as well.
     mod00 <- matrix(rep(1, ncol(dat)), ncol = 1)
@@ -190,9 +197,13 @@ delta_f.pvalue <- function(dat, mod, mod0) {
     r2_full <- 1 - rss1/rss00
     r2_reduced <- 1 - rss0/rss00
     
-    #delta <- (apply(dat, 1, mean) * 0.01)^2
-    delta <- n * (apply(dat, 1, mean) * 0.05)^2
-    #delta <- 0
+    if(robust){
+      #delta <- (apply(dat, 1, mean) * 0.01)^2
+      delta <- n * (apply(dat, 1, mean) * 0.05)^2
+    }else{
+      delta <- 0
+    }
+    
     p <- 1
     if (df1 > df0)  {
         fstats <- ((rss0 - rss1)/(df1 - df0))/(delta + rss1/(n - df1))
@@ -201,7 +212,7 @@ delta_f.pvalue <- function(dat, mod, mod0) {
     return(list(p = p, r2_full = r2_full, r2_reduced = r2_reduced))
 }
 
-batchEffectPvalue <- function(data, batch) {
+batchEffectPvalue <- function(data, batch, robust) {
     nbatch <- nlevels(as.factor(batch))
     if (nbatch <= 1)  {
         batch_ps <- rep(1, 4)
@@ -230,7 +241,7 @@ batchEffectPvalue <- function(data, batch) {
     mod00 <- model.matrix(~1, data=pdata)
         # reduced model for batch adjusted data
     #batch_test <- delta_f.pvalue(batcheffectmatrix, mod, genes_mod)
-    batch_test <- delta_f.pvalue(batcheffectmatrix, batch_mod, mod00)
+    batch_test <- delta_f.pvalue(batcheffectmatrix, batch_mod, mod00, robust=robust)
     batch_ps <- batch_test$p
     return(batch_ps)
 } 

@@ -19,4 +19,3 @@ a plot
 \description{
 Plot first 2 principal components
 }
-

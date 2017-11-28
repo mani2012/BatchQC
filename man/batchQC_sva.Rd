@@ -33,4 +33,3 @@ pdata <- data.frame(batch, condition)
 modmatrix = model.matrix(~as.factor(condition), data=pdata)
 batchQC_sva(data.matrix, modmatrix)
 }
-

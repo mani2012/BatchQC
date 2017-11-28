@@ -2,9 +2,10 @@
 % Please edit documentation in R/batchQC.R
 \docType{data}
 \name{protein_example_data}
-\alias{protein_data}
 \alias{protein_example_data}
 \alias{protein_sample_info}
+\alias{protein_example_data}
+\alias{protein_data}
 \title{Batch and Condition indicator for protein expression data}
 \format{A data frame with 24 rows and 4 variables:
 \describe{
@@ -31,4 +32,3 @@ This data consists of two batches and two conditions
 corresponding to case and control
 }
 \keyword{datasets}
-

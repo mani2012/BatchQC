@@ -805,9 +805,67 @@ shinyServer(function(input, output, session) {
         lcounts <- shinyInput$lcounts
         lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
         bf <- as.factor(shinyInput$batch)
-        batchQC_shapeVariation(lcounts_adj, batch, plot = TRUE, groupCol = 
-            rainbow(nlevels(bf))[bf])
+        batchQC_shapeVariation(lcounts_adj, batch, plot = TRUE, groupCol = rainbow(nlevels(bf))[bf], 
+                               robustSample=input$robustSample, robustGene=input$robustGene)
     })
+    
+    # Visualize sample-wise moments 
+    output$SamplewiseMoments <- renderPlot({
+      if (input$batchShape == 1) {
+        if (is.null(getShinyInputCombat())) {
+          session$sendCustomMessage(type = "testmessage", message = 
+                                      "First run ComBat from the ComBat tab")
+          updateRadioButtons(session, "batchShape", choices = list(
+            None = 0, Combat = 1, SVA = 2), selected = 0)
+        } else {
+          setInputs(1)
+        }
+      } else if (input$batchShape == 2) {
+        if (is.null(getShinyInputSVA())) {
+          session$sendCustomMessage(type = "testmessage", message = 
+                                      "First run SVA from the SVA tab")
+          updateRadioButtons(session, "batchShape", choices = list(
+            None = 0, Combat = 1, SVA = 2), selected = 0)
+        } else {
+          setInputs(2)
+        }
+      } else {
+        setInputs(0)
+      }
+      shinyInput <- getShinyInput()
+      lcounts <- shinyInput$lcounts
+      lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
+      plot_samplewise_moments(lcounts_adj, batch, robust=input$robustSample)
+    }, height=525)
+    
+    # Visualize gene-wise moments
+    output$GenewiseMoments <- renderPlot({
+      if (input$batchShape == 1) {
+        if (is.null(getShinyInputCombat())) {
+          session$sendCustomMessage(type = "testmessage", message = 
+                                      "First run ComBat from the ComBat tab")
+          updateRadioButtons(session, "batchShape", choices = list(
+            None = 0, Combat = 1, SVA = 2), selected = 0)
+        } else {
+          setInputs(1)
+        }
+      } else if (input$batchShape == 2) {
+        if (is.null(getShinyInputSVA())) {
+          session$sendCustomMessage(type = "testmessage", message = 
+                                      "First run SVA from the SVA tab")
+          updateRadioButtons(session, "batchShape", choices = list(
+            None = 0, Combat = 1, SVA = 2), selected = 0)
+        } else {
+          setInputs(2)
+        }
+      } else {
+        setInputs(0)
+      }
+      shinyInput <- getShinyInput()
+      lcounts <- shinyInput$lcounts
+      lcounts_adj <- batchQC_condition_adjusted(lcounts, batch, condition)
+      plot_genewise_moments(lcounts_adj, batch, robust=input$robustGene)
+    }, height=525)
     
     # interactive density plots
     output$densityQQPlots <- renderPlot({

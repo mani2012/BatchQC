@@ -4,7 +4,8 @@
 \alias{batchQC_shapeVariation}
 \title{Perform Mean and Variance batch variation analysis}
 \usage{
-batchQC_shapeVariation(data, groups, plot = FALSE, groupCol = NULL)
+batchQC_shapeVariation(data, groups, plot = FALSE, groupCol = NULL,
+  robustSample = FALSE, robustGene = FALSE)
 }
 \arguments{
 \item{data}{Given data}
@@ -14,6 +15,10 @@ batchQC_shapeVariation(data, groups, plot = FALSE, groupCol = NULL)
 \item{plot}{Indicate whether to generate plot}
 
 \item{groupCol}{group color}
+
+\item{robustSample}{Indicate whether to use robust sample-wise test}
+
+\item{robustGene}{Indicate whether to use robust gene-wise test}
 }
 \value{
 Mean and Variance batch variation Overall and Pairwise p-values
@@ -31,4 +36,3 @@ data.matrix <- rnaseq_sim(ngenes=50, nbatch=nbatch, ncond=ncond, npercond=
 batch <- rep(1:nbatch, each=ncond*npercond)
 batchQC_shapeVariation(data.matrix, groups=batch)
 }
-
