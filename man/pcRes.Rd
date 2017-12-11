@@ -24,4 +24,3 @@ batch.R-sqrd
 Compute variance of each principal component and how they correlate with 
 batch and cond
 }
-

@@ -18,4 +18,3 @@ Setter function to set the shinyInputSVAr option
 \examples{
 setShinyInputSVAr(NULL)
 }
-

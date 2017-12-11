@@ -2,6 +2,7 @@
 % Please edit documentation in R/batchQC.R
 \docType{data}
 \name{example_batchqc_data}
+\alias{example_batchqc_data}
 \alias{batch_indicator}
 \alias{example_batchqc_data}
 \alias{signature_data}
@@ -35,4 +36,3 @@ This data consists of three batches and ten different conditions
 corresponding to control and nine different pathways
 }
 \keyword{datasets}
-

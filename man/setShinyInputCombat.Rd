@@ -18,4 +18,3 @@ Setter function to set the shinyInputCombat option
 \examples{
 setShinyInputCombat(NULL)
 }
-
