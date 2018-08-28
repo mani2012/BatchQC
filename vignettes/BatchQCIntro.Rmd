@@ -48,8 +48,9 @@ run the following to automatically install BatchQC and all the dependencies,
 except pandoc, which you have to manually install as follows.
 
 ```r
-source("http://bioconductor.org/biocLite.R")
-biocLite("BatchQC")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("BatchQC")
 ```
 Install 'pandoc' package by following the instructions at the following URL:
 http://pandoc.org/installing.html
