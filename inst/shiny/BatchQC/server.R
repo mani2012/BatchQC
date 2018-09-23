@@ -281,6 +281,9 @@ shinyServer(function(input, output, session) {
             all_values <- function(x) {
                 if (is.null(x)) 
                     return(NULL)
+                shinyInput <- getShinyInput()
+                pc <- shinyInput$pc
+                pc$id <- 1:nrow(pc)
                 row <- pc[pc$id == x$id, ]
                 paste0(paste0("PC", xcol()), ": ", signif(with(row, 
                     get(names(row)[xcol()])), 3), "<br>", 
