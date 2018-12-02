@@ -1,8 +1,8 @@
 Package: BatchQC
 Type: Package
 Title: Batch Effects Quality Control Software
-Version: 1.10.0
-Date: 2018-09-22
+Version: 1.10.1
+Date: 2018-12-01
 Maintainer: Solaiappan Manimaran <manimaran_1975@hotmail.com>
 Description: Sequencing and microarray samples often are collected or
         processed in multiple batches or at different times. This often
@@ -41,7 +41,8 @@ Imports: utils, rmarkdown, knitr, pander, gplots, MCMCpack, shiny, sva,
         limma, grDevices, graphics, stats, methods, Matrix
 biocViews: BatchEffect, GraphAndNetwork, Microarray,
         PrincipalComponent, Sequencing, Software, Visualization,
-        QualityControl, RNASeq, Preprocessing, DifferentialExpression
+        QualityControl, RNASeq, Preprocessing, DifferentialExpression,
+        ImmunoOncology
 SystemRequirements: pandoc (http://pandoc.org/installing.html) for
         generating reports from markdown files.
 VignetteBuilder: knitr
