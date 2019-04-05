@@ -77,30 +77,30 @@ n.sv=batchQC_num.sv(data.matrix,modmatrix)
 combat_data.matrix = ComBat(dat=data.matrix, batch=batch, mod=modmatrix)
 #combat_data.matrix.eh = ComBat(dat=data.matrix.eh, batch=batch, mod=modmatrix)
 
-sva.object=batchQC_sva(data.matrix, modmatrix)
-#sva.object.eh=batchQC_sva(data.matrix.eh, modmatrix)
-
-## Plot the surrogate variables by batch and the unmodeled factor
-
-par(mfrow=c(1,2))
-if (sva.object$n.sv > 1)  {
-    for(i in 1:sva.object$n.sv){
-        boxplot(sva.object$sv[,i]~unmodeled.factor.indicator,xlab=
-            "Unmodeled Factor ",ylab=paste("Surrogate Variable",i,sep=" "),main=
-            "Simulated Data ")
-        boxplot(sva.object$sv[,i]~batch,xlab="Batch",ylab=paste(
-            "Surrogate Variable",i,sep=" "),main="Simulated Data")
-    }
-} else  {
-    boxplot(sva.object$sv~unmodeled.factor.indicator,xlab=
-        "Unmodeled Factor ",ylab=paste("Surrogate Variable",1,sep=" "),main=
-        "Simulated Data ")
-    boxplot(sva.object$sv~batch,xlab="Batch",ylab=paste(
-        "Surrogate Variable",1,sep=" "),main="Simulated Data")
-}
-
-pprob.gam=sva.object$pprob.gam ##prob each gene is affected by EH
-index.p.batch.8=which(pprob.gam>=.8)
+# sva.object=batchQC_sva(data.matrix, modmatrix)
+# #sva.object.eh=batchQC_sva(data.matrix.eh, modmatrix)
+# 
+# ## Plot the surrogate variables by batch and the unmodeled factor
+# 
+# par(mfrow=c(1,2))
+# if (sva.object$n.sv > 1)  {
+#     for(i in 1:sva.object$n.sv){
+#         boxplot(sva.object$sv[,i]~unmodeled.factor.indicator,xlab=
+#             "Unmodeled Factor ",ylab=paste("Surrogate Variable",i,sep=" "),main=
+#             "Simulated Data ")
+#         boxplot(sva.object$sv[,i]~batch,xlab="Batch",ylab=paste(
+#             "Surrogate Variable",i,sep=" "),main="Simulated Data")
+#     }
+# } else  {
+#     boxplot(sva.object$sv~unmodeled.factor.indicator,xlab=
+#         "Unmodeled Factor ",ylab=paste("Surrogate Variable",1,sep=" "),main=
+#         "Simulated Data ")
+#     boxplot(sva.object$sv~batch,xlab="Batch",ylab=paste(
+#         "Surrogate Variable",1,sep=" "),main="Simulated Data")
+# }
+# 
+# pprob.gam=sva.object$pprob.gam ##prob each gene is affected by EH
+# index.p.batch.8=which(pprob.gam>=.8)
 
 par(mfrow=c(1,1))
 ### Look at heatmap for genes just affected by EH
@@ -184,29 +184,29 @@ n.sv.eh=batchQC_num.sv(data.matrix.eh,modmatrix)
 
 combat_data.matrix.eh = ComBat(dat=data.matrix.eh, batch=batch, mod=modmatrix)
 
-sva.object.eh=batchQC_sva(data.matrix.eh, modmatrix)
-
-par(mfrow=c(1,2))
-if (sva.object.eh$n.sv > 1)  {
-    for(i in 1:sva.object.eh$n.sv){
-        boxplot(sva.object.eh$sv[,i]~unmodeled.factor.indicator,xlab=
-            "Unmodeled Factor ",ylab=paste("Surrogate Variable",i,sep=" "),main=
-            "Simulated Data with EH")
-    
-        boxplot(sva.object.eh$sv[,i]~batch,xlab="Batch",ylab=paste(
-            "Surrogate Variable",i,sep=" "),main="Simulated Data with EH")
-    }
-} else  {
-    boxplot(sva.object.eh$sv~unmodeled.factor.indicator,xlab=
-        "Unmodeled Factor ",ylab=paste("Surrogate Variable",1,sep=" "),main=
-        "Simulated Data with EH")
-
-    boxplot(sva.object.eh$sv~batch,xlab="Batch",ylab=paste(
-        "Surrogate Variable",1,sep=" "),main="Simulated Data with EH")
-}
-
-pprob.gam.eh=sva.object.eh$pprob.gam ##prob each gene is affected by EH
-index.p.batch.8.eh=which(pprob.gam.eh>=.8)
+# sva.object.eh=batchQC_sva(data.matrix.eh, modmatrix)
+# 
+# par(mfrow=c(1,2))
+# if (sva.object.eh$n.sv > 1)  {
+#     for(i in 1:sva.object.eh$n.sv){
+#         boxplot(sva.object.eh$sv[,i]~unmodeled.factor.indicator,xlab=
+#             "Unmodeled Factor ",ylab=paste("Surrogate Variable",i,sep=" "),main=
+#             "Simulated Data with EH")
+#     
+#         boxplot(sva.object.eh$sv[,i]~batch,xlab="Batch",ylab=paste(
+#             "Surrogate Variable",i,sep=" "),main="Simulated Data with EH")
+#     }
+# } else  {
+#     boxplot(sva.object.eh$sv~unmodeled.factor.indicator,xlab=
+#         "Unmodeled Factor ",ylab=paste("Surrogate Variable",1,sep=" "),main=
+#         "Simulated Data with EH")
+# 
+#     boxplot(sva.object.eh$sv~batch,xlab="Batch",ylab=paste(
+#         "Surrogate Variable",1,sep=" "),main="Simulated Data with EH")
+# }
+# 
+# pprob.gam.eh=sva.object.eh$pprob.gam ##prob each gene is affected by EH
+# index.p.batch.8.eh=which(pprob.gam.eh>=.8)
 
 ### Look at heatmap for genes just affected by EH
 par(mfrow=c(1,1))
