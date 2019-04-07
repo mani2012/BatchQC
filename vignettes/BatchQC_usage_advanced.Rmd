@@ -101,10 +101,10 @@ combat_data.matrix = ComBat(dat=data.matrix, batch=batch, mod=modmatrix)
 # 
 # pprob.gam=sva.object$pprob.gam ##prob each gene is affected by EH
 # index.p.batch.8=which(pprob.gam>=.8)
-
-par(mfrow=c(1,1))
-### Look at heatmap for genes just affected by EH
-heatmap=batchqc_heatmap(data.matrix[index.p.batch.8,], batch, mod=modmatrix)
+# 
+# par(mfrow=c(1,1))
+# ### Look at heatmap for genes just affected by EH
+# heatmap=batchqc_heatmap(data.matrix[index.p.batch.8,], batch, mod=modmatrix)
 
 
 ### Histogram of the p values
@@ -125,21 +125,21 @@ pValuesBatch = f.pvalue(data.matrix,modBatch,mod0Batch)
 qValuesBatch = p.adjust(pValuesBatch,method="BH")
 
 #### (d) Include SV's
-modSv = cbind(modmatrix,sva.object$sv) 
-## include surrogate variables in model matrix with condition (cancer status)
-mod0Sv = cbind(modmatrix.null,sva.object$sv) 
-## include surrogate variables in null model matrix
-
-pValuesSv = f.pvalue(data.matrix,modSv,mod0Sv) 
-## pvalues including sv's in model matrix
-qValuesSv = p.adjust(pValuesSv,method="BH")
+# modSv = cbind(modmatrix,sva.object$sv) 
+# ## include surrogate variables in model matrix with condition (cancer status)
+# mod0Sv = cbind(modmatrix.null,sva.object$sv) 
+# ## include surrogate variables in null model matrix
+# 
+# pValuesSv = f.pvalue(data.matrix,modSv,mod0Sv) 
+# ## pvalues including sv's in model matrix
+# qValuesSv = p.adjust(pValuesSv,method="BH")
 
 par(mfrow=c(1,2))
 ## Original Simulated Data
 hist(pValues,main="Raw Count Data")
-hist(pValuesSv,main="Count Data after Combat")
+# hist(pValuesSv,main="Count Data after Combat")
 hist(pValuesBatch,main="Adjusted p-Values for Batch")
-hist(pValuesSv,main="Adjusted p-Values for SVs")
+# hist(pValuesSv,main="Adjusted p-Values for SVs")
 
 ```
 
@@ -209,9 +209,9 @@ combat_data.matrix.eh = ComBat(dat=data.matrix.eh, batch=batch, mod=modmatrix)
 # index.p.batch.8.eh=which(pprob.gam.eh>=.8)
 
 ### Look at heatmap for genes just affected by EH
-par(mfrow=c(1,1))
-heatmap.eh=batchqc_heatmap(data.matrix.eh[index.p.batch.8.eh,], batch, 
-    mod=modmatrix)
+# par(mfrow=c(1,1))
+# heatmap.eh=batchqc_heatmap(data.matrix.eh[index.p.batch.8.eh,], batch, 
+#     mod=modmatrix)
 
 ### Histogram of the p values
 
@@ -240,30 +240,30 @@ pValuesBatch.eh = f.pvalue(data.matrix.eh,modBatch,mod0Batch)
 qValuesBatch.eh = p.adjust(pValuesBatch.eh,method="BH")
 
 #### (d) Include SV's
-modSv = cbind(modmatrix,sva.object$sv) 
-## include surrogate variables in model matrix with condition (cancer status)
-mod0Sv = cbind(modmatrix.null,sva.object$sv) 
-## include surrogate variables in null model matrix
+# modSv = cbind(modmatrix,sva.object$sv) 
+# ## include surrogate variables in model matrix with condition (cancer status)
+# mod0Sv = cbind(modmatrix.null,sva.object$sv) 
+# ## include surrogate variables in null model matrix
+# 
+# modSv.eh = cbind(modmatrix,sva.object.eh$sv) 
+# ## include surrogate variables in model matrix with condition (cancer status)
+# mod0Sv.eh = cbind(modmatrix.null,sva.object.eh$sv) 
+# ## include surrogate variables in null model matrix
+# 
+# pValuesSv = f.pvalue(data.matrix,modSv,mod0Sv) 
+# ## pvalues including sv's in model matrix
+# qValuesSv = p.adjust(pValuesSv,method="BH")
 
-modSv.eh = cbind(modmatrix,sva.object.eh$sv) 
-## include surrogate variables in model matrix with condition (cancer status)
-mod0Sv.eh = cbind(modmatrix.null,sva.object.eh$sv) 
-## include surrogate variables in null model matrix
-
-pValuesSv = f.pvalue(data.matrix,modSv,mod0Sv) 
-## pvalues including sv's in model matrix
-qValuesSv = p.adjust(pValuesSv,method="BH")
-
-pValuesSv.eh = f.pvalue(data.matrix.eh,modSv.eh,mod0Sv.eh) 
-## pvalues including sv's in model matrix
-qValuesSv.eh = p.adjust(pValuesSv.eh,method="BH")
+# pValuesSv.eh = f.pvalue(data.matrix.eh,modSv.eh,mod0Sv.eh) 
+# ## pvalues including sv's in model matrix
+# qValuesSv.eh = p.adjust(pValuesSv.eh,method="BH")
 
 par(mfrow=c(2,2))
 ## Additional source of EH Added
 hist(pValues.eh,main="Raw Count Data (Added EH)")
-hist(pValuesSv.eh,main="Count Data after Combat (Added EH)")
+# hist(pValuesSv.eh,main="Count Data after Combat (Added EH)")
 hist(pValuesBatch.eh,main="Adjusted p-Values for Batch (Added EH)")
-hist(pValuesSv.eh,main="Adjusted p-Values for SVs (Added EH)")
+# hist(pValuesSv.eh,main="Adjusted p-Values for SVs (Added EH)")
 
 ```
 
