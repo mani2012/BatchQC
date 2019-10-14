@@ -1,8 +1,8 @@
 Package: BatchQC
 Type: Package
 Title: Batch Effects Quality Control Software
-Version: 1.13.0
-Date: 2019-04-07
+Version: 1.13.1
+Date: 2019-10-13
 Maintainer: Solaiappan Manimaran <manimaran_1975@hotmail.com>
 Description: Sequencing and microarray samples often are collected or
         processed in multiple batches or at different times. This often
@@ -46,6 +46,6 @@ biocViews: BatchEffect, GraphAndNetwork, Microarray,
 SystemRequirements: pandoc (http://pandoc.org/installing.html) for
         generating reports from markdown files.
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 NeedsCompilation: no
 Packaged: 2017-04-25 00:20:25 UTC; biocbuild
