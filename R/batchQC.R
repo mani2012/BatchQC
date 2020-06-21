@@ -195,12 +195,16 @@ batchQC <- function(dat, batch, condition = NULL,
     batchqc_ev <- NULL
     pca <- NULL
     rmdfile <- system.file("reports/batchqc_report.Rmd", package = "BatchQC")
+    batchqc_html <- system.file("reports/batchQC.html", package = "BatchQC")
     # rmarkdown::draft('batchqc_report.Rmd', template =
     # 'batchqc', package = 'BatchQC')
     static_lib_dir <- system.file("reports/libs", package = "BatchQC")
     file.copy(static_lib_dir, report_dir, recursive = TRUE)
-    outputfile <- rmarkdown::render(rmdfile, output_file = report_file, 
-        output_dir=report_dir, clean=FALSE)
+    file.copy(rmdfile, report_dir)
+    file.copy(batchqc_html, report_dir)
+    rmdfile_copy <- file.path(report_dir, "batchqc_report.Rmd")
+    outputfile <- rmarkdown::render(rmdfile_copy, output_file = report_file, 
+        output_dir=report_dir, knit_root_dir=report_dir, clean=FALSE)
     shinyInput <- getShinyInput()
     setShinyInputOrig(shinyInput)
     setShinyInputCombat(NULL)
