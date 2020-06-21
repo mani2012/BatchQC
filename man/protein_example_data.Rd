@@ -4,16 +4,23 @@
 \name{protein_example_data}
 \alias{protein_example_data}
 \alias{protein_sample_info}
-\alias{protein_example_data}
 \alias{protein_data}
 \title{Batch and Condition indicator for protein expression data}
-\format{A data frame with 24 rows and 4 variables:
+\format{
+A data frame with 24 rows and 4 variables:
 \describe{
     \item{Arrayname}{Array Name}
     \item{samplename}{Sample Name}
     \item{Batch}{Batch Indicator}
     \item{category}{Condition (Case vs Control) Indicator}
-}}
+}
+
+A data frame with 39 rows and 24 variables:
+\describe{
+    \item{Columns1-24}{Control and Case samples}
+    \item{rows1-39}{Proteins 1-39}
+}
+}
 \usage{
 protein_sample_info
 

@@ -4,8 +4,14 @@
 \alias{batchQC_shapeVariation}
 \title{Perform Mean and Variance batch variation analysis}
 \usage{
-batchQC_shapeVariation(data, groups, plot = FALSE, groupCol = NULL,
-  robustSample = FALSE, robustGene = FALSE)
+batchQC_shapeVariation(
+  data,
+  groups,
+  plot = FALSE,
+  groupCol = NULL,
+  robustSample = FALSE,
+  robustGene = FALSE
+)
 }
 \arguments{
 \item{data}{Given data}

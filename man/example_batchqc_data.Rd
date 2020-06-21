@@ -4,15 +4,22 @@
 \name{example_batchqc_data}
 \alias{example_batchqc_data}
 \alias{batch_indicator}
-\alias{example_batchqc_data}
 \alias{signature_data}
 \title{Batch and Condition indicator for signature data captured when 
 activating different growth pathway genes in human mammary epithelial cells.}
-\format{A data frame with 89 rows and 2 variables:
+\format{
+A data frame with 89 rows and 2 variables:
 \describe{
     \item{V1}{Batch Indicator}
     \item{V2}{Condition (Pathway) Indicator}
-}}
+}
+
+A data frame with 18052 rows and 89 variables:
+\describe{
+    \item{Columns1-89}{Control and Pathway activated samples}
+    \item{rows1-18052}{Genes 1-18052}
+}
+}
 \source{
 GEO accession: GSE73628
 

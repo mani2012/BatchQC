@@ -6,8 +6,18 @@
 This is the standard lmFit function from limma package with the modification
 to accept an additional correlation matrix parameter option}
 \usage{
-lmFitC(object, design = NULL, ndups = 1, spacing = 1, block = NULL,
-  correlation, cormatrix = NULL, weights = NULL, method = "ls", ...)
+lmFitC(
+  object,
+  design = NULL,
+  ndups = 1,
+  spacing = 1,
+  block = NULL,
+  correlation,
+  cormatrix = NULL,
+  weights = NULL,
+  method = "ls",
+  ...
+)
 }
 \arguments{
 \item{object}{A matrix-like data object containing log-ratios or 
