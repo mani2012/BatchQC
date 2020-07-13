@@ -1,8 +1,8 @@
 Package: BatchQC
 Type: Package
 Title: Batch Effects Quality Control Software
-Version: 1.17.1
-Date: 2020-06-21
+Version: 1.17.2
+Date: 2020-07-13
 Maintainer: Solaiappan Manimaran <manimaran_1975@hotmail.com>
 Description: Sequencing and microarray samples often are collected or
         processed in multiple batches or at different times. This often
@@ -31,13 +31,13 @@ Author: Solaiappan Manimaran <manimaran_1975@hotmail.com>, W. Evan
 URL: https://github.com/mani2012/BatchQC
 BugReports: https://github.com/mani2012/BatchQC/issues
 License: GPL (>= 2)
-Depends: R (>= 3.3.0)
+Depends: R (>= 3.5.0)
 Collate: 'simulate_data.R' 'heatmap.R' 'pca.R' 'batchtest.R'
         'batchQC.R' 'correlation.R' 'utils.R' 'sva.R' 'Circos.R'
         'shapeAnalysis.R' 'lmfitC.R'
 Suggests: testthat
 Imports: utils, rmarkdown, knitr, pander, gplots, MCMCpack, shiny, sva,
-        corpcor, moments, matrixStats, ggvis, d3heatmap (>= 0.6.1.2), 
+        corpcor, moments, matrixStats, ggvis, heatmaply, 
         reshape2, limma, grDevices, graphics, stats, methods, Matrix
 biocViews: BatchEffect, GraphAndNetwork, Microarray,
         PrincipalComponent, Sequencing, Software, Visualization,
@@ -49,3 +49,4 @@ VignetteBuilder: knitr
 RoxygenNote: 7.1.0
 NeedsCompilation: no
 Packaged: 2017-04-25 00:20:25 UTC; biocbuild
+Encoding: UTF-8

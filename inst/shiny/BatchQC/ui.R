@@ -1,7 +1,8 @@
 library(shiny)
 library(pander)
 library(ggvis)
-library(d3heatmap)
+library(heatmaply)
+#library(d3heatmap)
 
 minbatch <- function(batch1){
     batch2 <- as.factor(batch1)
@@ -133,10 +134,10 @@ shinyUI(navbarPage("BatchQC", id="BatchQC", fluid=TRUE,
             mainPanel(
                 tabsetPanel(
                     tabPanel("Heatmap",
-                        d3heatmapOutput("heatmap", width="100%", height="550px")
+                        plotlyOutput("heatmap", width="100%", height="550px")
                     ),
                     tabPanel("Sample Correlations",
-                        d3heatmapOutput("correlation", width="100%", 
+                        plotlyOutput("correlation", width="100%", 
                             height="550px")
                     )
                 ) , width=9
