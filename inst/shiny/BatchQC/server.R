@@ -1,7 +1,8 @@
 library(shiny)
 library(pander)
 library(ggvis)
-library(d3heatmap)
+library(heatmaply)
+#library(d3heatmap)
 library(reshape2)
 library(limma)
 library(Matrix)
@@ -642,7 +643,7 @@ shinyServer(function(input, output, session) {
     })
     
     # interactive heatmap
-    output$heatmap <- renderD3heatmap({
+    output$heatmap <- renderPlotly({
         if (input$batchHM == 1) {
             if (is.null(getShinyInputCombat())) {
                 session$sendCustomMessage(type = "testmessage", message = 
@@ -675,13 +676,19 @@ shinyServer(function(input, output, session) {
             return(bc[i])
         }
         cc <- sapply(batch, colorfun, simplify = TRUE)
-        d3heatmap(lcountsReduced, colors = "RdBu", labCol = make.unique(
-            as.character(batch)), dendrogram = 
+        # plot_ly(x=make.unique(as.character(batch)), 
+        #         z=lcountsReduced, type="heatmap")
+        heatmaply(lcountsReduced, colors = "RdBu", labCol = make.unique(
+            as.character(batch)), dendrogram =
             if (input$cluster) "both" else "none",
             ColSideColors=cc)
+        # d3heatmap(lcountsReduced, colors = "RdBu", labCol = make.unique(
+        #     as.character(batch)), dendrogram = 
+        #     if (input$cluster) "both" else "none",
+        #     ColSideColors=cc)
     })
     
-    output$correlation <- renderD3heatmap({
+    output$correlation <- renderPlotly({
         if (input$batchHM == 1) {
             if (is.null(getShinyInputCombat())) {
                 session$sendCustomMessage(type = "testmessage", message = 
@@ -715,9 +722,12 @@ shinyServer(function(input, output, session) {
             return(bc[i])
         }
         cc <- sapply(intbatch, colorfun, simplify = TRUE)
-        d3heatmap(cormat, colors = "RdBu", labCol = sample, labRow = sample, 
-            dendrogram = if (input$cluster) "both" else "none",
-            ColSideColors=cc)
+        heatmaply(cormat, colors = "RdBu", labCol = sample, labRow = sample, 
+                  dendrogram = if (input$cluster) "both" else "none",
+                  ColSideColors=cc)
+        # d3heatmap(cormat, colors = "RdBu", labCol = sample, labRow = sample, 
+        #     dendrogram = if (input$cluster) "both" else "none",
+        #     ColSideColors=cc)
     })
     
     # Shape plots
