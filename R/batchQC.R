@@ -200,8 +200,8 @@ batchQC <- function(dat, batch, condition = NULL,
     # 'batchqc', package = 'BatchQC')
     static_lib_dir <- system.file("reports/libs", package = "BatchQC")
     file.copy(static_lib_dir, report_dir, recursive = TRUE)
-    file.copy(rmdfile, report_dir)
-    file.copy(batchqc_html, report_dir)
+    file.copy(rmdfile, report_dir, overwrite = TRUE)
+    file.copy(batchqc_html, report_dir, overwrite = TRUE)
     rmdfile_copy <- file.path(report_dir, "batchqc_report.Rmd")
     outputfile <- rmarkdown::render(rmdfile_copy, output_file = report_file, 
         output_dir=report_dir, knit_root_dir=report_dir, clean=FALSE)

@@ -1007,10 +1007,11 @@ shinyServer(function(input, output, session) {
             report_option_vector = report_option_vector,
             lcounts=lcounts_combat)
         setShinyInput(shinyInput)
-        rmdfile <- system.file("reports/batchqc_report.Rmd", 
-            package = "BatchQC")
+        #rmdfile <- system.file("reports/batchqc_report.Rmd", 
+        #    package = "BatchQC")
+        rmdfile_copy <- file.path(shinyInput$report_dir, "batchqc_report.Rmd")
         # dat <- as.matrix(combat_data)
-        outputfile <- rmarkdown::render(rmdfile, output_file = 
+        outputfile <- rmarkdown::render(rmdfile_copy, output_file = 
             "combat_batchqc_report.html", output_dir = shinyInput$report_dir,
             clean=FALSE)
         shinyInput <- getShinyInput()
@@ -1071,10 +1072,12 @@ shinyServer(function(input, output, session) {
                     report_option_vector = report_option_vector,
                     lcounts=lcounts_svaf)
                 setShinyInput(shinyInput)
-                rmdfile <- system.file("reports/batchqc_report.Rmd", 
-                    package = "BatchQC")
+                #rmdfile <- system.file("reports/batchqc_report.Rmd", 
+                #    package = "BatchQC")
+                rmdfile_copy <- file.path(shinyInput$report_dir, 
+                    "batchqc_report.Rmd")
                 # dat <- as.matrix(svaf_data)
-                outputfile <- rmarkdown::render(rmdfile, output_file = 
+                outputfile <- rmarkdown::render(rmdfile_copy, output_file = 
                     "svaf_batchqc_report.html", output_dir = 
                     shinyInput$report_dir, clean=FALSE)
                 shinyInput <- getShinyInput()
@@ -1106,10 +1109,12 @@ shinyServer(function(input, output, session) {
                     report_option_vector = report_option_vector,
                     lcounts=lcounts_svar)
                 setShinyInput(shinyInput)
-                rmdfile <- system.file("reports/batchqc_report.Rmd", 
-                    package = "BatchQC")
+                #rmdfile <- system.file("reports/batchqc_report.Rmd", 
+                #    package = "BatchQC")
+                rmdfile_copy <- file.path(shinyInput$report_dir, 
+                    "batchqc_report.Rmd")
                 # dat <- as.matrix(svar_data)
-                outputfile <- rmarkdown::render(rmdfile, output_file = 
+                outputfile <- rmarkdown::render(rmdfile_copy, output_file = 
                     "svar_batchqc_report.html", output_dir = 
                     shinyInput$report_dir, clean=FALSE)
                 shinyInput <- getShinyInput()
